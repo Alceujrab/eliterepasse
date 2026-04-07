@@ -32,7 +32,6 @@ class OrderSeeder extends Seeder
             DB::table('order_vehicle')->insert([
                 'order_id' => $orderId,
                 'vehicle_id' => $vehicle->id,
-                'sale_price_at_time' => $vehicle->sale_price,
             ]);
         }
 
@@ -50,7 +49,6 @@ class OrderSeeder extends Seeder
             DB::table('order_vehicle')->insert([
                 'order_id' => $order2Id,
                 'vehicle_id' => $vehicle2->id,
-                'sale_price_at_time' => $vehicle2->sale_price,
             ]);
         }
     }
