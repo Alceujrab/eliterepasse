@@ -34,18 +34,16 @@ class Suporte extends Component
 
     public function render()
     {
-        $company = auth()->user()->companies()->first();
-        
-        $tickets = $company ? Ticket::with(['order', 'messages' => function ($query) {
+        $tickets = Ticket::with(['messages' => function ($query) {
             $query->latest();
-        }])->where('company_id', $company->id)->latest()->get() : collect();
+        }])->where('user_id', auth()->id())->latest()->get();
 
-        $activeTicket = $this->activeTicketId ? Ticket::with(['messages.user', 'order'])->find($this->activeTicketId) : null;
+        $activeTicket = $this->activeTicketId ? Ticket::with(['messages.user'])->find($this->activeTicketId) : null;
 
         return view('livewire.suporte', [
             'tickets' => $tickets,
             'activeTicket' => $activeTicket,
-            'company' => $company
+            'company' => auth()->user()->companies()->first()
         ]);
     }
 }

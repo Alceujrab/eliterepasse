@@ -24,11 +24,9 @@ class TicketSeeder extends Seeder
 
         if ($order && $user) {
             $ticketId = DB::table('tickets')->insertGetId([
-                'company_id' => $order->company_id,
                 'user_id' => $user->id,
-                'order_id' => $order->id,
-                'subject' => 'Dúvida sobre documentação',
-                'status' => 'em_andamento',
+                'type' => 'Dúvida sobre documentação',
+                'status' => 'andamento',
                 'created_at' => Carbon::now()->subDays(1),
                 'updated_at' => Carbon::now()->subDays(1),
             ]);

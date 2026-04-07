@@ -24,12 +24,12 @@
                         @foreach($tickets as $ticket)
                             <li wire:click="selectTicket({{ $ticket->id }})" class="p-4 cursor-pointer hover:bg-orange-50 transition-colors {{ $activeTicketId == $ticket->id ? 'bg-orange-50 border-l-4 border-orange_cta' : '' }}">
                                 <div class="flex justify-between items-start mb-1">
-                                    <span class="font-bold text-sm text-gray-900 truncate">Pedido #{{ str_pad($ticket->order_id, 6, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="font-bold text-sm text-gray-900 truncate">Ticket #{{ str_pad($ticket->id, 4, '0', STR_PAD_LEFT) }}</span>
                                     <span class="text-xs text-gray-400">{{ $ticket->created_at->format('d/m') }}</span>
                                 </div>
-                                <div class="text-xs font-semibold text-gray-700 truncate mb-1">{{ $ticket->subject }}</div>
+                                <div class="text-xs font-semibold text-gray-700 truncate mb-1">{{ $ticket->type }}</div>
                                 <div class="text-xs text-gray-500 truncate">
-                                    @if($ticket->messages->count() > 0)
+                                    @if($ticket->messages->isNotEmpty())
                                         {{ $ticket->messages->first()->message }}
                                     @else
                                         ...
@@ -62,7 +62,7 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-gray-800">Suporte Elite Repasse</h3>
-                            <p class="text-xs text-gray-500">Ref: {{ $activeTicket->subject }} (Pedido #{{ str_pad($activeTicket->order_id, 6, '0', STR_PAD_LEFT) }})</p>
+                            <p class="text-xs text-gray-500">{{ $activeTicket->type }}</p>
                         </div>
                     </div>
                     <div>
