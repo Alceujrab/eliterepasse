@@ -5,9 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
 class MeusPedidos extends Component
 {
-    #[Layout('layouts.app')]
     public function render()
     {
         $company = auth()->user()->companies()->first();
