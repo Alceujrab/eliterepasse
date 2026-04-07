@@ -8,6 +8,10 @@ Route::get('dashboard', \App\Livewire\Vitrine::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('veiculo/{id}', \App\Livewire\VehicleDetails::class)
+    ->middleware(['auth', 'verified'])
+    ->name('vehicle.details');
+
 Route::get('pedidos', \App\Livewire\MeusPedidos::class)
     ->middleware(['auth', 'verified'])
     ->name('pedidos');

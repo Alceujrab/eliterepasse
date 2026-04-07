@@ -15,45 +15,58 @@
 
     <!-- Main Content Area -->
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 pb-16">
-        <!-- Sidebar / Filtros -->
-        <div class="w-full md:w-[260px] flex-shrink-0 space-y-6">
-            <div class="bg-white p-5 sticky top-24 shadow-sm border border-gray-200 rounded min-h-[400px]">
-                <div class="flex items-center gap-2 mb-5 border-b border-gray-100 pb-3">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                    <h3 class="text-[15px] font-bold text-gray-800">Filtros</h3>
+        <!-- Sidebar / Filtros (Print 2 logic) -->
+        <div class="w-full md:w-[280px] flex-shrink-0 space-y-6">
+            <div class="bg-white sticky top-24 shadow-sm border border-gray-200 rounded min-h-[400px]">
+                <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <h3 class="text-[15px] font-bold text-gray-800">Filtrar por</h3>
+                    </div>
                 </div>
                 
-                <div class="space-y-5">
-                    <!-- Search -->
-                    <div>
-                        <label class="block text-[11px] font-black text-gray-500 uppercase tracking-wider mb-2">Buscar (Modelo/Placa)</label>
-                        <input wire:model.live.debounce.300ms="searchTerm" type="text" class="w-full rounded border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm text-[13px] py-2 px-3 bg-white" placeholder="Quer qual carro?">
+                <div class="divide-y divide-gray-100">
+                    <!-- Search Accordion -->
+                    <div x-data="{ open: true }" class="p-4">
+                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
+                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">BUSCA</span>
+                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" class="mt-4">
+                            <input wire:model.live.debounce.300ms="searchTerm" type="text" class="w-full rounded border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm text-[13px] py-2 px-3 placeholder-gray-400" placeholder="Digite marca ou modelo...">
+                        </div>
                     </div>
 
-                    <!-- Categoria -->
-                    <div>
-                        <label class="block text-[11px] font-black text-gray-500 uppercase tracking-wider mb-2">Categoria</label>
-                        <select wire:model.live="category" class="w-full rounded border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm text-[13px] py-2 px-3 bg-white">
-                            <option value="">Todas as Categorias</option>
-                            <option value="Hatch">Hatch</option>
-                            <option value="Sedan">Sedan</option>
-                            <option value="SUV">SUV</option>
-                            <option value="Picape">Picape</option>
-                        </select>
+                    <!-- Marca Accordion -->
+                    <div x-data="{ open: true }" class="p-4">
+                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
+                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">MARCAS</span>
+                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" class="mt-4 space-y-2">
+                            @foreach($availableBrands as $b)
+                                <label class="flex items-center cursor-pointer group">
+                                    <input type="checkbox" wire:model.live="brands" value="{{ $b }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary transition duration-150 ease-in-out">
+                                    <span class="ml-2 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $b }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
 
-                    <!-- Marca -->
-                    <div>
-                        <label class="block text-[11px] font-black text-gray-500 uppercase tracking-wider mb-2">Marca</label>
-                        <select wire:model.live="brand" class="w-full rounded border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm text-[13px] py-2 px-3 bg-white">
-                            <option value="">Todas as Marcas</option>
-                            <option value="Volkswagen">Volkswagen</option>
-                            <option value="Jeep">Jeep</option>
-                            <option value="Chevrolet">Chevrolet</option>
-                            <option value="Fiat">Fiat</option>
-                            <option value="Toyota">Toyota</option>
-                            <option value="Hyundai">Hyundai</option>
-                        </select>
+                    <!-- Categoria Accordion -->
+                    <div x-data="{ open: true }" class="p-4">
+                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
+                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">CARROCERIA</span>
+                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" class="mt-4 space-y-2 mb-2">
+                            @foreach($availableCategories as $c)
+                                <label class="flex items-center cursor-pointer group">
+                                    <input type="checkbox" wire:model.live="categories" value="{{ $c }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary transition duration-150 ease-in-out">
+                                    <span class="ml-2 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $c }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,9 +74,30 @@
 
         <!-- Vitrine Grid -->
         <div class="flex-1 w-full min-w-0">
-            <div class="mb-4 flex justify-between items-center bg-transparent py-1">
+            <!-- Active Filters (Selected Tags) -->
+            <div class="mb-4 text-sm flex gap-2 flex-wrap items-center">
+                @if(count($brands) > 0 || count($categories) > 0)
+                    <span class="text-[12px] text-gray-500 font-bold mr-2">Filtros ativos:</span>
+                @endif
+                
+                @foreach($brands as $ab)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-white border border-gray-300 text-gray-700 shadow-sm">
+                        {{ $ab }}
+                        <button wire:click="removeFilter('brands', '{{ $ab }}')" class="hover:text-red-500 transition focus:outline-none"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    </span>
+                @endforeach
+                
+                @foreach($categories as $ac)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-white border border-gray-300 text-gray-700 shadow-sm">
+                        {{ $ac }}
+                        <button wire:click="removeFilter('categories', '{{ $ac }}')" class="hover:text-red-500 transition focus:outline-none"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    </span>
+                @endforeach
+            </div>
+
+            <div class="mb-4 flex justify-between items-center bg-transparent py-1 border-b border-gray-200/50 pb-4">
                 <h2 class="text-[18px] font-bold text-gray-800">Veículos em Destaque</h2>
-                <span class="text-[12px] font-medium text-gray-500 bg-gray-200/50 border border-gray-200 px-3 py-1 rounded-sm">{{ count($vehicles) }} resultados</span>
+                <span class="text-[12px] font-medium text-gray-500 bg-white border border-gray-200 px-3 py-1 rounded-sm">{{ count($vehicles) }} resultados</span>
             </div>
 
             @if(count($vehicles) === 0)
@@ -72,7 +106,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                     <h3 class="mt-4 text-sm font-bold text-gray-700">Nenhum veículo encontrado</h3>
-                    <p class="mt-1 text-[13px] text-gray-500">Ajuste os filtros laterais para ver as ofertas.</p>
+                    <p class="mt-1 text-[13px] text-gray-500">Limpe as seleções dos filtros laterais para ver as ofertas.</p>
                 </div>
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -81,8 +115,9 @@
                             $media = json_decode($vehicle->media, true); 
                             $image = (is_array($media) && count($media) > 0) ? $media[0] : 'https://placehold.co/600x400?text=Sem+Foto';
                             $margin = $vehicle->fipe_price > 0 ? round((($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100) : 0;
+                            $isFav = in_array($vehicle->id, $userFavorites);
                         @endphp
-                        <div class="bg-white rounded border border-gray-200 overflow-hidden flex flex-col group hover:shadow-lg hover:border-gray-300 transition-all">
+                        <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate class="bg-white rounded border border-gray-200 overflow-hidden flex flex-col group hover:shadow-lg hover:border-gray-300 transition-all block">
                             <!-- Imagem -->
                             <div class="relative h-[210px] bg-gray-100 overflow-hidden cursor-pointer">
                                 <img src="{{ $image }}" alt="{{ $vehicle->model }}" class="w-full h-full object-cover">
@@ -91,8 +126,8 @@
                                     {{ $vehicle->manufacture_year }}/{{ $vehicle->model_year }}
                                 </div>
                                 <!-- Heart -->
-                                <button class="absolute top-3 right-3 text-gray-300 hover:text-red-500 drop-shadow-md transition">
-                                    <svg class="w-7 h-7 fill-white" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                <button wire:click.prevent="toggleFavorite({{ $vehicle->id }})" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 drop-shadow-md transition z-10 focus:outline-none">
+                                    <svg class="w-7 h-7 {{ $isFav ? 'text-red-500 fill-current' : 'fill-white' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                                 </button>
                             </div>
                             
@@ -129,16 +164,16 @@
                                             <span class="text-[9px] font-black tracking-widest text-[#e06512] border border-[#e06512]/30 px-1 py-0.5 rounded-sm uppercase">Super Oferta</span>
                                         @endif
                                     </div>
-                                    <div class="text-[24px] font-black text-gray-900 tracking-tight leading-none mb-4 mt-1">
+                                    <div class="text-[24px] font-black text-gray-900 tracking-tight leading-none mb-4 mt-1 group-hover:text-primary transition-colors">
                                         R$ {{ number_format($vehicle->sale_price, 2, ',', '.') }}
                                     </div>
                                     
-                                    <button class="w-full bg-orange_cta hover:bg-[#e06512] text-white font-black py-2.5 px-4 rounded transition-colors text-[14px] flex items-center justify-center gap-2">
+                                    <button class="w-full bg-orange_cta group-hover:bg-[#e06512] text-white font-black py-2.5 px-4 rounded transition-colors text-[14px] flex items-center justify-center gap-2">
                                         Tenho Interesse
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             @endif
