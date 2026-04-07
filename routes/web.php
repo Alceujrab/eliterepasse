@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', \App\Livewire\LandingPage::class)->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', \App\Livewire\Vitrine::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
