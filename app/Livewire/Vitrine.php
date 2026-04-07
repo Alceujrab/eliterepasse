@@ -10,7 +10,7 @@ class Vitrine extends Component
     public $category = '';
     public $brand = '';
 
-    public function with(): array
+    public function render()
     {
         $query = \App\Models\Vehicle::query();
 
@@ -28,13 +28,8 @@ class Vitrine extends Component
              $query->where('brand', $this->brand);
         }
 
-        return [
+        return view('livewire.vitrine', [
             'vehicles' => $query->latest()->get()
-        ];
-    }
-
-    public function render()
-    {
-        return view('livewire.vitrine');
+        ]);
     }
 }
