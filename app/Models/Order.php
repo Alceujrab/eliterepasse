@@ -20,4 +20,9 @@ class Order extends Model
     {
         return $this->belongsToMany(Vehicle::class);
     }
+
+    public function financial()
+    {
+        return $this->hasOne(Financial::class);
+    }
 }

@@ -12,6 +12,10 @@ Route::get('pedidos', \App\Livewire\MeusPedidos::class)
     ->middleware(['auth', 'verified'])
     ->name('pedidos');
 
+Route::get('financeiro', \App\Livewire\Financeiro::class)
+    ->middleware(['auth', 'verified'])
+    ->name('financeiro');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
