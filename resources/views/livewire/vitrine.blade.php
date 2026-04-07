@@ -15,59 +15,219 @@
 
     <!-- Main Content Area -->
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 pb-16">
-        <!-- Sidebar / Filtros (Print 2 logic) -->
-        <div class="w-full md:w-[280px] flex-shrink-0 space-y-6">
-            <div class="bg-white sticky top-24 shadow-sm border border-gray-200 rounded min-h-[400px]">
-                <div class="flex items-center justify-between p-4 border-b border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        <h3 class="text-[15px] font-bold text-gray-800">Filtrar por</h3>
-                    </div>
-                </div>
+        <!-- Sidebar / Filtros Localiza Style -->
+        <div class="w-full md:w-[280px] flex-shrink-0">
+            <div class="bg-white rounded overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.04)] border border-gray-200 border-b-0 sticky top-24">
                 
+                <!-- Swithes -->
                 <div class="divide-y divide-gray-100">
-                    <!-- Search Accordion -->
-                    <div x-data="{ open: true }" class="p-4">
-                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
-                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">BUSCA</span>
-                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" class="mt-4">
-                            <input wire:model.live.debounce.300ms="searchTerm" type="text" class="w-full rounded border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm text-[13px] py-2 px-3 placeholder-gray-400" placeholder="Digite marca ou modelo...">
+                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L9.2 4.1 5.7 3.5 4.8 6.9 2 9.2l1.6 3-1.6 3 2.8 2.3.9 3.4 3.5-.6 2.8 2.1 2.8-2.1 3.5.6.9-3.4 2.8-2.3-1.6-3 1.6-3-2.8-2.3-.9-3.4-3.5.6L12 2zm1 12H11v-2h2v2zm0-4H11V6h2v4z"></path></svg>
+                            <span class="text-[13px] text-gray-700 font-medium">Veículos em oferta</span>
                         </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" wire:model.live="vehiclesOnSale" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            <span class="text-[13px] text-gray-700 font-medium">Carros com Laudo</span>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" wire:model.live="carsWithReport" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            <span class="text-[13px] text-gray-700 font-medium">Garantia de fábrica</span>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" wire:model.live="factoryWarranty" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer border-b-[3px] border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <span class="text-[13px] text-gray-700 font-medium">Acabou de chegar</span>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" wire:model.live="justArrived" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Accordions List -->
+                <div class="divide-y divide-gray-100 bg-white">
+                    
+                    <!-- Lojas -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Lojas</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
                     </div>
 
-                    <!-- Marca Accordion -->
-                    <div x-data="{ open: true }" class="p-4">
-                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
-                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">MARCAS</span>
-                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <!-- Preço -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <span class="text-[14px] text-gray-600 font-bold w-4 text-center">R$</span>
+                                <span class="font-bold text-gray-800 text-[13px]">Preço</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div x-show="open" class="mt-4 space-y-2">
-                            @foreach($availableBrands as $b)
-                                <label class="flex items-center cursor-pointer group">
-                                    <input type="checkbox" wire:model.live="brands" value="{{ $b }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary transition duration-150 ease-in-out">
-                                    <span class="ml-2 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $b }}</span>
-                                </label>
-                            @endforeach
-                        </div>
                     </div>
 
-                    <!-- Categoria Accordion -->
-                    <div x-data="{ open: true }" class="p-4">
-                        <button @click="open = !open" class="flex justify-between items-center w-full focus:outline-none">
-                            <span class="text-[13px] font-bold text-gray-800 tracking-wide">CARROCERIA</span>
-                            <svg class="w-4 h-4 text-gray-500 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <!-- Margem FIPE -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Margem FIPE</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div x-show="open" class="mt-4 space-y-2 mb-2">
+                    </div>
+
+                    <!-- Carroceria -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path><path d="M9 7v14"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Carroceria</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" class="px-4 pb-4 pt-2 space-y-2" style="display: none;">
                             @foreach($availableCategories as $c)
                                 <label class="flex items-center cursor-pointer group">
-                                    <input type="checkbox" wire:model.live="categories" value="{{ $c }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary transition duration-150 ease-in-out">
-                                    <span class="ml-2 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $c }}</span>
+                                    <input type="checkbox" wire:model.live="categories" value="{{ $c }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded">
+                                    <span class="ml-3 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $c }}</span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- Marca e Modelo -->
+                    <div x-data="{ open: true }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Marca e Modelo</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" class="px-4 pb-4 pt-2 space-y-2">
+                            @foreach($availableBrands as $b)
+                                <label class="flex items-center cursor-pointer group">
+                                    <input type="checkbox" wire:model.live="brands" value="{{ $b }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded">
+                                    <span class="ml-3 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $b }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Quilometragem -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Quilometragem</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Ano Fabr./Mod. -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Ano Fabr./Mod.</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Câmbio -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Câmbio</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Motor -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Motor</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Cor -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Cor</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Acessórios -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Acessórios</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Portas -->
+                    <div x-data="{ open: false }" class="border-b border-gray-200">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Portas</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Final da placa -->
+                    <div x-data="{ open: false }">
+                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                                <span class="font-bold text-gray-800 text-[13px]">Final da placa</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+                    
                 </div>
             </div>
         </div>

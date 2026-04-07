@@ -13,11 +13,26 @@ class Vitrine extends Component
     public $searchTerm = '';
     public $categories = [];
     public $brands = [];
+    
+    // Novas variaveis para Switches
+    public $vehiclesOnSale = false;
+    public $carsWithReport = false;
+    public $factoryWarranty = false;
+    public $justArrived = false;
+
+    // Novas variaveis para sanfonas
+    public $stores = [];
+    public $priceRange = '';
+    public $mileageRange = '';
+    public $transmissions = [];
+    public $colors = [];
+    public $plateEnds = [];
 
     protected $queryString = [
         'searchTerm' => ['except' => ''],
         'categories' => ['except' => []],
         'brands' => ['except' => []],
+        'vehiclesOnSale' => ['except' => false],
     ];
 
     public function toggleFavorite($vehicleId)
