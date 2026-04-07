@@ -13,14 +13,19 @@ class TicketSeeder extends Seeder
         $order = DB::table('orders')->first();
         $user = DB::table('users')->where('email', 'alceujr.ab@gmail.com')->first();
         
-        $adminId = DB::table('users')->insertGetId([
-            'name' => 'Elite Repasse (Suporte)',
-            'email' => 'suporte@eliterepasse.com.br',
-            'password' => bcrypt('password'),
-            'is_admin' => true,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        $admin = DB::table('users')->where('email', 'suporte@eliterepasse.com.br')->first();
+        if (!$admin) {
+            $adminId = DB::table('users')->insertGetId([
+                'name' => 'Elite Repasse (Suporte)',
+                'email' => 'suporte@eliterepasse.com.br',
+                'password' => bcrypt('password'),
+                'is_admin' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        } else {
+            $adminId = $admin->id;
+        }
 
         if ($order && $user) {
             $ticketId = DB::table('tickets')->insertGetId([
