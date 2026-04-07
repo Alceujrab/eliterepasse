@@ -20,6 +20,18 @@ Route::get('suporte', \App\Livewire\Suporte::class)
     ->middleware(['auth', 'verified'])
     ->name('suporte');
 
+Route::get('meus-documentos', \App\Livewire\MeusDocumentos::class)
+    ->middleware(['auth', 'verified'])
+    ->name('meus-documentos');
+
+Route::get('documentos-elite', \App\Livewire\DocumentosElite::class)
+    ->middleware(['auth', 'verified'])
+    ->name('documentos-elite');
+
+Route::get('favoritos', \App\Livewire\Favoritos::class)
+    ->middleware(['auth', 'verified'])
+    ->name('favoritos');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
