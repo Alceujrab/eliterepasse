@@ -12,20 +12,6 @@ class TicketSeeder extends Seeder
     {
         $order = DB::table('orders')->first();
         $user = DB::table('users')->where('email', 'alceujr.ab@gmail.com')->first();
-        
-        $admin = DB::table('users')->where('email', 'suporte@eliterepasse.com.br')->first();
-        if (!$admin) {
-            $adminId = DB::table('users')->insertGetId([
-                'name' => 'Elite Repasse (Suporte)',
-                'email' => 'suporte@eliterepasse.com.br',
-                'password' => bcrypt('password'),
-                'is_admin' => true,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        } else {
-            $adminId = $admin->id;
-        }
 
         if ($order && $user) {
             $ticketId = DB::table('tickets')->insertGetId([
@@ -39,14 +25,14 @@ class TicketSeeder extends Seeder
             DB::table('ticket_messages')->insert([
                 [
                     'ticket_id' => $ticketId,
-                    'user_id' => $user->id,
+                    'sender_type' => 'lojista',
                     'message' => 'Olá, gostaria de saber se o CRV já está disponível para transferência. O cliente já está perguntando.',
                     'created_at' => Carbon::now()->subHours(24),
                     'updated_at' => Carbon::now()->subHours(24),
                 ],
                 [
                     'ticket_id' => $ticketId,
-                    'user_id' => $adminId,
+                    'sender_type' => 'admin',
                     'message' => 'Olá! Sim, o documento já está no nosso despachante central. Enviaremos as custas via Sedex amanhã pela manhã.',
                     'created_at' => Carbon::now()->subHours(20),
                     'updated_at' => Carbon::now()->subHours(20),

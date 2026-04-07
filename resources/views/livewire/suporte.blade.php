@@ -75,7 +75,7 @@
                 <!-- Mensagens -->
                 <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');">
                     @foreach($activeTicket->messages as $msg)
-                        @if($msg->user->is_admin)
+                        @if($msg->sender_type === 'admin')
                             <!-- Recebida (Admin) -->
                             <div class="flex mb-4">
                                 <div class="max-w-[75%] bg-white border border-gray-100 rounded-lg rounded-tl-none p-3 shadow-sm relative">

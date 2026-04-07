@@ -25,7 +25,7 @@ class Suporte extends Component
 
         TicketMessage::create([
             'ticket_id' => $this->activeTicketId,
-            'user_id' => auth()->id(),
+            'sender_type' => 'lojista',
             'message' => $this->newMessage,
         ]);
 
@@ -38,7 +38,7 @@ class Suporte extends Component
             $query->latest();
         }])->where('user_id', auth()->id())->latest()->get();
 
-        $activeTicket = $this->activeTicketId ? Ticket::with(['messages.user'])->find($this->activeTicketId) : null;
+        $activeTicket = $this->activeTicketId ? Ticket::with(['messages'])->find($this->activeTicketId) : null;
 
         return view('livewire.suporte', [
             'tickets' => $tickets,
