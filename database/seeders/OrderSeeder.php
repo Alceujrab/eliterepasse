@@ -40,7 +40,7 @@ class OrderSeeder extends Seeder
         if ($vehicle2) {
             $order2Id = DB::table('orders')->insertGetId([
                 'company_id' => $company->id,
-                'status' => 'reservado',
+                'status' => 'aguardando_pgto',
                 'total_amount' => $vehicle2->sale_price,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
