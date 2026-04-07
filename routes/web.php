@@ -16,6 +16,10 @@ Route::get('financeiro', \App\Livewire\Financeiro::class)
     ->middleware(['auth', 'verified'])
     ->name('financeiro');
 
+Route::get('suporte', \App\Livewire\Suporte::class)
+    ->middleware(['auth', 'verified'])
+    ->name('suporte');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
