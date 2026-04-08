@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
 use App\Services\ContractService;
+use App\Services\NotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -86,6 +87,8 @@ class OrdersTable
                             'confirmado_por' => auth()->id(),
                         ]);
                         $record->vehicle?->update(['status' => 'reserved']);
+                        // Notificar cliente
+                        app(NotificationService::class)->pedidoConfirmado($record->fresh());
                         Notification::make()->title('Compra confirmada!')->success()->send();
                     }),
 
@@ -98,9 +101,12 @@ class OrdersTable
                     ->modalDescription('Será gerado um contrato com os dados atuais do pedido.')
                     ->visible(fn (Order $r) => $r->status === 'confirmado')
                     ->action(function (Order $record) {
-                        $contract = app(ContractService::class)->gerarDeOrdem($record);
+                        $contract      = app(ContractService::class)->gerarDeOrdem($record);
+                        $linkAssinatura = route('contrato.assinar.show', $contract->token_assinatura);
+                        // Notificar cliente para assinar
+                        app(NotificationService::class)->contratoParaAssinar($contract, $linkAssinatura);
                         Notification::make()
-                            ->title("Contrato {$contract->numero} gerado!")
+                            ->title("Contrato {$contract->numero} gerado! Notificação enviada.")
                             ->success()->send();
                     }),
 

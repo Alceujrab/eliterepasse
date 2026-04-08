@@ -35,6 +35,10 @@ Route::middleware(['auth', 'verified', EnsureUserIsApproved::class])->group(func
 
     Route::get('favoritos', \App\Livewire\Favoritos::class)->name('favoritos');
 
+    Route::get('notificacoes', \App\Livewire\MinhasNotificacoes::class)->name('notificacoes');
+
+    Route::get('meus-pedidos', \App\Livewire\MeusPedidos::class)->name('meus-pedidos');
+
     Route::view('profile', 'profile')->name('profile');
 });
 
