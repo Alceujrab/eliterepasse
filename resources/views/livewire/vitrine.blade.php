@@ -1,342 +1,460 @@
-<div class="w-full bg-[#f8fafc] min-h-screen">
-    <!-- Top Banners mimicking Localiza -->
-    <div class="w-full bg-gradient-to-r from-primary to-blue-900 relative overflow-hidden mb-6 shadow-sm border-b border-gray-200">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 flex justify-between items-center h-24 md:h-32">
-            <div class="text-white z-10 w-full flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl md:text-[44px] font-black tracking-tight italic uppercase leading-none">Giro Rápido</h1>
-                    <p class="text-lg md:text-xl font-medium mt-1">Com margem de até <span class="text-orange-400 font-black">20% Abaixo FIPE</span></p>
+<div class="min-h-screen bg-[#f1f5f9]">
+
+    {{-- ─── Hero Search Bar ──────────────────────────────────────────── --}}
+    <div class="bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] py-6 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                <div class="flex-1">
+                    <h1 class="text-white font-black text-2xl tracking-tight mb-1">Vitrine de Veículos</h1>
+                    <p class="text-blue-200 text-sm">{{ $totalSemFiltro }} veículo(s) disponíveis</p>
+                </div>
+                {{-- Search --}}
+                <div class="relative flex-1 max-w-xl">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input wire:model.live.debounce.400ms="searchTerm"
+                        type="text"
+                        placeholder="Marca, modelo, versão ou placa..."
+                        class="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm focus:ring-2 focus:ring-orange-400 focus:border-transparent border-0 shadow-lg"/>
+                    @if($searchTerm)
+                        <button wire:click="$set('searchTerm', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    @endif
                 </div>
             </div>
-            <!-- Decorative Elements -->
-            <div class="absolute right-0 top-0 h-full w-1/2 opacity-20 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 16px 16px;"></div>
+
+            {{-- Quick switches --}}
+            <div class="flex gap-3 mt-4 flex-wrap">
+                @php
+                    $tags = [
+                        'vehiclesOnSale'  => ['🏷️ Em Promoção',   'orange'],
+                        'carsWithReport'  => ['📋 Com Laudo',      'blue'],
+                        'factoryWarranty' => ['🛡️ Garantia Fab.',  'green'],
+                        'justArrived'     => ['🆕 Recém Chegados', 'purple'],
+                    ];
+                @endphp
+                @foreach($tags as $prop => [$label, $color])
+                    <button wire:click="$toggle('{{ $prop }}')"
+                        class="px-3 py-1.5 rounded-full text-xs font-bold border transition
+                            {{ $this->$prop
+                                ? "bg-{$color}-500 border-{$color}-500 text-white"
+                                : 'bg-white bg-opacity-15 border-white border-opacity-30 text-white hover:bg-opacity-25' }}">
+                        {{ $label }}
+                    </button>
+                @endforeach
+            </div>
         </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 pb-16">
-        <!-- Sidebar / Filtros Localiza Style -->
-        <div class="w-full md:w-[280px] flex-shrink-0">
-            <div class="bg-white rounded overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.04)] border border-gray-200 border-b-0 sticky top-24">
-                
-                <!-- Swithes -->
-                <div class="divide-y divide-gray-100">
-                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L9.2 4.1 5.7 3.5 4.8 6.9 2 9.2l1.6 3-1.6 3 2.8 2.3.9 3.4 3.5-.6 2.8 2.1 2.8-2.1 3.5.6.9-3.4 2.8-2.3-1.6-3 1.6-3-2.8-2.3-.9-3.4-3.5.6L12 2zm1 12H11v-2h2v2zm0-4H11V6h2v4z"></path></svg>
-                            <span class="text-[13px] text-gray-700 font-medium">Veículos em oferta</span>
-                        </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                            <input type="checkbox" wire:model.live="vehiclesOnSale" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
-                        </div>
-                    </label>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5">
+        <div class="flex gap-6">
 
-                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            <span class="text-[13px] text-gray-700 font-medium">Carros com Laudo</span>
-                        </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                            <input type="checkbox" wire:model.live="carsWithReport" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
-                        </div>
-                    </label>
+            {{-- ─── Sidebar de Filtros ───────────────────────────────── --}}
+            <aside class="hidden lg:block w-64 flex-shrink-0">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sticky top-24 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-black text-gray-900">Filtros</h3>
+                        @if($this->activeFiltersCount > 0)
+                            <button wire:click="clearFilters"
+                                class="text-xs text-red-500 font-bold hover:underline">
+                                Limpar ({{ $this->activeFiltersCount }})
+                            </button>
+                        @endif
+                    </div>
 
-                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                            <span class="text-[13px] text-gray-700 font-medium">Garantia de fábrica</span>
-                        </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                            <input type="checkbox" wire:model.live="factoryWarranty" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
-                        </div>
-                    </label>
+                    {{-- Ordenar --}}
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Ordenar por</label>
+                        <select wire:model.live="ordenar"
+                            class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="recentes">Mais Recentes</option>
+                            <option value="preco_asc">Menor Preço</option>
+                            <option value="preco_desc">Maior Preço</option>
+                            <option value="km_asc">Menor KM</option>
+                            <option value="ano_desc">Mais Novo</option>
+                        </select>
+                    </div>
 
-                    <label class="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer border-b-[3px] border-gray-100">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            <span class="text-[13px] text-gray-700 font-medium">Acabou de chegar</span>
+                    {{-- Faixa de Preço --}}
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Preço (R$)</label>
+                        <div class="flex gap-2">
+                            <input wire:model.blur="priceMin" type="number" placeholder="Mínimo"
+                                class="w-full text-xs rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                            <input wire:model.blur="priceMax" type="number" placeholder="Máximo"
+                                class="w-full text-xs rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                         </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                            <input type="checkbox" wire:model.live="justArrived" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" style="right: 0;" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+
+                    {{-- Ano --}}
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Ano mínimo</label>
+                        <input wire:model.blur="yearMin" type="number" placeholder="Ex: 2020" min="2000" max="{{ date('Y') }}"
+                            class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                    </div>
+
+                    {{-- Marcas --}}
+                    @if($availableBrands->isNotEmpty())
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Marcas</label>
+                            <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                                @foreach($availableBrands as $brand)
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input wire:model.live="brands" type="checkbox" value="{{ $brand }}"
+                                            class="w-4 h-4 accent-blue-600 rounded"/>
+                                        <span class="text-sm text-gray-700 group-hover:text-blue-600 transition">{{ $brand }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
-                    </label>
+                    @endif
+
+                    {{-- Categorias --}}
+                    @if($availableCategories->isNotEmpty())
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Categorias</label>
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach($availableCategories as $cat)
+                                    <button wire:click="@if(in_array('{{ $cat }}', $categories)) $set('categories', array_values(array_diff($categories, ['{{ $cat }}']))) @else $set('categories', array_merge($categories, ['{{ $cat }}'])) @endif"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border transition
+                                            {{ in_array($cat, $categories)
+                                                ? 'bg-blue-600 border-blue-600 text-white'
+                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-400' }}">
+                                        {{ $cat }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Combustível --}}
+                    @if($availableFuelTypes->isNotEmpty())
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Combustível</label>
+                            <div class="space-y-1.5">
+                                @foreach($availableFuelTypes as $fuel)
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input wire:model.live="fuelTypes" type="checkbox" value="{{ $fuel }}"
+                                            class="w-4 h-4 accent-blue-600 rounded"/>
+                                        <span class="text-sm text-gray-700">{{ ucfirst($fuel) }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Transmissão --}}
+                    @if($availableTransmissions->isNotEmpty())
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Câmbio</label>
+                            <div class="flex gap-2 flex-wrap">
+                                @foreach($availableTransmissions as $trans)
+                                    <button wire:click="@if(in_array('{{ $trans }}', $transmissions)) $set('transmissions', array_values(array_diff($transmissions, ['{{ $trans }}']))) @else $set('transmissions', array_merge($transmissions, ['{{ $trans }}'])) @endif"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border transition
+                                            {{ in_array($trans, $transmissions)
+                                                ? 'bg-blue-600 border-blue-600 text-white'
+                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-400' }}">
+                                        {{ ucfirst($trans) }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </aside>
+
+            {{-- ─── Grid de Veículos ─────────────────────────────────── --}}
+            <div class="flex-1 min-w-0">
+
+                {{-- Toolbar --}}
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+                    <div class="flex items-center gap-3">
+                        {{-- Filtros mobile --}}
+                        <button wire:click="$toggle('showFilters')"
+                            class="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            Filtros
+                            @if($this->activeFiltersCount > 0)
+                                <span class="bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $this->activeFiltersCount }}</span>
+                            @endif
+                        </button>
+                        <p class="text-sm text-gray-500">
+                            <span class="font-black text-gray-900">{{ $vehicles->total() }}</span> resultado(s)
+                            @if($vehicles->total() != $totalSemFiltro)
+                                de {{ $totalSemFiltro }}
+                            @endif
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        {{-- Ordenar mobile --}}
+                        <select wire:model.live="ordenar"
+                            class="lg:hidden text-xs rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                            <option value="recentes">Mais Recentes</option>
+                            <option value="preco_asc">Menor Preço</option>
+                            <option value="preco_desc">Maior Preço</option>
+                            <option value="km_asc">Menor KM</option>
+                            <option value="ano_desc">Mais Novo</option>
+                        </select>
+                        {{-- View toggle --}}
+                        <div class="flex bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <button wire:click="$set('viewMode','grid')"
+                                class="p-2 {{ $viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-50' }} transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
+                                </svg>
+                            </button>
+                            <button wire:click="$set('viewMode','list')"
+                                class="p-2 {{ $viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-50' }} transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Accordions List -->
-                <div class="divide-y divide-gray-100 bg-white">
-                    
-                    <!-- Lojas -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Lojas</span>
+                {{-- Mobile Filters Drawer --}}
+                @if($showFilters)
+                    <div class="lg:hidden bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-4 space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Preço Min</label>
+                                <input wire:model.blur="priceMin" type="number" placeholder="R$"
+                                    class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                             </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Preço -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <span class="text-[14px] text-gray-600 font-bold w-4 text-center">R$</span>
-                                <span class="font-bold text-gray-800 text-[13px]">Preço</span>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Preço Max</label>
+                                <input wire:model.blur="priceMax" type="number" placeholder="R$"
+                                    class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                             </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Margem FIPE -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Margem FIPE</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Marcas</label>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($availableBrands as $brand)
+                                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold cursor-pointer transition
+                                        {{ in_array($brand, $brands) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-gray-50 border-gray-200 text-gray-700' }}">
+                                        <input wire:model.live="brands" type="checkbox" value="{{ $brand }}" class="hidden"/>
+                                        {{ $brand }}
+                                    </label>
+                                @endforeach
                             </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Carroceria -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path><path d="M9 7v14"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Carroceria</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" class="px-4 pb-4 pt-2 space-y-2" style="display: none;">
-                            @foreach($availableCategories as $c)
-                                <label class="flex items-center cursor-pointer group">
-                                    <input type="checkbox" wire:model.live="categories" value="{{ $c }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded">
-                                    <span class="ml-3 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $c }}</span>
-                                </label>
-                            @endforeach
+                        </div>
+                        <div class="flex gap-3 pt-2 border-t border-gray-100">
+                            <button wire:click="clearFilters" class="flex-1 py-2 bg-gray-100 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-200 transition">Limpar</button>
+                            <button wire:click="$set('showFilters', false)" class="flex-1 py-2 bg-blue-600 rounded-xl text-sm font-bold text-white hover:bg-blue-700 transition">Aplicar</button>
                         </div>
                     </div>
-
-                    <!-- Marca e Modelo -->
-                    <div x-data="{ open: true }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Marca e Modelo</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" class="px-4 pb-4 pt-2 space-y-2">
-                            @foreach($availableBrands as $b)
-                                <label class="flex items-center cursor-pointer group">
-                                    <input type="checkbox" wire:model.live="brands" value="{{ $b }}" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded">
-                                    <span class="ml-3 text-[13px] text-gray-700 group-hover:text-gray-900 transition">{{ $b }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Quilometragem -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Quilometragem</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Ano Fabr./Mod. -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Ano Fabr./Mod.</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Câmbio -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Câmbio</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Motor -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Motor</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Cor -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Cor</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Acessórios -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Acessórios</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Portas -->
-                    <div x-data="{ open: false }" class="border-b border-gray-200">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Portas</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-
-                    <!-- Final da placa -->
-                    <div x-data="{ open: false }">
-                        <button @click="open = !open" class="flex w-full items-center justify-between px-4 py-[14px] bg-white hover:bg-gray-50 transition">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
-                                <span class="font-bold text-gray-800 text-[13px]">Final da placa</span>
-                            </div>
-                            <svg class="w-4 h-4 text-gray-700 transform transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Vitrine Grid -->
-        <div class="flex-1 w-full min-w-0">
-            <!-- Active Filters (Selected Tags) -->
-            <div class="mb-4 text-sm flex gap-2 flex-wrap items-center">
-                @if(count($brands) > 0 || count($categories) > 0)
-                    <span class="text-[12px] text-gray-500 font-bold mr-2">Filtros ativos:</span>
                 @endif
-                
-                @foreach($brands as $ab)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-white border border-gray-300 text-gray-700 shadow-sm">
-                        {{ $ab }}
-                        <button wire:click="removeFilter('brands', '{{ $ab }}')" class="hover:text-red-500 transition focus:outline-none"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                    </span>
-                @endforeach
-                
-                @foreach($categories as $ac)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-white border border-gray-300 text-gray-700 shadow-sm">
-                        {{ $ac }}
-                        <button wire:click="removeFilter('categories', '{{ $ac }}')" class="hover:text-red-500 transition focus:outline-none"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                    </span>
-                @endforeach
-            </div>
 
-            <div class="mb-4 flex justify-between items-center bg-transparent py-1 border-b border-gray-200/50 pb-4">
-                <h2 class="text-[18px] font-bold text-gray-800">Veículos em Destaque</h2>
-                <span class="text-[12px] font-medium text-gray-500 bg-white border border-gray-200 px-3 py-1 rounded-sm">{{ count($vehicles) }} resultados</span>
-            </div>
+                {{-- Empty State --}}
+                @if($vehicles->isEmpty())
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm py-20 text-center">
+                        <div class="text-5xl mb-4">🔍</div>
+                        <h3 class="text-lg font-bold text-gray-700 mb-1">Nenhum veículo encontrado</h3>
+                        <p class="text-gray-400 text-sm mb-6">Tente ajustar os filtros ou buscar por outros termos.</p>
+                        <button wire:click="clearFilters"
+                            class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">
+                            Limpar Filtros
+                        </button>
+                    </div>
 
-            @if(count($vehicles) === 0)
-                <div class="bg-white rounded border border-gray-200 p-12 text-center h-64 flex flex-col justify-center items-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <h3 class="mt-4 text-sm font-bold text-gray-700">Nenhum veículo encontrado</h3>
-                    <p class="mt-1 text-[13px] text-gray-500">Limpe as seleções dos filtros laterais para ver as ofertas.</p>
-                </div>
-            @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    @foreach($vehicles as $vehicle)
-                        @php 
-                            $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media; 
-                            $image = (is_array($media) && count($media) > 0) ? $media[0] : 'https://placehold.co/600x400?text=Sem+Foto';
-                            $margin = $vehicle->fipe_price > 0 ? round((($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100) : 0;
-                            $isFav = in_array($vehicle->id, $userFavorites);
-                        @endphp
-                        <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate class="bg-white rounded border border-gray-200 overflow-hidden flex flex-col group hover:shadow-lg hover:border-gray-300 transition-all block">
-                            <!-- Imagem -->
-                            <div class="relative h-[210px] bg-gray-100 overflow-hidden cursor-pointer">
-                                <img src="{{ $image }}" alt="{{ $vehicle->model }}" class="w-full h-full object-cover">
-                                <!-- Badge Ano -->
-                                <div class="absolute top-3 left-3 bg-orange-500 text-white text-[10px] uppercase font-black px-2 py-0.5 rounded-sm shadow-sm">
-                                    {{ $vehicle->manufacture_year }}/{{ $vehicle->model_year }}
-                                </div>
-                                <!-- Heart -->
-                                <button wire:click.prevent="toggleFavorite({{ $vehicle->id }})" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 drop-shadow-md transition z-10 focus:outline-none">
-                                    <svg class="w-7 h-7 {{ $isFav ? 'text-red-500 fill-current' : 'fill-white' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                                </button>
-                            </div>
-                            
-                            <!-- Corpo -->
-                            <div class="p-4 flex flex-col flex-grow">
-                                <div class="mb-3">
-                                    <h3 class="text-[17px] font-black text-primary uppercase leading-tight tracking-tight">{{ $vehicle->brand }} {{ $vehicle->model }}</h3>
-                                    <p class="text-[12px] font-medium text-gray-500 uppercase mt-1">{{ $vehicle->version }}</p>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-2 mb-5">
-                                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500">
-                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
-                                        {{ number_format($vehicle->mileage, 0, ',', '.') }} km
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500">
-                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg> 
-                                        {{ explode(' ', $vehicle->transmission)[0] }}
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500">
-                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16h14zm-4-4h2"></path></svg> 
-                                        {{ explode(' ', $vehicle->fuel_type)[0] }}
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500">
-                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg> 
-                                        {{ $vehicle->color }}
-                                    </div>
-                                </div>
+                {{-- Grid View --}}
+                @elseif($viewMode === 'grid')
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        @foreach($vehicles as $vehicle)
+                            @php
+                                $isFav   = in_array($vehicle->id, $userFavorites);
+                                $media   = is_array($vehicle->media) ? $vehicle->media : json_decode($vehicle->media ?? '[]', true);
+                                $thumb   = $media[0] ?? null;
+                                $discPct = $vehicle->fipe_price > 0 ? (($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100 : 0;
+                            @endphp
+                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition group">
+                                {{-- Imagem --}}
+                                <div class="relative h-44 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                                    @if($thumb)
+                                        <img src="{{ $thumb }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-4xl">🚗</div>
+                                    @endif
 
-                                <div class="mt-auto border-t border-gray-100 pt-4">
-                                    <div class="flex items-center justify-between mb-0.5">
-                                        <span class="text-[11px] text-gray-400 font-bold line-through">FIPE: R$ {{ number_format($vehicle->fipe_price, 2, ',', '.') }}</span>
-                                        @if($margin > 0)
-                                            <span class="text-[9px] font-black tracking-widest text-[#e06512] border border-[#e06512]/30 px-1 py-0.5 rounded-sm uppercase">Super Oferta</span>
+                                    {{-- Badges --}}
+                                    <div class="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+                                        @if($vehicle->is_on_sale)
+                                            <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🏷️ OFERTA</span>
+                                        @endif
+                                        @if($vehicle->is_just_arrived)
+                                            <span class="bg-purple-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🆕 NOVO</span>
+                                        @endif
+                                        @if($vehicle->has_factory_warranty)
+                                            <span class="bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🛡️ GARANTIA</span>
                                         @endif
                                     </div>
-                                    <div class="text-[24px] font-black text-gray-900 tracking-tight leading-none mb-4 mt-1 group-hover:text-primary transition-colors">
-                                        R$ {{ number_format($vehicle->sale_price, 2, ',', '.') }}
-                                    </div>
-                                    
-                                    <button class="w-full bg-orange_cta group-hover:bg-[#e06512] text-white font-black py-2.5 px-4 rounded transition-colors text-[14px] flex items-center justify-center gap-2">
-                                        Tenho Interesse
+
+                                    {{-- Favorito --}}
+                                    <button wire:click="toggleFavorite({{ $vehicle->id }})"
+                                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition hover:scale-110">
+                                        <svg class="w-4 h-4 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
                                     </button>
+
+                                    {{-- Desconto FIPE --}}
+                                    @if($discPct > 0)
+                                        <div class="absolute bottom-2 right-2 bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                                            ↓ {{ number_format($discPct, 0) }}% FIPE
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Info --}}
+                                <div class="p-4">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div>
+                                            <h3 class="font-black text-gray-900 leading-tight">{{ $vehicle->brand }} {{ $vehicle->model }}</h3>
+                                            <p class="text-xs text-gray-500 truncate max-w-[200px]">{{ $vehicle->version }}</p>
+                                        </div>
+                                        <span class="text-xs bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-lg flex-shrink-0">{{ $vehicle->model_year }}</span>
+                                    </div>
+
+                                    {{-- Specs mini --}}
+                                    <div class="flex gap-3 text-xs text-gray-500 font-semibold my-2.5">
+                                        <span>{{ number_format($vehicle->mileage, 0, ',', '.') }} km</span>
+                                        <span>·</span>
+                                        <span>{{ ucfirst($vehicle->fuel_type) }}</span>
+                                        <span>·</span>
+                                        <span>{{ ucfirst($vehicle->transmission) }}</span>
+                                    </div>
+
+                                    {{-- Preço --}}
+                                    <div class="flex items-end justify-between mt-3">
+                                        <div>
+                                            @if($vehicle->fipe_price && $discPct > 0)
+                                                <p class="text-xs text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
+                                            @endif
+                                            <p class="text-xl font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
+                                        </div>
+                                        <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate
+                                            class="px-4 py-2 bg-[#1a3a5c] hover:bg-[#1e4f8a] text-white rounded-xl text-xs font-black transition">
+                                            Ver Mais
+                                        </a>
+                                    </div>
+
+                                    {{-- Laudo --}}
+                                    @if($vehicle->has_report)
+                                        <div class="mt-2.5 pt-2.5 border-t border-gray-100 flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Laudo disponível
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                        </a>
-                    @endforeach
+                        @endforeach
+                    </div>
+
+                {{-- List View --}}
+                @else
+                    <div class="space-y-3">
+                        @foreach($vehicles as $vehicle)
+                            @php
+                                $isFav  = in_array($vehicle->id, $userFavorites);
+                                $media  = is_array($vehicle->media) ? $vehicle->media : json_decode($vehicle->media ?? '[]', true);
+                                $thumb  = $media[0] ?? null;
+                                $discPct = $vehicle->fipe_price > 0 ? (($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100 : 0;
+                            @endphp
+                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex gap-0">
+                                {{-- Thumb --}}
+                                <div class="w-36 h-28 sm:w-48 sm:h-36 flex-shrink-0 bg-gray-100 overflow-hidden">
+                                    @if($thumb)
+                                        <img src="{{ $thumb }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}" class="w-full h-full object-cover"/>
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-3xl">🚗</div>
+                                    @endif
+                                </div>
+                                {{-- Info --}}
+                                <div class="flex-1 min-w-0 p-4 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h3 class="font-black text-gray-900">{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->model_year }}</h3>
+                                            @if($vehicle->is_on_sale) <span class="text-[10px] bg-orange-100 text-orange-700 font-black px-1.5 py-0.5 rounded-full">🏷️ OFERTA</span> @endif
+                                            @if($vehicle->has_report) <span class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-1.5 py-0.5 rounded-full">📋 LAUDO</span> @endif
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">{{ $vehicle->version }}</p>
+                                        <div class="flex gap-3 text-xs text-gray-500 font-semibold mt-1.5">
+                                            <span>{{ number_format($vehicle->mileage, 0, ',', '.') }} km</span>
+                                            <span>·</span><span>{{ ucfirst($vehicle->fuel_type) }}</span>
+                                            <span>·</span><span>{{ ucfirst($vehicle->transmission) }}</span>
+                                            @if($vehicle->color) <span>·</span><span>{{ $vehicle->color }}</span> @endif
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between mt-3">
+                                        <div>
+                                            @if($discPct > 0)
+                                                <p class="text-xs text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
+                                            @endif
+                                            <p class="text-lg font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
+                                            @if($discPct > 0) <p class="text-xs text-emerald-500 font-bold">↓ {{ number_format($discPct, 0) }}% abaixo FIPE</p> @endif
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button wire:click="toggleFavorite({{ $vehicle->id }})"
+                                                class="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center hover:border-red-300 transition">
+                                                <svg class="w-4 h-4 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                                </svg>
+                                            </button>
+                                            <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate
+                                                class="px-4 py-2 bg-[#1a3a5c] hover:bg-[#1e4f8a] text-white rounded-xl text-xs font-black transition">
+                                                Ver Detalhes
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Paginação --}}
+                <div class="mt-6">
+                    {{ $vehicles->links() }}
                 </div>
-            @endif
+            </div>
         </div>
     </div>
+
+    {{-- ─── Bottom Nav Mobile ───────────────────────────────────────── --}}
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
+        <div class="flex">
+            @php
+                $navItems = [
+                    ['route' => 'dashboard',      'icon' => '🏠', 'label' => 'Vitrine'],
+                    ['route' => 'meus-pedidos',   'icon' => '📋', 'label' => 'Pedidos'],
+                    ['route' => 'financeiro',      'icon' => '💳', 'label' => 'Financeiro'],
+                    ['route' => 'suporte',         'icon' => '💬', 'label' => 'Suporte'],
+                    ['route' => 'favoritos',       'icon' => '❤️', 'label' => 'Favoritos'],
+                ];
+            @endphp
+            @foreach($navItems as $item)
+                <a href="{{ route($item['route']) }}" wire:navigate
+                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
+                        {{ request()->routeIs($item['route'])
+                            ? 'text-[#1a3a5c]'
+                            : 'text-gray-400 hover:text-gray-600' }}">
+                    <span class="text-lg leading-none">{{ $item['icon'] }}</span>
+                    <span class="text-[9px] font-bold mt-0.5 tracking-wide">{{ $item['label'] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+    <div class="lg:hidden h-16"></div>
+
 </div>
