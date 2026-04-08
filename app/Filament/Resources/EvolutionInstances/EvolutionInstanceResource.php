@@ -21,6 +21,8 @@ use Filament\Tables\Table;
 
 class EvolutionInstanceResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = EvolutionInstance::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
