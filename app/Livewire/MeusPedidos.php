@@ -2,20 +2,111 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Models\Contract;
+use App\Models\Document;
+use App\Models\Order;
+use App\Models\Ticket;
+use App\Models\Vehicle;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class MeusPedidos extends Component
 {
+    public string $abaPedidos = 'todos'; // todos | pendente | confirmado | cancelado
+
     public function render()
     {
-        $company = auth()->user()->companies()->first();
-        $orders = $company ? \App\Models\Order::with('vehicles')->where('company_id', $company->id)->latest()->get() : collect();
+        $user    = auth()->user();
+        $userId  = $user->id;
 
-        return view('livewire.meus-pedidos', [
-            'orders' => $orders,
-            'company' => $company
-        ]);
+        // ─── Pedidos (filtrado por aba) ───────────────────────────────
+        $query = Order::with(['vehicle', 'paymentMethod'])
+            ->where('user_id', $userId)
+            ->latest();
+
+        if ($this->abaPedidos !== 'todos') {
+            $query->where('status', $this->abaPedidos);
+        }
+
+        $pedidos = $query->get();
+
+        // ─── KPIs do Lojista ──────────────────────────────────────────
+        $totalGasto = Order::where('user_id', $userId)
+            ->whereIn('status', ['confirmado', 'faturado'])
+            ->sum('valor_compra');
+
+        $totalPedidos = Order::where('user_id', $userId)->count();
+
+        $pedidosMes = Order::where('user_id', $userId)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $gastoMes = Order::where('user_id', $userId)
+            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('valor_compra');
+
+        $gastoMesPassado = Order::where('user_id', $userId)
+            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->sum('valor_compra');
+
+        $ticketsAbertos = Ticket::where('user_id', $userId)
+            ->whereIn('status', ['aberto', 'em_andamento'])
+            ->count();
+
+        $documentosPendentes = Document::where('user_id', $userId)
+            ->where('status', 'pendente')
+            ->count();
+
+        $contratosPendentes = 0;
+        if (class_exists(Contract::class)) {
+            $contratosPendentes = Contract::where('user_id', $userId)
+                ->where('status', 'pendente')
+                ->count();
+        }
+
+        // ─── Histórico de gastos por mês (últimos 6 meses) ────────────
+        $historicoGastos = Order::where('user_id', $userId)
+            ->whereIn('status', ['confirmado', 'faturado'])
+            ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+            ->select(
+                DB::raw('YEAR(created_at) as ano'),
+                DB::raw('MONTH(created_at) as mes'),
+                DB::raw('SUM(valor_compra) as total'),
+                DB::raw('COUNT(*) as qtd')
+            )
+            ->groupBy('ano', 'mes')
+            ->orderBy('ano')->orderBy('mes')
+            ->get()
+            ->map(fn ($r) => [
+                'label' => Carbon::create($r->ano, $r->mes)->translatedFormat('M/y'),
+                'total' => (float) $r->total,
+                'qtd'   => (int) $r->qtd,
+            ]);
+
+        // ─── Variação vs mês passado ──────────────────────────────────
+        $variacaoGasto = $gastoMesPassado > 0
+            ? round((($gastoMes - $gastoMesPassado) / $gastoMesPassado) * 100, 1)
+            : null;
+
+        return view('livewire.meus-pedidos', compact(
+            'pedidos',
+            'totalGasto',
+            'totalPedidos',
+            'pedidosMes',
+            'gastoMes',
+            'variacaoGasto',
+            'ticketsAbertos',
+            'documentosPendentes',
+            'contratosPendentes',
+            'historicoGastos',
+        ));
     }
 }
