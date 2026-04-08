@@ -1,95 +1,309 @@
-<div>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Financeiro & Faturamento') }}
-            </h2>
-            @if($company)
-                <span class="text-sm text-gray-200 bg-white/10 px-3 py-1 rounded-full backdrop-blur-md border border-white/20">Loja Atual: {{ $company->razao_social }} ({{ $company->cnpj }})</span>
-            @endif
-        </div>
-    </x-slot>
+<div class="w-full min-h-screen bg-[#f1f5f9]">
 
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @if(!$company)
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow-sm">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="..." clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-yellow-700 font-medium">Conta sem CNPJ vinculado.</p>
-                        </div>
+    {{-- ─── Hero ─────────────────────────────────────────────────────── --}}
+    <div class="bg-gradient-to-br from-[#1a3a5c] via-[#1e4f8a] to-[#0f2d4e]">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                <div class="text-white">
+                    <p class="text-orange-300 text-xs font-bold uppercase tracking-widest mb-1">Portal B2B</p>
+                    <h1 class="text-3xl font-black tracking-tight">Financeiro</h1>
+                    <p class="text-blue-200 text-sm mt-1">Extratos, faturas e cobranças</p>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    <div class="bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl px-4 py-3 text-center min-w-[110px]">
+                        <div class="text-white font-black text-lg">R$ {{ number_format($this->totalInvestido, 0, ',', '.') }}</div>
+                        <div class="text-blue-200 text-xs mt-0.5">Total Investido</div>
                     </div>
+                    <div class="bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl px-4 py-3 text-center min-w-[110px]">
+                        <div class="text-white font-black text-lg">R$ {{ number_format($this->totalMes, 0, ',', '.') }}</div>
+                        <div class="text-blue-200 text-xs mt-0.5">Este Mês</div>
+                    </div>
+                    @if($this->totalPendente > 0)
+                        <div class="bg-red-500 bg-opacity-80 border border-red-400 rounded-xl px-4 py-3 text-center min-w-[110px]">
+                            <div class="text-white font-black text-lg">R$ {{ number_format($this->totalPendente, 0, ',', '.') }}</div>
+                            <div class="text-red-200 text-xs mt-0.5">⚠️ A Pagar</div>
+                        </div>
+                    @endif
                 </div>
-            @elseif($orders->isEmpty())
-                <div class="bg-white p-10 rounded-xl shadow-sm text-center border border-gray-100">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-6">
+
+        {{-- ─── KPI Cards ──────────────────────────────────────────────── --}}
+        @php
+            $statusCard = [
+                'confirmado'      => ['label' => 'Confirmados',  'emoji' => '✅', 'color' => 'border-emerald-300 bg-emerald-50', 'val' => 'success'],
+                'faturado'        => ['label' => 'Faturados',    'emoji' => '🧾', 'color' => 'border-blue-300 bg-blue-50',    'val' => 'info'],
+                'aguardando_pgto' => ['label' => 'Aguard. Pgt.', 'emoji' => '⏳', 'color' => 'border-orange-300 bg-orange-50','val' => 'warning'],
+                'cancelado'       => ['label' => 'Cancelados',   'emoji' => '❌', 'color' => 'border-red-300 bg-red-50',      'val' => 'danger'],
+            ];
+        @endphp
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            @foreach($statusCard as $status => $cfg)
+                @php
+                    $dados = $this->countPorStatus[$status] ?? ['total' => 0, 'soma' => 0];
+                @endphp
+                <button wire:click="$set('filtro', '{{ $filtro === $status ? 'todos' : $status }}')"
+                    class="bg-white rounded-2xl border {{ $cfg['color'] }} {{ $filtro === $status ? 'ring-2 ring-offset-2 ring-blue-500' : '' }} p-4 shadow-sm text-left hover:shadow-md transition">
+                    <div class="flex items-start justify-between mb-2">
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">{{ $cfg['label'] }}</p>
+                        <span class="text-xl">{{ $cfg['emoji'] }}</span>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900">{{ $dados['total'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 font-semibold mt-0.5">
+                        R$ {{ number_format($dados['soma'] ?? 0, 0, ',', '.') }}
+                    </p>
+                </button>
+            @endforeach
+        </div>
+
+        {{-- ─── Filtros + Busca ────────────────────────────────────────── --}}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-5">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900">Nenhum faturamento pendente ou histórico financeiro disponível</h3>
+                    <input wire:model.live.debounce.300ms="busca"
+                        type="text"
+                        placeholder="Buscar por número, marca ou modelo..."
+                        class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                 </div>
-            @else
-                <div class="grid grid-cols-1 gap-6">
-                    @foreach($orders as $order)
-                        <div class="bg-white overflow-hidden shadow-sm hover:shadow-md rounded-xl border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between transition">
-                            
-                            <!-- Esquerda: Resumo Pedido -->
-                            <div class="flex flex-col mb-4 md:mb-0 w-full md:w-1/3">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Pedido #{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</span>
-                                <h3 class="text-2xl font-black text-gray-900">R$ {{ number_format($order->total_amount, 2, ',', '.') }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">
-                                     Gerado em {{ $order->created_at->format('d/m/Y') }}
+                <div class="flex gap-1.5 flex-wrap">
+                    @foreach(['todos' => 'Todos', 'confirmado' => '✅ Confirmados', 'faturado' => '🧾 Faturados', 'aguardando_pgto' => '⏳ Pendentes', 'cancelado' => '❌ Cancelados'] as $val => $label)
+                        <button wire:click="$set('filtro', '{{ $val }}')"
+                            class="px-3 py-2 text-xs font-bold rounded-xl transition
+                                {{ $filtro === $val ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- ─── Lista de Pedidos ────────────────────────────────────────── --}}
+        @if($this->pedidos->isEmpty())
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm py-20 text-center">
+                <div class="text-5xl mb-3">💳</div>
+                <p class="text-gray-400 font-semibold">Nenhum registro financeiro encontrado.</p>
+                @if($busca || $filtro !== 'todos')
+                    <button wire:click="$set('filtro','todos'); $set('busca','')"
+                        class="mt-4 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition">
+                        Limpar filtros
+                    </button>
+                @endif
+            </div>
+        @else
+            <div class="space-y-3">
+                @foreach($this->pedidos as $pedido)
+                    @php
+                        $fin = $pedido->financial;
+                        $v   = $pedido->vehicle;
+                        $badgeClass = match($pedido->status) {
+                            'confirmado'      => 'bg-emerald-100 text-emerald-700',
+                            'faturado'        => 'bg-blue-100 text-blue-700',
+                            'cancelado'       => 'bg-red-100 text-red-700',
+                            'pendente'        => 'bg-yellow-100 text-yellow-700',
+                            'aguardando_pgto' => 'bg-orange-100 text-orange-700',
+                            default           => 'bg-gray-100 text-gray-600',
+                        };
+                        $statusLabel = \App\Models\Order::statusLabels()[$pedido->status] ?? $pedido->status;
+                        $open        = $pedidoOpen === $pedido->id;
+                    @endphp
+
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition">
+
+                        {{-- Linha principal --}}
+                        <button wire:click="abrirDetalhe({{ $pedido->id }})"
+                            class="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition text-left">
+
+                            {{-- Ícone do status --}}
+                            <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl
+                                {{ $pedido->status === 'confirmado' ? 'bg-emerald-100' : ($pedido->status === 'aguardando_pgto' ? 'bg-orange-100' : 'bg-gray-100') }}">
+                                {{ $pedido->status === 'faturado' ? '🧾' : ($pedido->status === 'aguardando_pgto' ? '⏳' : ($pedido->status === 'cancelado' ? '❌' : '🚗')) }}
+                            </div>
+
+                            {{-- Dados do pedido --}}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                                    <span class="text-sm font-black text-gray-900 font-mono">{{ $pedido->numero }}</span>
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $statusLabel }}</span>
+                                    @if($fin?->boleto_url)
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">🔗 Boleto</span>
+                                    @endif
+                                </div>
+                                <p class="text-sm text-gray-700 font-semibold truncate">
+                                    {{ $v ? "{$v->brand} {$v->model} {$v->model_year}" : 'Veículo não encontrado' }}
+                                    @if($v?->license_plate) · <span class="font-mono text-gray-500">{{ $v->license_plate }}</span> @endif
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $pedido->created_at->format('d/m/Y') }}
+                                    @if($pedido->paymentMethod) · {{ $pedido->paymentMethod->nome }} @endif
+                                    @if($pedido->confirmado_em) · Confirmado em {{ $pedido->confirmado_em->format('d/m/Y') }} @endif
                                 </p>
                             </div>
 
-                            <!-- Centro: Veiculos (Micro list) -->
-                            <div class="flex-1 px-4 w-full md:w-auto mb-4 md:mb-0">
-                                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 border-b pb-1">Itens Adquiridos</div>
-                                <div class="space-y-1">
-                                    @foreach($order->vehicles as $v)
-                                        <div class="text-sm text-gray-700">🚙 {{ $v->brand }} {{ $v->model }} (Chassi: {{ substr($v->plate, -4) }})</div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <!-- Direita: Ações / Boleto -->
-                            <div class="w-full md:w-1/3 flex flex-col items-end space-y-3">
-                                @if($order->financial && $order->financial->status == 'em_aberto')
-                                    <div class="bg-orange-50 border border-orange-200 rounded p-3 w-full text-center">
-                                        <p class="text-xs text-orange-800 font-bold mb-2">VENCIMENTO PRÓXIMO</p>
-                                        <div class="flex flex-col space-y-2">
-                                            <a href="{{ $order->financial->boleto_url }}" target="_blank" class="inline-flex justify-center items-center px-4 py-2 bg-orange_cta text-white text-sm font-bold rounded shadow hover:bg-[#e06512] transition">
-                                                Imprimir Boleto
-                                            </a>
-                                            <button class="inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded shadow-sm hover:bg-gray-50 transition" onclick="alert('Código copiado!')">
-                                                Copiar Código de Barras
-                                            </button>
-                                        </div>
-                                    </div>
-                                @elseif($order->financial && $order->financial->status == 'pago')
-                                     <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800">
-                                         ✓ PAGAMENTO CONFIRMADO
-                                     </div>
-                                     @if($order->financial->invoice_url)
-                                         <a href="{{ $order->financial->invoice_url }}" target="_blank" class="text-sm text-primary hover:underline font-semibold flex items-center mt-2">
-                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                             Baixar XML / NF-e
-                                         </a>
-                                     @endif
-                                @else
-                                    <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-600">
-                                         EM PROCESSAMENTO
-                                     </div>
+                            {{-- Valor --}}
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-xl font-black text-gray-900">R$ {{ number_format($pedido->valor_compra, 0, ',', '.') }}</p>
+                                @if($pedido->valor_fipe)
+                                    <p class="text-xs text-gray-400 mt-0.5">FIPE: R$ {{ number_format($pedido->valor_fipe, 0, ',', '.') }}</p>
+                                    @php $desc = (($pedido->valor_fipe - $pedido->valor_compra) / $pedido->valor_fipe) * 100; @endphp
+                                    @if($desc > 0)
+                                        <p class="text-xs text-emerald-600 font-bold">↓ {{ number_format($desc, 1) }}% abaixo FIPE</p>
+                                    @endif
                                 @endif
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
+
+                            {{-- Chevron --}}
+                            <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 {{ $open ? 'rotate-180' : '' }}"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        {{-- Painel expansível de cobrança --}}
+                        @if($open)
+                            <div class="border-t border-gray-100 bg-gray-50 px-5 py-5">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                    {{-- Dados Financeiros --}}
+                                    <div>
+                                        <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">💳 Dados de Cobrança</h3>
+                                        @if($fin)
+                                            <div class="space-y-2.5">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Status do Pagamento</span>
+                                                    <span class="font-bold text-gray-800">{{ ucfirst($fin->status ?? '-') }}</span>
+                                                </div>
+                                                @if($fin->digitable_line)
+                                                    <div>
+                                                        <p class="text-xs text-gray-500 mb-1">Linha Digitável</p>
+                                                        <div class="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-2">
+                                                            <code class="text-xs text-gray-700 flex-1 break-all">{{ $fin->digitable_line }}</code>
+                                                            <button onclick="navigator.clipboard.writeText('{{ $fin->digitable_line }}')"
+                                                                class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-200 transition flex-shrink-0">
+                                                                Copiar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <p class="text-sm text-gray-400">Nenhum dado financeiro registrado.</p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Ações / Documentos --}}
+                                    <div>
+                                        <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">📄 Documentos e Ações</h3>
+                                        <div class="space-y-2">
+                                            @if($fin?->boleto_url)
+                                                <a href="{{ $fin->boleto_url }}" target="_blank"
+                                                    class="flex items-center gap-3 w-full bg-white border border-orange-200 hover:border-orange-400 rounded-xl px-4 py-3 transition group">
+                                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">🎫</div>
+                                                    <div class="flex-1">
+                                                        <p class="text-sm font-bold text-gray-800 group-hover:text-orange-600 transition">Ver Boleto</p>
+                                                        <p class="text-xs text-gray-400">Abre em nova aba</p>
+                                                    </div>
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                    </svg>
+                                                </a>
+                                            @endif
+
+                                            @if($fin?->invoice_url)
+                                                <a href="{{ $fin->invoice_url }}" target="_blank"
+                                                    class="flex items-center gap-3 w-full bg-white border border-blue-200 hover:border-blue-400 rounded-xl px-4 py-3 transition group">
+                                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">🧾</div>
+                                                    <div class="flex-1">
+                                                        <p class="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition">Ver Nota Fiscal</p>
+                                                        <p class="text-xs text-gray-400">Abre em nova aba</p>
+                                                    </div>
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                    </svg>
+                                                </a>
+                                            @endif
+
+                                            {{-- Suporte --}}
+                                            <a href="{{ route('suporte') }}"
+                                                class="flex items-center gap-3 w-full bg-white border border-gray-200 hover:border-gray-300 rounded-xl px-4 py-3 transition group">
+                                                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">💬</div>
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-bold text-gray-800 group-hover:text-gray-600 transition">Abrir Chamado Financeiro</p>
+                                                    <p class="text-xs text-gray-400">Dúvidas sobre este pedido</p>
+                                                </div>
+                                            </a>
+
+                                            @if(! $fin?->boleto_url && ! $fin?->invoice_url)
+                                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-xs text-yellow-700">
+                                                    ⏳ Os documentos financeiros serão disponibilizados após a confirmação do pedido.
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Resumo do veículo --}}
+                                @if($v)
+                                    <div class="mt-5 pt-4 border-t border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <div class="bg-white rounded-xl border border-gray-100 px-3 py-2 text-center">
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Marca</p>
+                                            <p class="text-sm font-black text-gray-800">{{ $v->brand }}</p>
+                                        </div>
+                                        <div class="bg-white rounded-xl border border-gray-100 px-3 py-2 text-center">
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Modelo</p>
+                                            <p class="text-sm font-black text-gray-800">{{ $v->model }}</p>
+                                        </div>
+                                        <div class="bg-white rounded-xl border border-gray-100 px-3 py-2 text-center">
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Ano</p>
+                                            <p class="text-sm font-black text-gray-800">{{ $v->model_year }}</p>
+                                        </div>
+                                        <div class="bg-white rounded-xl border border-gray-100 px-3 py-2 text-center">
+                                            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Placa</p>
+                                            <p class="text-sm font-black text-gray-800 font-mono">{{ $v->license_plate ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- ─── Resumo Anual com Gráfico ───────────────────────────────── --}}
+        @php
+            $totalAnual    = \App\Models\Order::where('user_id', auth()->id())->whereYear('created_at', now()->year)->sum('valor_compra');
+            $quantAnual    = \App\Models\Order::where('user_id', auth()->id())->whereYear('created_at', now()->year)->count();
+            $mediaAnual    = $quantAnual > 0 ? $totalAnual / $quantAnual : 0;
+        @endphp
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
+                <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Total em {{ now()->year }}</p>
+                <p class="text-3xl font-black text-gray-900">R$ {{ number_format($totalAnual, 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ $quantAnual }} pedido(s) no ano</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
+                <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Ticket Médio</p>
+                <p class="text-3xl font-black text-gray-900">R$ {{ number_format($mediaAnual, 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 mt-1">por pedido</p>
+            </div>
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-5 text-center text-white">
+                <p class="text-xs text-orange-200 uppercase tracking-widest font-bold mb-1">Desconto vs FIPE</p>
+                @php
+                    $totalFipe  = \App\Models\Order::where('user_id', auth()->id())->whereNotNull('valor_fipe')->sum('valor_fipe');
+                    $totalCompra= \App\Models\Order::where('user_id', auth()->id())->whereNotNull('valor_fipe')->sum('valor_compra');
+                    $economia   = $totalFipe - $totalCompra;
+                @endphp
+                <p class="text-3xl font-black">R$ {{ number_format($economia, 0, ',', '.') }}</p>
+                <p class="text-xs text-orange-200 mt-1">economizados vs tabela FIPE</p>
+            </div>
         </div>
+
     </div>
 </div>

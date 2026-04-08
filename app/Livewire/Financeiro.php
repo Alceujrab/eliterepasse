@@ -2,27 +2,75 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
+use App\Models\Order;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Financeiro extends Component
 {
-    public function render()
-    {
-        $company = auth()->user()->companies()->first();
-        
-        // Busca os pedidos (faturas) que tem boletos ou que estao faturados
-        $orders = $company ? \App\Models\Order::with(['vehicles', 'financial'])
-            ->where('company_id', $company->id)
-            ->whereIn('status', ['faturado', 'aguardando_pgto'])
-            ->latest()
-            ->get() : collect();
+    public string $filtro     = 'todos';
+    public string $busca      = '';
+    public ?int   $pedidoOpen = null; // Modal de detalhes
 
-        return view('livewire.financeiro', [
-            'orders' => $orders,
-            'company' => $company
-        ]);
+    // ─── Dados computados ─────────────────────────────────────────────
+
+    public function getPedidosProperty()
+    {
+        $user = auth()->user();
+
+        return Order::with(['vehicle', 'financial', 'paymentMethod'])
+            ->where('user_id', $user->id)
+            ->when($this->filtro !== 'todos', fn ($q) => $q->where('status', $this->filtro))
+            ->when($this->busca, function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('numero', 'LIKE', "%{$this->busca}%")
+                       ->orWhereHas('vehicle', fn ($v) =>
+                            $v->where('brand', 'LIKE', "%{$this->busca}%")
+                              ->orWhere('model', 'LIKE', "%{$this->busca}%")
+                       );
+                });
+            })
+            ->latest()
+            ->get();
+    }
+
+    public function getTotalInvestidoProperty(): float
+    {
+        return Order::where('user_id', auth()->id())
+            ->whereIn('status', ['confirmado', 'faturado'])
+            ->sum('valor_compra');
+    }
+
+    public function getTotalPendenteProperty(): float
+    {
+        return Order::where('user_id', auth()->id())
+            ->where('status', 'aguardando_pgto')
+            ->sum('valor_compra');
+    }
+
+    public function getTotalMesProperty(): float
+    {
+        return Order::where('user_id', auth()->id())
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('valor_compra');
+    }
+
+    public function getCountPorStatusProperty(): array
+    {
+        return Order::where('user_id', auth()->id())
+            ->selectRaw('status, COUNT(*) as total, SUM(valor_compra) as soma')
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status')
+            ->toArray();
+    }
+
+    // ─── UI ──────────────────────────────────────────────────────────
+
+    public function abrirDetalhe(int $id): void
+    {
+        $this->pedidoOpen = $this->pedidoOpen === $id ? null : $id;
     }
 }
