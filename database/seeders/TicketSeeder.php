@@ -63,6 +63,7 @@ class TicketSeeder extends Seeder
             $ticket = Ticket::create([
                 'user_id'        => $user->id,
                 'titulo'         => $t['titulo'],
+                'type'           => $t['categoria'],
                 'categoria'      => $t['categoria'],
                 'prioridade'     => $t['prioridade'],
                 'status'         => $t['status'],

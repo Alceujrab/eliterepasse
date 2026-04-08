@@ -3,10 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
+use App\Models\Ticket;
+use App\Models\TicketMessage;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class OrderSeeder extends Seeder
 {
