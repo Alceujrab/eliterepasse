@@ -20,7 +20,7 @@
                         </div>
                         <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $doc->created_at->format('d/m/Y') }}</span>
                     </div>
-                    <h3 class="text-[16px] font-bold text-gray-900 mb-1 line-clamp-2" title="{{ $doc->title }}">{{ $doc->title }}</h3>
+                    <h3 class="text-[16px] font-bold text-gray-900 mb-1 line-clamp-2" title="{{ $doc->titulo }}">{{ $doc->titulo }}</h3>
                     @if($doc->vehicle)
                         <p class="text-[13px] font-semibold text-gray-500 mb-4">{{ $doc->vehicle->brand }} {{ $doc->vehicle->model }} <span class="text-gray-800">| PLACA **{{ substr($doc->vehicle->plate, -4) }}</span></p>
                     @endif
