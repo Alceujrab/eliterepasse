@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\Documents\Schemas;
+namespace App\Filament\Resources\VehicleReports\Schemas;
 
 use Filament\Schemas\Schema;
 
-class DocumentForm
+class VehicleReportInfolist
 {
     public static function configure(Schema $schema): Schema
     {

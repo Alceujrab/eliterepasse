@@ -35,6 +35,21 @@ class Vehicle extends Model
         return $this->hasMany(Contract::class);
     }
 
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(VehicleReport::class)->orderByDesc('created_at');
+    }
+
+    public function ultimoLaudo()
+    {
+        return $this->hasOne(VehicleReport::class)->where('status', 'aprovado')->latest();
+    }
+
     // ─── Helpers FIPE ────────────────────────────────────────────────
     /** Percentual atual abaixo/acima da FIPE */
     public function getDescontoFipeAttribute(): ?float

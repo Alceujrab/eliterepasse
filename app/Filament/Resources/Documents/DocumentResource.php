@@ -20,7 +20,30 @@ class DocumentResource extends Resource
 {
     protected static ?string $model = Document::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentDuplicate;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Estoque';
+
+    protected static ?string $navigationLabel = 'Documentos';
+
+    protected static ?string $modelLabel = 'Documento';
+
+    protected static ?string $pluralModelLabel = 'Documentos';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'titulo';
+
+    /** Badge com docs pendentes de verificação */
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getEloquentQuery()->where('status', 'pendente')->count() ?: null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -39,18 +62,16 @@ class DocumentResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListDocuments::route('/'),
+            'index'  => ListDocuments::route('/'),
             'create' => CreateDocument::route('/create'),
-            'view' => ViewDocument::route('/{record}'),
-            'edit' => EditDocument::route('/{record}/edit'),
+            'view'   => ViewDocument::route('/{record}'),
+            'edit'   => EditDocument::route('/{record}/edit'),
         ];
     }
 }
