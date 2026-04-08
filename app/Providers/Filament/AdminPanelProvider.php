@@ -55,7 +55,7 @@ class AdminPanelProvider extends PanelProvider
             // ─── Layout — Top Navigation (mesmo padrão do lojista)
             ->topNavigation()
             ->breadcrumbs(true)
-            ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full)
+            ->maxContentWidth('full')
 
             // ─── Dark Mode ────────────────────────────────────────
             ->darkMode(true)
