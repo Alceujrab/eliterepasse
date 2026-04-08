@@ -1,14 +1,16 @@
-<div class="w-full bg-[#f8fafc] min-h-screen">
+<div class="w-full bg-[#f1f5f9] min-h-screen">
 
-    {{-- Header --}}
-    <div class="w-full bg-gradient-to-r from-primary to-blue-900 relative overflow-hidden mb-6 shadow-sm">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-between items-center">
-            <div class="text-white z-10">
-                <h1 class="text-3xl font-black tracking-tight italic uppercase leading-none">Central de Suporte</h1>
-                <p class="text-base font-medium mt-1 opacity-80">Abra chamados e acompanhe seu atendimento</p>
+    {{-- ─── Header ─────────────────────────────────────────────────── --}}
+    <div class="bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] relative overflow-hidden shadow-sm">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-300 opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/4"></div>
+        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="text-white">
+                <p class="text-orange-300 text-xs font-bold uppercase tracking-widest mb-1">Portal do Lojista</p>
+                <h1 class="text-2xl font-black tracking-tight">💬 Central de Suporte</h1>
+                <p class="text-blue-200 text-sm mt-1">Abra chamados e acompanhe seu atendimento</p>
             </div>
             <button wire:click="abrirNovoTicket"
-                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-3 rounded-xl transition shadow-lg">
+                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-5 py-3 rounded-xl transition shadow-lg text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -17,14 +19,40 @@
         </div>
     </div>
 
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 flex flex-col lg:flex-row gap-6">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col lg:flex-row gap-6">
 
         {{-- ─── Sidebar: Lista de Tickets ────────────────────────────── --}}
-        <div class="w-full lg:w-[340px] flex-shrink-0">
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="w-full lg:w-[340px] flex-shrink-0 space-y-4">
+
+            {{-- Filtros de status --}}
+            <div class="flex gap-1.5 flex-wrap">
+                @php
+                    $filtros = [
+                        'todos'           => ['label' => 'Todos',         'cor' => ''],
+                        'aberto'          => ['label' => '🔴 Abertos',    'cor' => 'text-red-600'],
+                        'em_atendimento'  => ['label' => '🟡 Em andamento','cor' => 'text-amber-600'],
+                        'resolvido'       => ['label' => '🟢 Resolvidos', 'cor' => 'text-emerald-600'],
+                    ];
+                @endphp
+                @foreach($filtros as $key => $f)
+                    <button wire:click="$set('filtroStatus', '{{ $key }}')"
+                        class="px-3 py-1.5 text-xs font-bold rounded-lg transition
+                            {{ $filtroStatus === $key
+                                ? 'bg-[#1a3a5c] text-white'
+                                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' }}">
+                        {{ $f['label'] }}
+                        @if(isset($contadores[$key]) && $contadores[$key] > 0)
+                            <span class="ml-1 bg-white bg-opacity-20 text-[10px] px-1.5 py-0.5 rounded-full {{ $filtroStatus === $key ? '' : 'bg-gray-100' }}">{{ $contadores[$key] }}</span>
+                        @endif
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Lista --}}
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                    <span class="font-bold text-gray-800 text-sm">Meus Chamados</span>
-                    <span class="text-xs text-gray-400">{{ $tickets->count() }} total</span>
+                    <span class="font-black text-gray-800 text-sm">Meus Chamados</span>
+                    <span class="text-xs text-gray-400 font-bold">{{ $tickets->count() }}</span>
                 </div>
 
                 @forelse($tickets as $ticket)
@@ -36,11 +64,11 @@
                         <div class="flex-shrink-0 mt-1">
                             @php
                                 $cor = match($ticket->status) {
-                                    'aberto' => 'bg-red-500',
-                                    'em_atendimento' => 'bg-amber-400',
+                                    'aberto'             => 'bg-red-500',
+                                    'em_atendimento'     => 'bg-amber-400',
                                     'aguardando_cliente' => 'bg-blue-400',
-                                    'resolvido' => 'bg-green-500',
-                                    default => 'bg-gray-400',
+                                    'resolvido'          => 'bg-green-500',
+                                    default              => 'bg-gray-400',
                                 };
                             @endphp
                             <div class="w-2.5 h-2.5 rounded-full {{ $cor }} {{ $ticket->status === 'aberto' ? 'animate-pulse' : '' }}"></div>
@@ -53,22 +81,36 @@
                                 <span>·</span>
                                 <span>{{ $ticket->created_at->diffForHumans() }}</span>
                             </div>
+                            {{-- SLA indicator --}}
+                            @if($ticket->prazo_resposta && ! in_array($ticket->status, ['resolvido', 'fechado']))
+                                @php $atrasado = now()->isAfter($ticket->prazo_resposta); @endphp
+                                <div class="text-[10px] mt-1 font-bold {{ $atrasado ? 'text-red-500' : 'text-emerald-500' }}">
+                                    @if($atrasado)
+                                        ⚠️ SLA estourado ({{ $ticket->prazo_resposta->diffForHumans() }})
+                                    @else
+                                        ⏱️ Prazo: {{ $ticket->prazo_resposta->diffForHumans() }}
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
-                        @if($ticket->messages->where('is_admin', true)->count() > 0)
-                            <div class="flex-shrink-0">
-                                <span class="text-xs bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">
-                                    {{ $ticket->messages->count() }}
-                                </span>
-                            </div>
-                        @endif
+                        <div class="flex-shrink-0 flex flex-col items-end gap-1">
+                            <span class="text-xs bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-full">
+                                {{ $ticket->messages->count() }}
+                            </span>
+                            @if($ticket->avaliacao)
+                                <div class="flex">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <span class="text-[9px] {{ $i <= $ticket->avaliacao ? 'text-yellow-400' : 'text-gray-200' }}">★</span>
+                                    @endfor
+                                </div>
+                            @endif
+                        </div>
                     </button>
                 @empty
-                    <div class="px-4 py-8 text-center text-sm text-gray-400">
-                        <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        Nenhum chamado aberto
+                    <div class="px-4 py-12 text-center text-sm text-gray-400">
+                        <div class="text-3xl mb-2">💬</div>
+                        Nenhum chamado encontrado
                     </div>
                 @endforelse
             </div>
@@ -79,9 +121,9 @@
 
             {{-- Formulário de Novo Ticket --}}
             @if($showNovoTicket)
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                     <div class="flex items-center justify-between mb-5">
-                        <h2 class="text-lg font-black text-gray-800">Abrir Novo Chamado</h2>
+                        <h2 class="text-lg font-black text-gray-800">📝 Abrir Novo Chamado</h2>
                         <button wire:click="cancelarNovoTicket" class="text-gray-400 hover:text-gray-600 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -91,16 +133,16 @@
 
                     <form wire:submit="criarTicket" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Assunto *</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Assunto *</label>
                             <input wire:model="titulo" type="text" placeholder="Descreva brevemente o problema..."
-                                class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
                             <x-input-error :messages="$errors->get('titulo')" class="mt-1"/>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Categoria</label>
-                                <select wire:model="categoria" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm bg-white">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Categoria</label>
+                                <select wire:model="categoria" class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-sm bg-white">
                                     <option value="duvida">❓ Dúvida</option>
                                     <option value="problema_tecnico">🔧 Problema Técnico</option>
                                     <option value="financeiro">💰 Financeiro</option>
@@ -110,25 +152,25 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Prioridade</label>
-                                <select wire:model="prioridade" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm bg-white">
-                                    <option value="baixa">🟢 Baixa</option>
-                                    <option value="media" selected>🟡 Média</option>
-                                    <option value="alta">🟠 Alta</option>
-                                    <option value="urgente">🔴 Urgente</option>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Prioridade</label>
+                                <select wire:model="prioridade" class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-sm bg-white">
+                                    <option value="baixa">🟢 Baixa (72h)</option>
+                                    <option value="media" selected>🟡 Média (24h)</option>
+                                    <option value="alta">🟠 Alta (8h)</option>
+                                    <option value="urgente">🔴 Urgente (2h)</option>
                                 </select>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Descrição detalhada *</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Descrição detalhada *</label>
                             <textarea wire:model="descricao" rows="5" placeholder="Explique com detalhes o que está acontecendo..."
-                                class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500"></textarea>
+                                class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 resize-none"></textarea>
                             <x-input-error :messages="$errors->get('descricao')" class="mt-1"/>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Anexos (opcional)</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Anexos (opcional)</label>
                             <input wire:model="arquivos" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                                 class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
                             <p class="text-xs text-gray-400 mt-1">PDF, JPG, PNG, DOC — máx. 5MB por arquivo</p>
@@ -136,14 +178,11 @@
 
                         <div class="flex gap-3 pt-2">
                             <button type="submit"
-                                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                </svg>
-                                Enviar Chamado
+                                class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:opacity-90 text-white font-black py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                                🚀 Enviar Chamado
                             </button>
                             <button type="button" wire:click="cancelarNovoTicket"
-                                class="px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition">
+                                class="px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl transition">
                                 Cancelar
                             </button>
                         </div>
@@ -152,24 +191,46 @@
 
             {{-- ─── Conversa do Ticket Ativo ───────────────────────── --}}
             @elseif($activeTicket)
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col" style="height: calc(100vh - 220px); min-height: 500px;">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col" style="height: calc(100vh - 200px); min-height: 500px;">
 
                     {{-- Header do ticket --}}
-                    <div class="px-5 py-4 border-b border-gray-100 flex items-start justify-between">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-mono text-xs text-gray-400">{{ $activeTicket->numero }}</span>
-                                @php
-                                    $cores = ['aberto' => 'bg-red-100 text-red-700', 'em_atendimento' => 'bg-amber-100 text-amber-700', 'aguardando_cliente' => 'bg-blue-100 text-blue-700', 'resolvido' => 'bg-green-100 text-green-700', 'fechado' => 'bg-gray-100 text-gray-600'];
-                                @endphp
-                                <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $cores[$activeTicket->status] ?? 'bg-gray-100 text-gray-600' }}">
-                                    {{ \App\Models\Ticket::statusLabels()[$activeTicket->status] ?? $activeTicket->status }}
-                                </span>
-                                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                                    {{ ucfirst($activeTicket->prioridade) }}
-                                </span>
+                    <div class="px-5 py-4 border-b border-gray-100">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                    <span class="font-mono text-xs text-gray-400">{{ $activeTicket->numero }}</span>
+                                    @php
+                                        $cores = [
+                                            'aberto'             => 'bg-red-100 text-red-700',
+                                            'em_atendimento'     => 'bg-amber-100 text-amber-700',
+                                            'aguardando_cliente' => 'bg-blue-100 text-blue-700',
+                                            'resolvido'          => 'bg-green-100 text-green-700',
+                                            'fechado'            => 'bg-gray-100 text-gray-600',
+                                        ];
+                                    @endphp
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $cores[$activeTicket->status] ?? 'bg-gray-100 text-gray-600' }}">
+                                        {{ \App\Models\Ticket::statusLabels()[$activeTicket->status] ?? $activeTicket->status }}
+                                    </span>
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                        {{ ucfirst($activeTicket->prioridade) }}
+                                    </span>
+                                    @if($activeTicket->categoria)
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                                            {{ \App\Models\Ticket::categoriaLabels()[$activeTicket->categoria] ?? $activeTicket->categoria }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <h2 class="text-base font-black text-gray-800">{{ $activeTicket->titulo }}</h2>
                             </div>
-                            <h2 class="text-base font-black text-gray-800">{{ $activeTicket->titulo }}</h2>
+
+                            {{-- SLA badge --}}
+                            @if($activeTicket->prazo_resposta && ! in_array($activeTicket->status, ['resolvido', 'fechado']))
+                                @php $atrasado = now()->isAfter($activeTicket->prazo_resposta); @endphp
+                                <div class="text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0
+                                    {{ $atrasado ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200' }}">
+                                    @if($atrasado) ⚠️ SLA estourado @else ⏱️ {{ $activeTicket->prazo_resposta->diffForHumans() }} @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -180,31 +241,30 @@
                                 <div class="max-w-[75%]">
                                     <div class="{{ $msg->is_admin
                                         ? 'bg-gray-100 text-gray-800 rounded-2xl rounded-tl-sm'
-                                        : 'bg-orange-500 text-white rounded-2xl rounded-tr-sm' }} px-4 py-3 text-sm leading-relaxed">
-                                        @if($msg->is_admin && $msg->is_internal)
+                                        : 'bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl rounded-tr-sm' }} px-4 py-3 text-sm leading-relaxed shadow-sm">
+                                        @if($msg->is_admin && $msg->is_internal ?? false)
                                             <div class="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-                                                Nota Interna
+                                                🔒 Nota Interna
                                             </div>
                                         @endif
-                                        {{ $msg->mensagem }}
+                                        {!! nl2br(e($msg->mensagem)) !!}
                                     </div>
                                     <div class="text-[11px] text-gray-400 mt-1 {{ $msg->is_admin ? 'text-left' : 'text-right' }}">
-                                        {{ $msg->is_admin ? 'Suporte Elite' : 'Você' }} · {{ $msg->created_at->diffForHumans() }}
+                                        {{ $msg->is_admin ? '🛡️ Suporte Elite' : '👤 Você' }} · {{ $msg->created_at->diffForHumans() }}
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
-                    {{-- Input de resposta --}}
+                    {{-- Input de resposta / Resolvido / Avaliação --}}
                     @if(! in_array($activeTicket->status, ['resolvido', 'fechado']))
                         <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
                             <form wire:submit="enviarMensagem" class="flex gap-3 items-end">
                                 <textarea wire:model="newMessage" rows="2" placeholder="Digite sua mensagem..."
                                     class="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 resize-none"></textarea>
                                 <button type="submit"
-                                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-3 rounded-xl transition flex-shrink-0">
+                                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-3 rounded-xl transition flex-shrink-0 shadow-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                     </svg>
@@ -212,39 +272,102 @@
                             </form>
                         </div>
                     @else
-                        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 text-center text-sm text-gray-400">
-                            🔒 Este chamado foi {{ $activeTicket->status }}. Abra um novo para mais dúvidas.
+                        <div class="px-5 py-4 border-t border-gray-100 bg-gray-50">
+                            {{-- Avaliação --}}
+                            @if($activeTicket->status === 'resolvido' && !$activeTicket->avaliacao)
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-3">
+                                    <p class="text-sm font-black text-emerald-800 mb-2">⭐ Como foi seu atendimento?</p>
+                                    <div class="flex gap-1 mb-3">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button wire:click="$set('avaliacao', {{ $i }})"
+                                                class="text-2xl transition hover:scale-110 {{ $avaliacao >= $i ? 'text-yellow-400' : 'text-gray-300' }}">★</button>
+                                        @endfor
+                                    </div>
+                                    @if($avaliacao > 0)
+                                        <textarea wire:model="avaliacaoComentario" rows="2" placeholder="Comentário opcional..."
+                                            class="w-full rounded-xl border border-emerald-200 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-400 resize-none mb-2"></textarea>
+                                        <button wire:click="avaliarTicket"
+                                            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                                            Enviar Avaliação
+                                        </button>
+                                    @endif
+                                </div>
+                            @elseif($activeTicket->avaliacao)
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-3 text-center">
+                                    <div class="flex justify-center gap-0.5 mb-1">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <span class="text-lg {{ $i <= $activeTicket->avaliacao ? 'text-yellow-400' : 'text-gray-200' }}">★</span>
+                                        @endfor
+                                    </div>
+                                    <p class="text-xs text-emerald-700 font-semibold">Obrigado pela avaliação!</p>
+                                </div>
+                            @endif
+
+                            <div class="flex gap-3">
+                                <button wire:click="reabrirTicket"
+                                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                                    🔄 Reabrir Chamado
+                                </button>
+                                <button wire:click="abrirNovoTicket"
+                                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                                    ➕ Novo Chamado
+                                </button>
+                            </div>
                         </div>
                     @endif
                 </div>
 
             {{-- ─── Estado vazio ────────────────────────────────────── --}}
             @else
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center py-20 px-6">
-                    <div class="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                    </div>
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center py-20 px-6">
+                    <div class="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4 text-3xl">💬</div>
                     <h3 class="text-lg font-bold text-gray-800 mb-2">Selecione um chamado ou abra um novo</h3>
                     <p class="text-sm text-gray-400 mb-6 max-w-sm">
                         Nossa equipe responde em até <strong>2 horas</strong> para chamados urgentes e <strong>24 horas</strong> para os demais.
                     </p>
                     <button wire:click="abrirNovoTicket"
-                        class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition flex items-center gap-2">
+                        class="bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3 rounded-xl transition flex items-center gap-2 shadow-lg">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Abrir Novo Chamado
                     </button>
+                    <div class="grid grid-cols-3 gap-4 mt-8 max-w-md w-full">
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-[#1a3a5c]">{{ $contadores['aberto'] ?? 0 }}</p>
+                            <p class="text-xs text-gray-400">Abertos</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-amber-500">{{ $contadores['em_atendimento'] ?? 0 }}</p>
+                            <p class="text-xs text-gray-400">Em atendimento</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-emerald-500">{{ $contadores['resolvido'] ?? 0 }}</p>
+                            <p class="text-xs text-gray-400">Resolvidos</p>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>
     </div>
 
+    {{-- Bottom Nav Mobile --}}
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
+        <div class="flex">
+            @foreach([['dashboard','🏠','Vitrine'],['meus-pedidos','📋','Pedidos'],['financeiro','💳','Financeiro'],['suporte','💬','Suporte'],['favoritos','❤️','Favoritos']] as [$rt,$ico,$lbl])
+                <a href="{{ route($rt) }}" wire:navigate
+                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
+                        {{ request()->routeIs($rt) ? 'text-[#1a3a5c]' : 'text-gray-400 hover:text-gray-600' }}">
+                    <span class="text-lg leading-none">{{ $ico }}</span>
+                    <span class="text-[9px] font-bold mt-0.5">{{ $lbl }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+    <div class="lg:hidden h-16"></div>
 </div>
 
-{{-- Auto-scroll para o fim das mensagens --}}
+{{-- Auto-scroll --}}
 <script>
     document.addEventListener('livewire:navigated', () => scrollToBottom());
     document.addEventListener('livewire:updated', () => scrollToBottom());

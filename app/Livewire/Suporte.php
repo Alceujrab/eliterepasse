@@ -16,8 +16,13 @@ class Suporte extends Component
     use WithFileUploads;
 
     // ─── Estado ──────────────────────────────────────────────────────
-    public ?int $activeTicketId = null;
-    public bool $showNovoTicket = false;
+    public ?int   $activeTicketId = null;
+    public bool   $showNovoTicket = false;
+    public string $filtroStatus   = 'todos';
+
+    // ─── Avaliação ──────────────────────────────────────────────────
+    public int    $avaliacao         = 0;
+    public string $avaliacaoComentario = '';
 
     // ─── Novo Ticket ─────────────────────────────────────────────────
     #[Rule('required|min:5|max:255')]
@@ -132,18 +137,66 @@ class Suporte extends Component
         $this->newMessage = '';
     }
 
+    public function reabrirTicket(): void
+    {
+        $ticket = Ticket::where('user_id', auth()->id())
+            ->where('id', $this->activeTicketId)->first();
+
+        if ($ticket && in_array($ticket->status, ['resolvido', 'fechado'])) {
+            $ticket->update(['status' => 'aberto', 'prazo_resposta' => now()->addHours(Ticket::slaPorPrioridade($ticket->prioridade))]);
+
+            TicketMessage::create([
+                'ticket_id' => $ticket->id,
+                'user_id'   => auth()->id(),
+                'mensagem'  => '🔄 Chamado reaberto pelo cliente.',
+                'is_admin'  => false,
+            ]);
+        }
+    }
+
+    public function avaliarTicket(): void
+    {
+        if ($this->avaliacao < 1 || $this->avaliacao > 5) return;
+
+        $ticket = Ticket::where('user_id', auth()->id())
+            ->where('id', $this->activeTicketId)->first();
+
+        if ($ticket && $ticket->status === 'resolvido') {
+            $ticket->update([
+                'avaliacao'            => $this->avaliacao,
+                'avaliacao_comentario' => $this->avaliacaoComentario,
+            ]);
+        }
+
+        $this->avaliacao = 0;
+        $this->avaliacaoComentario = '';
+    }
+
     public function render()
     {
-        $tickets = Ticket::with('messages')
-            ->where('user_id', auth()->id())
+        $query = Ticket::with('messages')
+            ->where('user_id', auth()->id());
+
+        if ($this->filtroStatus !== 'todos') {
+            $query->where('status', $this->filtroStatus);
+        }
+
+        $tickets = $query
             ->orderByRaw("FIELD(status, 'aberto', 'em_atendimento', 'aguardando_cliente', 'resolvido', 'fechado')")
             ->latest()
             ->get();
+
+        $contadores = [
+            'todos'    => Ticket::where('user_id', auth()->id())->count(),
+            'aberto'   => Ticket::where('user_id', auth()->id())->where('status', 'aberto')->count(),
+            'em_atendimento' => Ticket::where('user_id', auth()->id())->where('status', 'em_atendimento')->count(),
+            'resolvido' => Ticket::where('user_id', auth()->id())->where('status', 'resolvido')->count(),
+        ];
 
         $activeTicket = $this->activeTicketId
             ? Ticket::with(['messages.user', 'attachments'])->find($this->activeTicketId)
             : null;
 
-        return view('livewire.suporte', compact('tickets', 'activeTicket'));
+        return view('livewire.suporte', compact('tickets', 'activeTicket', 'contadores'));
     }
 }
