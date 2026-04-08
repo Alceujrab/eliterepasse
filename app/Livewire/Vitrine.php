@@ -104,7 +104,7 @@ class Vitrine extends Component
 
     public function render()
     {
-        $query = Vehicle::query()->where('status', 'disponivel');
+        $query = Vehicle::query()->where('status', 'available');
 
         // Busca textual
         if ($this->searchTerm) {
@@ -145,17 +145,17 @@ class Vitrine extends Component
         };
 
         $vehicles       = $query->paginate(18);
-        $totalSemFiltro = Vehicle::where('status', 'disponivel')->count();
+        $totalSemFiltro = Vehicle::where('status', 'available')->count();
 
         $userFavorites = auth()->check()
             ? Favorite::where('user_id', auth()->id())->pluck('vehicle_id')->toArray()
             : [];
 
         // Opções dinâmicas (baseadas no BD real)
-        $availableBrands     = Vehicle::where('status', 'disponivel')->distinct()->orderBy('brand')->pluck('brand')->filter()->values();
-        $availableCategories = Vehicle::where('status', 'disponivel')->distinct()->orderBy('category')->pluck('category')->filter()->values();
-        $availableFuelTypes  = Vehicle::where('status', 'disponivel')->distinct()->orderBy('fuel_type')->pluck('fuel_type')->filter()->values();
-        $availableTransmissions = Vehicle::where('status', 'disponivel')->distinct()->orderBy('transmission')->pluck('transmission')->filter()->values();
+        $availableBrands     = Vehicle::where('status', 'available')->distinct()->orderBy('brand')->pluck('brand')->filter()->values();
+        $availableCategories = Vehicle::where('status', 'available')->distinct()->orderBy('category')->pluck('category')->filter()->values();
+        $availableFuelTypes  = Vehicle::where('status', 'available')->distinct()->orderBy('fuel_type')->pluck('fuel_type')->filter()->values();
+        $availableTransmissions = Vehicle::where('status', 'available')->distinct()->orderBy('transmission')->pluck('transmission')->filter()->values();
 
         return view('livewire.vitrine', compact(
             'vehicles', 'userFavorites', 'totalSemFiltro',
@@ -163,3 +163,4 @@ class Vitrine extends Component
         ));
     }
 }
+

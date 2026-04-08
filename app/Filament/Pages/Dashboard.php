@@ -45,8 +45,8 @@ class Dashboard extends Page
 
         // Veículos
         $totalVeiculos  = Vehicle::count();
-        $disponiveis    = Vehicle::where('status', 'disponivel')->count();
-        $valorEstoque   = Vehicle::where('status', 'disponivel')->sum('sale_price');
+        $disponiveis    = Vehicle::where('status', 'available')->count();
+        $valorEstoque   = Vehicle::where('status', 'available')->sum('sale_price');
 
         // Pedidos
         $pedidosMes        = Order::whereMonth('created_at', $mesAtual)->whereYear('created_at', $anoAtual)->count();
@@ -144,3 +144,4 @@ class Dashboard extends Page
         return ['labels' => $labels, 'valores' => $valores];
     }
 }
+

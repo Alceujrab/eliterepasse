@@ -91,7 +91,7 @@ class VehicleDetails extends Component
     public function getSimilaresProperty()
     {
         return Vehicle::where('id', '!=', $this->vehicle->id)
-            ->where('status', 'disponivel')
+            ->where('status', 'available')
             ->where(fn ($q) =>
                 $q->where('brand', $this->vehicle->brand)
                   ->orWhere('category', $this->vehicle->category)
@@ -115,3 +115,4 @@ class VehicleDetails extends Component
         return view('livewire.vehicle-details');
     }
 }
+

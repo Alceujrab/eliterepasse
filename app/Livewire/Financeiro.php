@@ -73,4 +73,9 @@ class Financeiro extends Component
     {
         $this->pedidoOpen = $this->pedidoOpen === $id ? null : $id;
     }
+
+    public function render()
+    {
+        return view('livewire.financeiro');
+    }
 }

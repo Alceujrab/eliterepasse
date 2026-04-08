@@ -74,7 +74,7 @@ class MeusPedidos extends Component
             ->sum('valor_compra');
 
         $ticketsAbertos = Ticket::where('user_id', $userId)
-            ->whereIn('status', ['aberto', 'em_andamento'])
+            ->whereIn('status', ['aberto', 'em_atendimento'])
             ->count();
 
         $documentosPendentes = Document::where('user_id', $userId)

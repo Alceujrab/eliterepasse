@@ -136,7 +136,7 @@
                                 </div>
                                 <p class="text-sm text-gray-700 font-semibold truncate">
                                     {{ $v ? "{$v->brand} {$v->model} {$v->model_year}" : 'Veículo não encontrado' }}
-                                    @if($v?->license_plate) · <span class="font-mono text-gray-500">{{ $v->license_plate }}</span> @endif
+                                    @if($v?->plate) · <span class="font-mono text-gray-500">{{ $v->plate }}</span> @endif
                                 </p>
                                 <p class="text-xs text-gray-400 mt-0.5">
                                     {{ $pedido->created_at->format('d/m/Y') }}
@@ -264,7 +264,7 @@
                                         </div>
                                         <div class="bg-white rounded-xl border border-gray-100 px-3 py-2 text-center">
                                             <p class="text-[10px] text-gray-400 uppercase tracking-wide">Placa</p>
-                                            <p class="text-sm font-black text-gray-800 font-mono">{{ $v->license_plate ?? '—' }}</p>
+                                            <p class="text-sm font-black text-gray-800 font-mono">{{ $v->plate ?? '—' }}</p>
                                         </div>
                                     </div>
                                 @endif
@@ -306,4 +306,19 @@
         </div>
 
     </div>
+
+    {{-- Bottom Nav Mobile --}}
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
+        <div class="flex">
+            @foreach([['dashboard','🏠','Vitrine'],['meus-pedidos','📋','Pedidos'],['financeiro','💳','Financeiro'],['suporte','💬','Suporte'],['favoritos','❤️','Favoritos']] as [$rt,$ico,$lbl])
+                <a href="{{ route($rt) }}" wire:navigate
+                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
+                        {{ request()->routeIs($rt) ? 'text-[#1a3a5c]' : 'text-gray-400 hover:text-gray-600' }}">
+                    <span class="text-lg leading-none">{{ $ico }}</span>
+                    <span class="text-[9px] font-bold mt-0.5">{{ $lbl }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+    <div class="lg:hidden h-16"></div>
 </div>
