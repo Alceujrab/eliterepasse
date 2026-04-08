@@ -1,8 +1,14 @@
 <?php
 
 use App\Http\Controllers\ContractSignatureController;
+use App\Http\Controllers\EvolutionWebhookController;
 use App\Http\Middleware\EnsureUserIsApproved;
 use Illuminate\Support\Facades\Route;
+
+// ─── Webhook Evolution GO (sem CSRF, sem auth) ────────────────────────
+Route::post('/webhook/evolution', EvolutionWebhookController::class)
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->name('webhook.evolution');
 
 Route::get('/', \App\Livewire\LandingPage::class)->name('home');
 
