@@ -1,8 +1,7 @@
 <x-filament-panels::page>
 
     {{-- ─── Hero ──────────────────────────────────────────────────────── --}}
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a3a5c] via-[#1e4f8a] to-[#0f2d4e] p-6 mb-6 shadow-xl">
-        <div class="absolute top-0 right-0 w-72 h-72 bg-blue-300 opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/4"></div>
+    <div class="page-hero rounded-2xl p-6 mb-6 shadow-xl">
         <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-5">
             <div class="flex items-center gap-4 text-white">
                 <div class="w-12 h-12 rounded-2xl bg-white bg-opacity-20 flex items-center justify-center text-2xl">💰</div>
@@ -12,7 +11,7 @@
                 </div>
             </div>
             <button wire:click="novaCobranca()"
-                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3.5 rounded-xl shadow-lg transition text-base">
+                class="flex items-center gap-2 btn-cta-md">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -23,19 +22,19 @@
         {{-- KPI mini --}}
         <div class="relative grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
             @php $kpis = $this->kpis; @endphp
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
+            <div class="glass-panel px-4 py-3">
                 <p class="text-blue-200 text-sm font-bold mb-1">Emitido no Mês</p>
                 <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['total_mes'], 0, ',', '.') }}</p>
             </div>
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
+            <div class="glass-panel px-4 py-3">
                 <p class="text-blue-200 text-sm font-bold mb-1">A Receber</p>
                 <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['em_aberto'], 0, ',', '.') }}</p>
             </div>
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
+            <div class="glass-panel px-4 py-3">
                 <p class="text-blue-200 text-sm font-bold mb-1">Recebido no Mês</p>
                 <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['pagos_mes'], 0, ',', '.') }}</p>
             </div>
-            <div class="{{ $kpis['vencidos'] > 0 ? 'bg-red-500 bg-opacity-80' : 'bg-white bg-opacity-10' }} backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
+            <div class="{{ $kpis['vencidos'] > 0 ? 'bg-red-500 bg-opacity-80' : '' }} glass-panel px-4 py-3">
                 <p class="{{ $kpis['vencidos'] > 0 ? 'text-red-200' : 'text-blue-200' }} text-sm font-bold mb-1">Vencidos</p>
                 <p class="text-white font-black text-2xl">{{ $kpis['vencidos'] }}</p>
             </div>
@@ -67,7 +66,7 @@
 
     {{-- ─── Form Criar/Editar ─────────────────────────────────────────── --}}
     @if($showForm)
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 overflow-hidden">
+        <div class="elite-card mb-6 overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-white dark:from-gray-700 dark:to-gray-800">
                 <h2 class="font-black text-gray-800 dark:text-white">
                     {{ $editingId ? '✏️ Editar Cobrança' : '➕ Nova Cobrança' }}
@@ -200,7 +199,7 @@
     @endif
 
     {{-- ─── Filtros + Busca ────────────────────────────────────────────── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4 mb-5">
+    <div class="elite-card p-4 mb-5">
         <div class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,12 +223,12 @@
 
     {{-- ─── Tabela de Cobranças ─────────────────────────────────────────── --}}
     @if($this->financiais->isEmpty())
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm py-16 text-center">
+        <div class="elite-card py-16 text-center">
             <div class="text-5xl mb-3">🧾</div>
             <p class="text-gray-400 font-semibold">Nenhuma cobrança encontrada.</p>
         </div>
     @else
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="elite-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>

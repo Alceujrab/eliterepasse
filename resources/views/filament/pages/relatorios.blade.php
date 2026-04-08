@@ -30,10 +30,10 @@
         @endphp
 
         @foreach($cards as $card)
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
+            <div class="kpi-card">
                 <div class="text-2xl mb-1">{{ $card['icon'] }}</div>
-                <div class="text-2xl font-black text-gray-900 dark:text-white">{{ $card['value'] }}</div>
-                <div class="text-sm text-gray-500 mt-0.5">{{ $card['label'] }}</div>
+                <div class="kpi-value text-2xl">{{ $card['value'] }}</div>
+                <div class="kpi-label mt-0.5">{{ $card['label'] }}</div>
             </div>
         @endforeach
     </div>
@@ -42,16 +42,16 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
 
         {{-- Receita por dia --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">📈 Receita por Dia (R$)</h3>
+        <div class="elite-card p-5">
+            <h3 class="section-title text-base mb-4">📈 Receita por Dia (R$)</h3>
             <div style="position:relative; height: 220px;">
                 <canvas id="chartReceita"></canvas>
             </div>
         </div>
 
         {{-- Clientes novos por dia --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">👥 Novos Clientes por Dia</h3>
+        <div class="elite-card p-5">
+            <h3 class="section-title text-base mb-4">👥 Novos Clientes por Dia</h3>
             <div style="position:relative; height: 220px;">
                 <canvas id="chartClientes"></canvas>
             </div>
@@ -62,8 +62,8 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
 
         {{-- Estoque --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">🚗 Resumo do Estoque</h3>
+        <div class="elite-card p-5">
+            <h3 class="section-title text-base mb-4">🚗 Resumo do Estoque</h3>
             <div class="space-y-3">
                 @php
                     $estoqueItems = [
@@ -103,8 +103,8 @@
         </div>
 
         {{-- Top Vendas --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">🏆 Top Veículos Vendidos</h3>
+        <div class="elite-card p-5">
+            <h3 class="section-title text-base mb-4">🏆 Top Veículos Vendidos</h3>
             @if(count($this->topVendas) > 0)
                 <div class="space-y-2">
                     @foreach($this->topVendas as $i => $item)

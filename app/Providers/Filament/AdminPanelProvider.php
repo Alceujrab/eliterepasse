@@ -15,11 +15,14 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -49,13 +52,23 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->font('Inter', 'https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap')
 
-            // ─── Layout ─────────────────────────────────────────────
-            ->sidebarCollapsibleOnDesktop()
-            ->topNavigation(false)
+            // ─── Layout — Top Navigation (mesmo padrão do lojista)
+            ->topNavigation()
             ->breadcrumbs(true)
+            ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full)
 
             // ─── Dark Mode ────────────────────────────────────────
             ->darkMode(true)
+
+            // ─── Injetar Design System Elite no Admin ─────────────
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => Blade::render('@vite("resources/css/filament-elite.css")'),
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => Blade::render('filament.admin-bottom-nav'),
+            )
 
             // ─── Navegação Agrupada ───────────────────────────────
             ->navigationGroups([

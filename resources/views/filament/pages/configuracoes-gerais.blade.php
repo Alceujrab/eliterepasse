@@ -105,7 +105,7 @@
 
         <div class="mt-6 flex justify-end">
             <button type="submit"
-                class="inline-flex items-center px-8 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition shadow-sm gap-2 text-base">
+                class="btn-cta-md inline-flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>

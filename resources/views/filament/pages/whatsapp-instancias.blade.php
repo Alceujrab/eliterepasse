@@ -107,7 +107,7 @@
 
     {{-- ─── Form Criar/Editar ───────────────────────────────────────── --}}
     @if($showForm)
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 overflow-hidden">
+        <div class="elite-card mb-6 overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-green-50 to-white dark:from-gray-800 dark:to-gray-800">
                 <h2 class="font-black text-gray-800 dark:text-white">
                     {{ $editingId ? '✏️ Editar Instância' : '➕ Nova Instância' }}
@@ -184,7 +184,7 @@
 
     {{-- ─── Grid de Instâncias ────────────────────────────────────────── --}}
     @if($this->instancias->isEmpty())
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm py-20 text-center">
+        <div class="elite-card py-20 text-center">
             <div class="text-5xl mb-4">📱</div>
             <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-1">Nenhuma instância configurada</h3>
             <p class="text-gray-400 text-base mb-6">Adicione sua instância Evolution para ativar o WhatsApp.</p>
@@ -209,7 +209,7 @@
                     };
                 @endphp
 
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden hover:shadow-md transition group">
+                <div class="elite-card overflow-hidden hover:shadow-md transition group">
 
                     {{-- Card Header --}}
                     <div class="px-5 pt-5 pb-4">

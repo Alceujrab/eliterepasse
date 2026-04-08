@@ -30,7 +30,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5" style="min-height: 70vh;">
 
         {{-- ─── Lista de Conversas (1/3) ──────────────────────────────── --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
+        <div class="elite-card overflow-hidden flex flex-col">
 
             {{-- Filtros --}}
             <div class="px-4 pt-4 pb-3 border-b border-gray-100 dark:border-gray-700">
@@ -95,7 +95,7 @@
         </div>
 
         {{-- ─── Área da Conversa (2/3) ─────────────────────────────────── --}}
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
+        <div class="lg:col-span-2 elite-card overflow-hidden flex flex-col">
 
             @if($this->ticketAberto)
                 @php $ticket = $this->ticketAberto; @endphp

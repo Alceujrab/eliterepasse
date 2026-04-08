@@ -7,10 +7,7 @@
     @endphp
 
     {{-- ─── Hero ──────────────────────────────────────────────────────── --}}
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a3a5c] via-[#1e4f8a] to-[#0f2d4e] p-6 mb-6 shadow-xl">
-        <div class="absolute top-0 right-0 w-72 h-72 bg-blue-300 opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/4"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-orange-300 opacity-5 blur-3xl rounded-full translate-y-1/3 -translate-x-1/4"></div>
-
+    <div class="page-hero rounded-2xl p-6 mb-6 shadow-xl">
         <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div class="text-white">
                 <h1 class="text-3xl sm:text-4xl font-black tracking-tight">{{ $this->saudacao }}</h1>
@@ -21,11 +18,11 @@
             </div>
             <div class="flex gap-3 flex-wrap">
                 <a href="/admin/vehicles/create"
-                    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-5 py-3 rounded-xl shadow-lg transition text-base">
+                    class="flex items-center gap-2 btn-cta-md">
                     🚗 Novo Veículo
                 </a>
                 <a href="/admin/gestao-financeira"
-                    class="flex items-center gap-2 bg-white bg-opacity-15 border border-white border-opacity-20 text-white font-bold px-5 py-3 rounded-xl hover:bg-opacity-25 transition text-base">
+                    class="flex items-center gap-2 glass-panel text-white font-bold px-5 py-3">
                     💰 Financeiro
                 </a>
             </div>
@@ -55,41 +52,41 @@
     {{-- ─── KPI Cards (linha 1 — Estoque + Vendas) ───────────────────── --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {{-- Estoque disponível --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <div class="kpi-card">
             <div class="flex items-start justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-xl">🚗</div>
-                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                <span class="badge bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                     {{ $kpis['totalVeiculos'] }} total
                 </span>
             </div>
-            <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['disponiveis'] }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Veículos disponíveis</p>
+            <p class="kpi-value">{{ $kpis['disponiveis'] }}</p>
+            <p class="kpi-label mt-1">Veículos disponíveis</p>
         </div>
 
         {{-- Valor em estoque --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <div class="kpi-card">
             <div class="flex items-start justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl">💎</div>
             </div>
-            <p class="text-3xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['valorEstoque'], 0, ',', '.') }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Valor em estoque</p>
+            <p class="kpi-value">R$ {{ number_format($kpis['valorEstoque'], 0, ',', '.') }}</p>
+            <p class="kpi-label mt-1">Valor em estoque</p>
         </div>
 
         {{-- Pedidos do mês --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <div class="kpi-card">
             <div class="flex items-start justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-xl">🛒</div>
                 @php
                     $diff = $kpis['pedidosMes'] - $kpis['pedidosMesPassado'];
                 @endphp
                 @if($diff !== 0)
-                    <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $diff > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
+                    <span class="badge {{ $diff > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
                         {{ $diff > 0 ? '↑' : '↓' }} {{ abs($diff) }}
                     </span>
                 @endif
             </div>
-            <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['pedidosMes'] }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pedidos este mês</p>
+            <p class="kpi-value">{{ $kpis['pedidosMes'] }}</p>
+            <p class="kpi-label mt-1">Pedidos este mês</p>
         </div>
 
         {{-- Faturado no mês --}}
@@ -105,7 +102,7 @@
     {{-- ─── KPI Cards (linha 2 — Clientes + Suporte + Financeiro) ──── --}}
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {{-- Clientes --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <div class="elite-card p-5">
             <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">👥 Clientes</p>
             <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['totalClientes'] }}</p>
             <div class="flex gap-3 mt-2 text-sm">
@@ -117,14 +114,14 @@
         </div>
 
         {{-- Pedidos pendentes --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['pedidosPendentes'] > 0 ? 'border-orange-300 dark:border-orange-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+        <div class="elite-card p-5 {{ $kpis['pedidosPendentes'] > 0 ? '!border-orange-300 dark:!border-orange-700' : '' }}">
             <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">⏳ Pendentes</p>
             <p class="text-3xl font-black {{ $kpis['pedidosPendentes'] > 0 ? 'text-orange-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['pedidosPendentes'] }}</p>
             <p class="text-sm text-gray-400 mt-2">Pedidos aguardando ação</p>
         </div>
 
         {{-- Tickets --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['ticketsUrgentes'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+        <div class="elite-card p-5 {{ $kpis['ticketsUrgentes'] > 0 ? '!border-red-300 dark:!border-red-700' : '' }}">
             <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">🎫 Tickets</p>
             <p class="text-3xl font-black {{ $kpis['ticketsUrgentes'] > 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['ticketsAbertos'] }}</p>
             <div class="flex gap-3 mt-2 text-sm">
@@ -134,7 +131,7 @@
         </div>
 
         {{-- A Receber --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['vencidos'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+        <div class="elite-card p-5 {{ $kpis['vencidos'] > 0 ? '!border-red-300 dark:!border-red-700' : '' }}">
             <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">💰 A Receber</p>
             <p class="text-2xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['aReceber'], 0, ',', '.') }}</p>
             @if($kpis['vencidos'] > 0)
@@ -153,14 +150,14 @@
     {{-- ─── Gráfico + Timeline ─────────────────────────────────────────── --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         {{-- Gráfico de faturamento (2/3) --}}
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
-            <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">📊 Faturamento — Últimos 6 Meses</h3>
+        <div class="lg:col-span-2 elite-card p-5">
+            <h3 class="section-title text-lg mb-4">📊 Faturamento — Últimos 6 Meses</h3>
             <canvas id="revenueChart" class="w-full" style="height: 260px;"></canvas>
         </div>
 
         {{-- Timeline de atividades (1/3) --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 overflow-hidden">
-            <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">⏱️ Atividades Recentes</h3>
+        <div class="elite-card p-5 overflow-hidden">
+            <h3 class="section-title text-lg mb-4">⏱️ Atividades Recentes</h3>
             <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
                 @foreach($this->atividadesRecentes as $a)
                     <div class="flex gap-3 items-start">
@@ -176,7 +173,7 @@
                                         default                  => 'bg-blue-100 text-blue-700',
                                     };
                                 @endphp
-                                <span class="text-xs font-bold px-1.5 py-0.5 rounded-full {{ $statusBg }}">{{ $a['status'] }}</span>
+                                <span class="badge {{ $statusBg }}">{{ $a['status'] }}</span>
                                 <span class="text-xs text-gray-400">{{ $a['data']->diffForHumans() }}</span>
                             </div>
                         </div>
@@ -187,8 +184,8 @@
     </div>
 
     {{-- ─── Atalhos Rápidos ───────────────────────────────────────────── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
-        <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">⚡ Ações Rápidas</h3>
+    <div class="elite-card p-5">
+        <h3 class="section-title text-lg mb-4">⚡ Ações Rápidas</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             @php
                 $atalhos = [

@@ -1,11 +1,20 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-D0-vxNtj.css",
+    "file": "assets/app-B_XWf28h.css",
     "name": "app",
     "names": [
       "app.css"
     ],
     "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/filament-elite.css": {
+    "file": "assets/filament-elite-ykEkQeDd.css",
+    "name": "filament-elite",
+    "names": [
+      "filament-elite.css"
+    ],
+    "src": "resources/css/filament-elite.css",
     "isEntry": true
   },
   "resources/js/app.js": {

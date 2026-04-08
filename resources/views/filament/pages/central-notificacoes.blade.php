@@ -12,10 +12,10 @@
             ];
         @endphp
         @foreach($kpis as $kpi)
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
+            <div class="kpi-card">
                 <div class="text-2xl mb-1">{{ $kpi['icone'] }}</div>
-                <div class="text-3xl font-black text-gray-900 dark:text-white">{{ number_format($kpi['value']) }}</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ $kpi['label'] }}</div>
+                <div class="kpi-value">{{ number_format($kpi['value']) }}</div>
+                <div class="kpi-label mt-0.5">{{ $kpi['label'] }}</div>
             </div>
         @endforeach
     </div>
@@ -57,7 +57,7 @@
     {{-- ─── Tabela de Notificações ──────────────────────────────────── --}}
     @php $notificacoes = $this->getNotificacoes(); @endphp
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div class="elite-card overflow-hidden">
 
         {{-- Header --}}
         <div class="px-5 py-3.5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
@@ -134,8 +134,8 @@
     </div>
 
     {{-- Tipos de Notificação Disponíveis --}}
-    <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-        <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">📋 Notificações Automáticas do Sistema</h3>
+    <div class="mt-6 elite-card p-5">
+        <h3 class="section-title text-base mb-4">📋 Notificações Automáticas do Sistema</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             @php
                 $automaticas = [
