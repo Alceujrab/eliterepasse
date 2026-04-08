@@ -2,54 +2,45 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 use App\Models\Order;
+use App\Models\Ticket;
+use App\Models\TicketMessage;
+use App\Models\User;
+use App\Models\Vehicle;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class OrderSeeder extends Seeder
 {
     public function run(): void
     {
-        // Pega a primeira empresa e veiculos.
-        $company = DB::table('companies')->first();
-        if (!$company) return;
+        $user = User::where('email', 'alceujr.ab@gmail.com')->first();
+        if (! $user) return;
 
-        $vehicles = DB::table('vehicles')->take(2)->get();
+        $vehicles = Vehicle::where('status', 'disponivel')->take(6)->get();
+        if ($vehicles->isEmpty()) return;
 
-        if ($vehicles->count() == 0) return;
+        $statuses = ['confirmado', 'pendente', 'faturado', 'aguardando_pgto', 'pendente', 'cancelado'];
 
-        // Cria o pedido 1 vinculando ao Jeep e Onix (ficticio)
-        $orderId = DB::table('orders')->insertGetId([
-            'company_id' => $company->id,
-            'status' => 'faturado',
-            'total_amount' => $vehicles->sum('sale_price'),
-            'created_at' => Carbon::now()->subDays(2),
-            'updated_at' => Carbon::now()->subDays(2),
-        ]);
+        foreach ($vehicles as $i => $vehicle) {
+            $status = $statuses[$i] ?? 'pendente';
+            $daysAgo = rand(1, 60);
 
-        foreach ($vehicles as $vehicle) {
-            DB::table('order_vehicle')->insert([
-                'order_id' => $orderId,
-                'vehicle_id' => $vehicle->id,
-            ]);
-        }
-
-        // Outro pedido com status diferente
-        $vehicle2 = DB::table('vehicles')->skip(2)->first();
-        if ($vehicle2) {
-            $order2Id = DB::table('orders')->insertGetId([
-                'company_id' => $company->id,
-                'status' => 'aguardando_pgto',
-                'total_amount' => $vehicle2->sale_price,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+            $order = Order::create([
+                'user_id'        => $user->id,
+                'vehicle_id'     => $vehicle->id,
+                'valor_compra'   => $vehicle->sale_price,
+                'valor_fipe'     => $vehicle->fipe_price,
+                'status'         => $status,
+                'observacoes'    => $i === 0 ? 'Pagamento via transferência bancária. Retirada em SP.' : null,
+                'confirmado_em'  => in_array($status, ['confirmado', 'faturado']) ? now()->subDays($daysAgo - 1) : null,
+                'confirmado_por' => in_array($status, ['confirmado', 'faturado']) ? $user->id : null,
+                'created_at'     => now()->subDays($daysAgo),
+                'updated_at'     => now()->subDays(max(0, $daysAgo - 2)),
             ]);
 
-            DB::table('order_vehicle')->insert([
-                'order_id' => $order2Id,
-                'vehicle_id' => $vehicle2->id,
-            ]);
+            // Gera número
+            $order->update(['numero' => 'PED-' . now()->year . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT)]);
         }
     }
 }
