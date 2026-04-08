@@ -16,6 +16,10 @@ Route::middleware('guest')->group(function () {
 
     Volt::route('reset-password/{token}', 'pages.auth.reset-password')
         ->name('password.reset');
+
+    // Google OAuth Routes
+    Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleOAuthController::class, 'redirect'])->name('auth.google');
+    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleOAuthController::class, 'callback'])->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {
