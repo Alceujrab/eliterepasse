@@ -9,39 +9,66 @@ class EvolutionInstance extends Model
 {
     protected $fillable = [
         'nome', 'instancia', 'url_base', 'api_key',
-        'ativo', 'padrao', 'status_conexao', 'verificado_em'
+        'ativo', 'padrao', 'status_conexao', 'verificado_em',
     ];
 
     protected $casts = [
-        'ativo' => 'boolean',
-        'padrao' => 'boolean',
+        'ativo'         => 'boolean',
+        'padrao'        => 'boolean',
         'verificado_em' => 'datetime',
     ];
 
-    /**
-     * Retorna a instância padrão do sistema
-     */
+    // ─── Helpers ─────────────────────────────────────────────────────
+
+    /** Instância padrão ativa */
     public static function getPadrao(): ?self
     {
         return static::where('padrao', true)->where('ativo', true)->first()
             ?? static::where('ativo', true)->first();
     }
 
-    /**
-     * Envia mensagem de texto via Evolution GO
-     * POST {url_base}/{instancia}/message/sendText
-     */
-    public function sendText(string $phone, string $message): array
+    public function getStatusLabelAttribute(): string
     {
+        return match($this->status_conexao) {
+            'open'       => '🟢 Conectado',
+            'connecting' => '🟡 Conectando',
+            'close', '0' => '🔴 Desconectado',
+            default      => '⚪ Desconhecido',
+        };
+    }
+
+    public function getStatusCorAttribute(): string
+    {
+        return match($this->status_conexao) {
+            'open'  => 'success',
+            'close' => 'danger',
+            default => 'warning',
+        };
+    }
+
+    // ─── API Calls ────────────────────────────────────────────────────
+
+    /** Envia mensagem de texto (Evolution GO API) */
+    public function sendText(string $phone, string $text): array
+    {
+        // Normalizar telefone: apenas dígitos, com DDI 55
+        $phone = preg_replace('/\D/', '', $phone);
+        if (! str_starts_with($phone, '55')) {
+            $phone = '55' . $phone;
+        }
+
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->api_key,
-                'Content-Type'  => 'application/json',
-            ])->post("{$this->url_base}/{$this->instancia}/message/sendText", [
-                'number' => $phone,
-                'text'   => $message,
-                'delay'  => 1000,
-            ]);
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'apikey'       => $this->api_key,
+                    'Content-Type' => 'application/json',
+                ])
+                ->post(rtrim($this->url_base, '/') . "/message/sendText/{$this->instancia}", [
+                    'number'  => $phone,
+                    'text'    => $text,
+                    'delay'   => 1200,
+                    'options' => ['delay' => 1200, 'presence' => 'composing'],
+                ]);
 
             return [
                 'success' => $response->successful(),
@@ -49,34 +76,43 @@ class EvolutionInstance extends Model
                 'body'    => $response->json(),
             ];
         } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error'   => $e->getMessage(),
-            ];
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
 
-    /**
-     * Testa a conexão com a instância
-     */
+    /** Verifica estado de conexão da instância */
     public function testarConexao(): bool
     {
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->api_key,
-            ])->get("{$this->url_base}/{$this->instancia}/instance/connectionState");
+            $response = Http::timeout(8)
+                ->withHeaders(['apikey' => $this->api_key])
+                ->get(rtrim($this->url_base, '/') . "/instance/connectionState/{$this->instancia}");
 
-            $connected = $response->successful();
-            
+            $state = $response->json('instance.state') ?? 'close';
+
             $this->update([
-                'status_conexao' => $connected ? 1 : 2,
+                'status_conexao' => $state,
                 'verificado_em'  => now(),
             ]);
 
-            return $connected;
+            return $state === 'open';
         } catch (\Exception $e) {
-            $this->update(['status_conexao' => 2, 'verificado_em' => now()]);
+            $this->update(['status_conexao' => 'close', 'verificado_em' => now()]);
             return false;
+        }
+    }
+
+    /** Obtém QR Code para conectar a instância */
+    public function getQrCode(): ?string
+    {
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['apikey' => $this->api_key])
+                ->get(rtrim($this->url_base, '/') . "/instance/connect/{$this->instancia}");
+
+            return $response->json('qrcode.base64') ?? $response->json('base64');
+        } catch (\Exception $e) {
+            return null;
         }
     }
 }

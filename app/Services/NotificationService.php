@@ -17,24 +17,46 @@ use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
-    /**
-     * Dispara todas as notificações para um pedido confirmado.
-     */
+    private EvolutionService $whatsapp;
+
+    public function __construct(EvolutionService $whatsapp)
+    {
+        $this->whatsapp = $whatsapp;
+    }
+
+    // ─── Pedido Confirmado ────────────────────────────────────────────
+
     public function pedidoConfirmado(Order $order): void
     {
         try {
             $user = $order->user;
             if (! $user) return;
 
+            // 1. Notificação database + email
             $user->notify(new PedidoConfirmado($order));
+
+            // 2. WhatsApp
+            if ($user->phone) {
+                $veiculo = $order->vehicle
+                    ? "{$order->vehicle->brand} {$order->vehicle->model} {$order->vehicle->model_year}"
+                    : 'Veículo';
+                $valor = number_format((float) $order->valor_compra, 2, ',', '.');
+
+                $this->whatsapp->pedidoConfirmado(
+                    $user->phone,
+                    $user->razao_social ?? $user->name,
+                    $order->numero,
+                    $veiculo,
+                    $valor
+                );
+            }
         } catch (\Exception $e) {
             Log::error('NotificationService::pedidoConfirmado', ['error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Notifica cliente que há contrato para assinar.
-     */
+    // ─── Contrato Para Assinar ────────────────────────────────────────
+
     public function contratoParaAssinar(Contract $contract, string $linkAssinatura): void
     {
         try {
@@ -42,14 +64,22 @@ class NotificationService
             if (! $user) return;
 
             $user->notify(new ContratoParaAssinar($contract, $linkAssinatura));
+
+            if ($user->phone) {
+                $this->whatsapp->contratoParaAssinar(
+                    $user->phone,
+                    $user->razao_social ?? $user->name,
+                    $contract->numero,
+                    $linkAssinatura
+                );
+            }
         } catch (\Exception $e) {
             Log::error('NotificationService::contratoParaAssinar', ['error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Notifica cliente que seu ticket recebeu uma resposta.
-     */
+    // ─── Ticket Respondido ────────────────────────────────────────────
+
     public function ticketAtualizado(Ticket $ticket, TicketMessage $message): void
     {
         try {
@@ -57,26 +87,40 @@ class NotificationService
             if (! $user || $message->is_internal) return;
 
             $user->notify(new TicketAtualizado($ticket, $message));
+
+            if ($user->phone) {
+                $this->whatsapp->ticketRespondido(
+                    $user->phone,
+                    $user->razao_social ?? $user->name,
+                    $ticket->numero,
+                    mb_strimwidth($message->mensagem, 0, 120, '...')
+                );
+            }
         } catch (\Exception $e) {
             Log::error('NotificationService::ticketAtualizado', ['error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Notifica cliente que seu cadastro foi aprovado.
-     */
+    // ─── Cliente Aprovado ─────────────────────────────────────────────
+
     public function clienteAprovado(User $user): void
     {
         try {
             $user->notify(new ClienteAprovado());
+
+            if ($user->phone) {
+                $this->whatsapp->clienteAprovado(
+                    $user->phone,
+                    $user->razao_social ?? $user->nome_fantasia ?? $user->name
+                );
+            }
         } catch (\Exception $e) {
             Log::error('NotificationService::clienteAprovado', ['error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * Notifica cliente que seu documento foi verificado ou rejeitado.
-     */
+    // ─── Documento Verificado ─────────────────────────────────────────
+
     public function documentoVerificado(Document $document): void
     {
         try {
@@ -84,40 +128,19 @@ class NotificationService
             if (! $user) return;
 
             $user->notify(new DocumentoVerificado($document));
-        } catch (\Exception $e) {
-            Log::error('NotificationService::documentoVerificado', ['error' => $e->getMessage()]);
-        }
-    }
 
-    /**
-     * Notifica todos os admins sobre um novo ticket aberto.
-     */
-    public function novoTicketParaAdmins(Ticket $ticket): void
-    {
-        try {
-            $admins = User::where('is_admin', true)->get();
-            foreach ($admins as $admin) {
-                $admin->notify(
-                    \Illuminate\Support\Facades\Notification::getDefaultDriver() === 'database'
-                        ? new class($ticket) extends \Illuminate\Notifications\Notification {
-                            public function __construct(private Ticket $ticket) {}
-                            public function via($n) { return ['database']; }
-                            public function toDatabase($n): array {
-                                return [
-                                    'tipo'     => 'novo_ticket',
-                                    'icone'    => '🎫',
-                                    'titulo'   => "Novo chamado: {$this->ticket->numero}",
-                                    'mensagem' => $this->ticket->titulo,
-                                    'url'      => '/admin/tickets',
-                                    'dados'    => ['ticket_id' => $this->ticket->id],
-                                ];
-                            }
-                        }
-                        : null
+            if ($user->phone) {
+                $tipo = Document::tipoLabels()[$document->tipo] ?? $document->tipo;
+                $this->whatsapp->documentoVerificado(
+                    $user->phone,
+                    $user->razao_social ?? $user->name,
+                    $tipo,
+                    $document->status,
+                    $document->motivo_rejeicao ?? null
                 );
             }
         } catch (\Exception $e) {
-            Log::warning('NotificationService::novoTicketParaAdmins', ['error' => $e->getMessage()]);
+            Log::error('NotificationService::documentoVerificado', ['error' => $e->getMessage()]);
         }
     }
 }
