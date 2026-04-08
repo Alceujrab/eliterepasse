@@ -2,11 +2,11 @@
 
     {{-- ─── Filtro de Período ─────────────────────────────────────── --}}
     <div class="flex items-center gap-4 mb-6">
-        <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Período:</span>
+        <span class="text-base font-semibold text-gray-600 dark:text-gray-400">Período:</span>
         <div class="flex gap-2 flex-wrap">
             @foreach([7 => '7 dias', 30 => '30 dias', 60 => '60 dias', 90 => '90 dias', 365 => '1 ano'] as $val => $label)
                 <button wire:click="$set('periodo', '{{ $val }}')" wire:then="filtrar"
-                    class="px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                    class="px-4 py-2.5 rounded-lg text-sm font-semibold transition-all
                         {{ $this->periodo == $val
                             ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
                             : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-orange-500 hover:text-orange-500' }}">
@@ -30,10 +30,10 @@
         @endphp
 
         @foreach($cards as $card)
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
                 <div class="text-2xl mb-1">{{ $card['icon'] }}</div>
-                <div class="text-lg font-black text-gray-900 dark:text-white">{{ $card['value'] }}</div>
-                <div class="text-xs text-gray-500 mt-0.5">{{ $card['label'] }}</div>
+                <div class="text-2xl font-black text-gray-900 dark:text-white">{{ $card['value'] }}</div>
+                <div class="text-sm text-gray-500 mt-0.5">{{ $card['label'] }}</div>
             </div>
         @endforeach
     </div>
@@ -43,7 +43,7 @@
 
         {{-- Receita por dia --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">📈 Receita por Dia (R$)</h3>
+            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">📈 Receita por Dia (R$)</h3>
             <div style="position:relative; height: 220px;">
                 <canvas id="chartReceita"></canvas>
             </div>
@@ -51,7 +51,7 @@
 
         {{-- Clientes novos por dia --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">👥 Novos Clientes por Dia</h3>
+            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">👥 Novos Clientes por Dia</h3>
             <div style="position:relative; height: 220px;">
                 <canvas id="chartClientes"></canvas>
             </div>
@@ -63,7 +63,7 @@
 
         {{-- Estoque --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">🚗 Resumo do Estoque</h3>
+            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">🚗 Resumo do Estoque</h3>
             <div class="space-y-3">
                 @php
                     $estoqueItems = [
@@ -76,21 +76,21 @@
                 @endphp
                 @foreach($estoqueItems as $item)
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $item['label'] }}</span>
-                        <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($item['value']) }}</span>
+                        <span class="text-base text-gray-600 dark:text-gray-400">{{ $item['label'] }}</span>
+                        <span class="text-base font-bold text-gray-900 dark:text-white">{{ number_format($item['value']) }}</span>
                     </div>
                     @if (!$loop->last)<div class="h-px bg-gray-100 dark:bg-gray-700"></div>@endif
                 @endforeach
                 <div class="h-px bg-gray-100 dark:bg-gray-700"></div>
                 <div class="flex items-center justify-between pt-1">
-                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Valor em estoque</span>
-                    <span class="text-sm font-black text-green-600">
+                    <span class="text-base font-semibold text-gray-700 dark:text-gray-300">Valor em estoque</span>
+                    <span class="text-base font-black text-green-600">
                         R$ {{ number_format($this->resumoEstoque['valor_total'], 0, ',', '.') }}
                     </span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Preço médio</span>
-                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">
+                    <span class="text-base text-gray-600 dark:text-gray-400">Preço médio</span>
+                    <span class="text-base font-bold text-gray-700 dark:text-gray-300">
                         R$ {{ number_format($this->resumoEstoque['valor_medio'], 0, ',', '.') }}
                     </span>
                 </div>
@@ -104,7 +104,7 @@
 
         {{-- Top Vendas --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">🏆 Top Veículos Vendidos</h3>
+            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-4">🏆 Top Veículos Vendidos</h3>
             @if(count($this->topVendas) > 0)
                 <div class="space-y-2">
                     @foreach($this->topVendas as $i => $item)
@@ -113,11 +113,11 @@
                                 {{ $i + 1 }}
                             </span>
                             <div class="flex-1 min-w-0">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{{ $item['veiculo'] }}</div>
+                                <div class="text-base font-semibold text-gray-800 dark:text-gray-200 truncate">{{ $item['veiculo'] }}</div>
                                 <div class="text-xs text-gray-400 font-mono">{{ $item['placa'] }}</div>
                             </div>
                             <div class="text-right flex-shrink-0">
-                                <div class="text-sm font-black text-green-600">R$ {{ number_format($item['total'], 0, ',', '.') }}</div>
+                                <div class="text-base font-black text-green-600">R$ {{ number_format($item['total'], 0, ',', '.') }}</div>
                                 <div class="text-xs text-gray-400">{{ $item['qtd'] }}x venda</div>
                             </div>
                         </div>
@@ -125,7 +125,7 @@
                     @endforeach
                 </div>
             @else
-                <div class="text-center py-10 text-gray-400 text-sm">
+                <div class="text-center py-10 text-gray-400 text-base">
                     Nenhuma venda no período selecionado.
                 </div>
             @endif

@@ -7,12 +7,12 @@
             <div class="flex items-center gap-4 text-white">
                 <div class="w-12 h-12 rounded-2xl bg-white bg-opacity-20 flex items-center justify-center text-2xl">💰</div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tight">Gestão Financeira</h1>
-                    <p class="text-blue-200 text-sm">Cobranças, boletos, notas fiscais e extratos</p>
+                    <h1 class="text-3xl font-black tracking-tight">Gestão Financeira</h1>
+                    <p class="text-blue-200 text-base">Cobranças, boletos, notas fiscais e extratos</p>
                 </div>
             </div>
             <button wire:click="novaCobranca()"
-                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-5 py-3 rounded-xl shadow-lg transition text-sm">
+                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3.5 rounded-xl shadow-lg transition text-base">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -24,20 +24,20 @@
         <div class="relative grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
             @php $kpis = $this->kpis; @endphp
             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
-                <p class="text-blue-200 text-xs font-bold mb-1">Emitido no Mês</p>
-                <p class="text-white font-black text-xl">R$ {{ number_format($kpis['total_mes'], 0, ',', '.') }}</p>
+                <p class="text-blue-200 text-sm font-bold mb-1">Emitido no Mês</p>
+                <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['total_mes'], 0, ',', '.') }}</p>
             </div>
             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
-                <p class="text-blue-200 text-xs font-bold mb-1">A Receber</p>
-                <p class="text-white font-black text-xl">R$ {{ number_format($kpis['em_aberto'], 0, ',', '.') }}</p>
+                <p class="text-blue-200 text-sm font-bold mb-1">A Receber</p>
+                <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['em_aberto'], 0, ',', '.') }}</p>
             </div>
             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
-                <p class="text-blue-200 text-xs font-bold mb-1">Recebido no Mês</p>
-                <p class="text-white font-black text-xl">R$ {{ number_format($kpis['pagos_mes'], 0, ',', '.') }}</p>
+                <p class="text-blue-200 text-sm font-bold mb-1">Recebido no Mês</p>
+                <p class="text-white font-black text-2xl">R$ {{ number_format($kpis['pagos_mes'], 0, ',', '.') }}</p>
             </div>
             <div class="{{ $kpis['vencidos'] > 0 ? 'bg-red-500 bg-opacity-80' : 'bg-white bg-opacity-10' }} backdrop-blur-sm rounded-xl px-4 py-3 border border-white border-opacity-10">
-                <p class="{{ $kpis['vencidos'] > 0 ? 'text-red-200' : 'text-blue-200' }} text-xs font-bold mb-1">Vencidos</p>
-                <p class="text-white font-black text-xl">{{ $kpis['vencidos'] }}</p>
+                <p class="{{ $kpis['vencidos'] > 0 ? 'text-red-200' : 'text-blue-200' }} text-sm font-bold mb-1">Vencidos</p>
+                <p class="text-white font-black text-2xl">{{ $kpis['vencidos'] }}</p>
             </div>
         </div>
     </div>
@@ -48,13 +48,13 @@
             <div class="flex items-start gap-3">
                 <span class="text-2xl flex-shrink-0">⚠️</span>
                 <div class="flex-1">
-                    <p class="font-black text-yellow-800 dark:text-yellow-200 text-sm mb-2">
+                    <p class="font-black text-yellow-800 dark:text-yellow-200 text-base mb-2">
                         {{ $this->pedidosSemFinanciero->count() }} pedido(s) confirmado(s) sem cobrança registrada
                     </p>
                     <div class="flex flex-wrap gap-2">
                         @foreach($this->pedidosSemFinanciero as $ord)
                             <button wire:click="novaCobranca({{ $ord->id }})"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-200 dark:bg-yellow-800 hover:bg-yellow-300 dark:hover:bg-yellow-700 text-yellow-900 dark:text-yellow-100 rounded-xl text-xs font-bold transition">
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-yellow-200 dark:bg-yellow-800 hover:bg-yellow-300 dark:hover:bg-yellow-700 text-yellow-900 dark:text-yellow-100 rounded-xl text-sm font-bold transition">
                                 ➕ {{ $ord->numero }} — {{ $ord->user?->razao_social ?? $ord->user?->name }}
                                 (R$ {{ number_format($ord->valor_compra, 0, ',', '.') }})
                             </button>
@@ -208,12 +208,12 @@
                 </svg>
                 <input wire:model.live.debounce.300ms="buscaCliente" type="text"
                     placeholder="Buscar por cliente, CNPJ ou pedido..."
-                    class="w-full pl-9 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                    class="w-full pl-9 pr-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
             </div>
             <div class="flex gap-1.5 flex-wrap">
                 @foreach(['todos' => 'Todos', 'em_aberto' => '🟡 Em Aberto', 'pago' => '🟢 Pagos', 'vencido' => '🔴 Vencidos', 'cancelado' => '⚫ Cancelados'] as $val => $label)
                     <button wire:click="$set('filtroStatus', '{{ $val }}')"
-                        class="px-3 py-2 text-xs font-bold rounded-xl transition
+                        class="px-4 py-2.5 text-sm font-bold rounded-xl transition
                             {{ $filtroStatus === $val ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
                         {{ $label }}
                     </button>

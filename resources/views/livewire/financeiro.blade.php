@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 py-6">
+    <div class="page-container py-6">
 
         {{-- ─── KPI Cards ──────────────────────────────────────────────── --}}
         @php
@@ -46,13 +46,13 @@
                     $dados = $this->countPorStatus[$status] ?? ['total' => 0, 'soma' => 0];
                 @endphp
                 <button wire:click="$set('filtro', '{{ $filtro === $status ? 'todos' : $status }}')"
-                    class="bg-white rounded-2xl border {{ $cfg['color'] }} {{ $filtro === $status ? 'ring-2 ring-offset-2 ring-blue-500' : '' }} p-4 shadow-sm text-left hover:shadow-md transition">
+                    class="elite-card border {{ $cfg['color'] }} {{ $filtro === $status ? 'ring-2 ring-offset-2 ring-blue-500' : '' }} p-5 text-left hover:shadow-md transition">
                     <div class="flex items-start justify-between mb-2">
-                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">{{ $cfg['label'] }}</p>
-                        <span class="text-xl">{{ $cfg['emoji'] }}</span>
+                        <p class="kpi-label">{{ $cfg['label'] }}</p>
+                        <span class="text-2xl">{{ $cfg['emoji'] }}</span>
                     </div>
-                    <p class="text-2xl font-black text-gray-900">{{ $dados['total'] ?? 0 }}</p>
-                    <p class="text-xs text-gray-500 font-semibold mt-0.5">
+                    <p class="kpi-value">{{ $dados['total'] ?? 0 }}</p>
+                    <p class="text-sm text-gray-500 font-semibold mt-0.5">
                         R$ {{ number_format($dados['soma'] ?? 0, 0, ',', '.') }}
                     </p>
                 </button>
@@ -60,21 +60,21 @@
         </div>
 
         {{-- ─── Filtros + Busca ────────────────────────────────────────── --}}
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-5">
+        <div class="elite-card p-5 mb-5">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input wire:model.live.debounce.300ms="busca"
                         type="text"
                         placeholder="Buscar por número, marca ou modelo..."
-                        class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                        class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                 </div>
-                <div class="flex gap-1.5 flex-wrap">
+                <div class="flex gap-2 flex-wrap">
                     @foreach(['todos' => 'Todos', 'confirmado' => '✅ Confirmados', 'faturado' => '🧾 Faturados', 'aguardando_pgto' => '⏳ Pendentes', 'cancelado' => '❌ Cancelados'] as $val => $label)
                         <button wire:click="$set('filtro', '{{ $val }}')"
-                            class="px-3 py-2 text-xs font-bold rounded-xl transition
+                            class="px-4 py-2.5 text-sm font-bold rounded-xl transition
                                 {{ $filtro === $val ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                             {{ $label }}
                         </button>
@@ -85,18 +85,18 @@
 
         {{-- ─── Lista de Pedidos ────────────────────────────────────────── --}}
         @if($this->pedidos->isEmpty())
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm py-20 text-center">
-                <div class="text-5xl mb-3">💳</div>
-                <p class="text-gray-400 font-semibold">Nenhum registro financeiro encontrado.</p>
+            <div class="elite-card py-24 text-center">
+                <div class="text-6xl mb-4">💳</div>
+                <p class="text-lg text-gray-400 font-semibold">Nenhum registro financeiro encontrado.</p>
                 @if($busca || $filtro !== 'todos')
                     <button wire:click="$set('filtro','todos'); $set('busca','')"
-                        class="mt-4 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition">
+                        class="btn-cta-md mt-6">
                         Limpar filtros
                     </button>
                 @endif
             </div>
         @else
-            <div class="space-y-3">
+            <div class="space-y-4">
                 @foreach($this->pedidos as $pedido)
                     @php
                         $fin = $pedido->financial;
@@ -113,14 +113,14 @@
                         $open        = $pedidoOpen === $pedido->id;
                     @endphp
 
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition">
+                    <div class="elite-card overflow-hidden transition">
 
                         {{-- Linha principal --}}
                         <button wire:click="abrirDetalhe({{ $pedido->id }})"
-                            class="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition text-left">
+                            class="w-full flex items-center gap-4 px-6 py-5 hover:bg-gray-50 transition text-left">
 
                             {{-- Ícone do status --}}
-                            <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl
+                            <div class="w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl
                                 {{ $pedido->status === 'confirmado' ? 'bg-emerald-100' : ($pedido->status === 'aguardando_pgto' ? 'bg-orange-100' : 'bg-gray-100') }}">
                                 {{ $pedido->status === 'faturado' ? '🧾' : ($pedido->status === 'aguardando_pgto' ? '⏳' : ($pedido->status === 'cancelado' ? '❌' : '🚗')) }}
                             </div>
@@ -128,17 +128,17 @@
                             {{-- Dados do pedido --}}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap mb-0.5">
-                                    <span class="text-sm font-black text-gray-900 font-mono">{{ $pedido->numero }}</span>
-                                    <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $statusLabel }}</span>
+                                    <span class="text-base font-black text-gray-900 font-mono">{{ $pedido->numero }}</span>
+                                    <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                                     @if($fin?->boleto_url)
-                                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">🔗 Boleto</span>
+                                        <span class="badge bg-purple-100 text-purple-700">🔗 Boleto</span>
                                     @endif
                                 </div>
-                                <p class="text-sm text-gray-700 font-semibold truncate">
+                                <p class="text-base text-gray-700 font-semibold truncate">
                                     {{ $v ? "{$v->brand} {$v->model} {$v->model_year}" : 'Veículo não encontrado' }}
                                     @if($v?->plate) · <span class="font-mono text-gray-500">{{ $v->plate }}</span> @endif
                                 </p>
-                                <p class="text-xs text-gray-400 mt-0.5">
+                                <p class="text-sm text-gray-400 mt-0.5">
                                     {{ $pedido->created_at->format('d/m/Y') }}
                                     @if($pedido->paymentMethod) · {{ $pedido->paymentMethod->nome }} @endif
                                     @if($pedido->confirmado_em) · Confirmado em {{ $pedido->confirmado_em->format('d/m/Y') }} @endif
@@ -147,7 +147,7 @@
 
                             {{-- Valor --}}
                             <div class="text-right flex-shrink-0">
-                                <p class="text-xl font-black text-gray-900">R$ {{ number_format($pedido->valor_compra, 0, ',', '.') }}</p>
+                                <p class="text-2xl font-black text-gray-900">R$ {{ number_format($pedido->valor_compra, 0, ',', '.') }}</p>
                                 @if($pedido->valor_fipe)
                                     <p class="text-xs text-gray-400 mt-0.5">FIPE: R$ {{ number_format($pedido->valor_fipe, 0, ',', '.') }}</p>
                                     @php $desc = (($pedido->valor_fipe - $pedido->valor_compra) / $pedido->valor_fipe) * 100; @endphp
@@ -282,43 +282,30 @@
             $mediaAnual    = $quantAnual > 0 ? $totalAnual / $quantAnual : 0;
         @endphp
 
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Total em {{ now()->year }}</p>
-                <p class="text-3xl font-black text-gray-900">R$ {{ number_format($totalAnual, 0, ',', '.') }}</p>
-                <p class="text-xs text-gray-400 mt-1">{{ $quantAnual }} pedido(s) no ano</p>
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="kpi-card text-center">
+                <p class="kpi-label mb-2">Total em {{ now()->year }}</p>
+                <p class="kpi-value">R$ {{ number_format($totalAnual, 0, ',', '.') }}</p>
+                <p class="text-sm text-gray-400 mt-1">{{ $quantAnual }} pedido(s) no ano</p>
             </div>
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Ticket Médio</p>
-                <p class="text-3xl font-black text-gray-900">R$ {{ number_format($mediaAnual, 0, ',', '.') }}</p>
-                <p class="text-xs text-gray-400 mt-1">por pedido</p>
+            <div class="kpi-card text-center">
+                <p class="kpi-label mb-2">Ticket Médio</p>
+                <p class="kpi-value">R$ {{ number_format($mediaAnual, 0, ',', '.') }}</p>
+                <p class="text-sm text-gray-400 mt-1">por pedido</p>
             </div>
-            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-5 text-center text-white">
-                <p class="text-xs text-orange-200 uppercase tracking-widest font-bold mb-1">Desconto vs FIPE</p>
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg p-6 text-center text-white">
+                <p class="text-sm text-orange-200 uppercase tracking-widest font-bold mb-2">Desconto vs FIPE</p>
                 @php
                     $totalFipe  = \App\Models\Order::where('user_id', auth()->id())->whereNotNull('valor_fipe')->sum('valor_fipe');
                     $totalCompra= \App\Models\Order::where('user_id', auth()->id())->whereNotNull('valor_fipe')->sum('valor_compra');
                     $economia   = $totalFipe - $totalCompra;
                 @endphp
-                <p class="text-3xl font-black">R$ {{ number_format($economia, 0, ',', '.') }}</p>
-                <p class="text-xs text-orange-200 mt-1">economizados vs tabela FIPE</p>
+                <p class="text-3xl sm:text-4xl font-black">R$ {{ number_format($economia, 0, ',', '.') }}</p>
+                <p class="text-sm text-orange-200 mt-1">economizados vs tabela FIPE</p>
             </div>
         </div>
 
     </div>
 
-    {{-- Bottom Nav Mobile --}}
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
-        <div class="flex">
-            @foreach([['dashboard','🏠','Vitrine'],['meus-pedidos','📋','Pedidos'],['financeiro','💳','Financeiro'],['suporte','💬','Suporte'],['favoritos','❤️','Favoritos']] as [$rt,$ico,$lbl])
-                <a href="{{ route($rt) }}" wire:navigate
-                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
-                        {{ request()->routeIs($rt) ? 'text-[#1a3a5c]' : 'text-gray-400 hover:text-gray-600' }}">
-                    <span class="text-lg leading-none">{{ $ico }}</span>
-                    <span class="text-[9px] font-bold mt-0.5">{{ $lbl }}</span>
-                </a>
-            @endforeach
-        </div>
-    </nav>
-    <div class="lg:hidden h-16"></div>
+    {{-- Bottom nav agora no layout compartilhado --}}
 </div>

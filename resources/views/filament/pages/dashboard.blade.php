@@ -13,19 +13,19 @@
 
         <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div class="text-white">
-                <h1 class="text-3xl font-black tracking-tight">{{ $this->saudacao }}</h1>
-                <p class="text-blue-200 text-sm mt-1">
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tight">{{ $this->saudacao }}</h1>
+                <p class="text-blue-200 text-base mt-1">
                     📅 {{ now()->translatedFormat('l, d \\d\\e F \\d\\e Y') }}
                     · {{ $kpis['totalVeiculos'] }} veículos no sistema
                 </p>
             </div>
             <div class="flex gap-3 flex-wrap">
                 <a href="/admin/vehicles/create"
-                    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-4 py-2.5 rounded-xl shadow-lg transition text-sm">
+                    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-black px-5 py-3 rounded-xl shadow-lg transition text-base">
                     🚗 Novo Veículo
                 </a>
                 <a href="/admin/gestao-financeira"
-                    class="flex items-center gap-2 bg-white bg-opacity-15 border border-white border-opacity-20 text-white font-bold px-4 py-2.5 rounded-xl hover:bg-opacity-25 transition text-sm">
+                    class="flex items-center gap-2 bg-white bg-opacity-15 border border-white border-opacity-20 text-white font-bold px-5 py-3 rounded-xl hover:bg-opacity-25 transition text-base">
                     💰 Financeiro
                 </a>
             </div>
@@ -41,7 +41,7 @@
                         {{ $a['tipo'] === 'danger'
                             ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
                             : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' }}">
-                    <p class="text-sm font-bold {{ $a['tipo'] === 'danger' ? 'text-red-700 dark:text-red-300' : 'text-yellow-700 dark:text-yellow-300' }}">
+                    <p class="text-base font-bold {{ $a['tipo'] === 'danger' ? 'text-red-700 dark:text-red-300' : 'text-yellow-700 dark:text-yellow-300' }}">
                         {{ $a['msg'] }}
                     </p>
                     <svg class="w-4 h-4 ml-auto text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@
                 </span>
             </div>
             <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['disponiveis'] }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Veículos disponíveis</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Veículos disponíveis</p>
         </div>
 
         {{-- Valor em estoque --}}
@@ -71,8 +71,8 @@
             <div class="flex items-start justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl">💎</div>
             </div>
-            <p class="text-2xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['valorEstoque'], 0, ',', '.') }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Valor em estoque</p>
+            <p class="text-3xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['valorEstoque'], 0, ',', '.') }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Valor em estoque</p>
         </div>
 
         {{-- Pedidos do mês --}}
@@ -89,7 +89,7 @@
                 @endif
             </div>
             <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['pedidosMes'] }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pedidos este mês</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pedidos este mês</p>
         </div>
 
         {{-- Faturado no mês --}}
@@ -97,18 +97,18 @@
             <div class="flex items-start justify-between mb-3">
                 <div class="w-10 h-10 rounded-xl bg-white bg-opacity-20 flex items-center justify-center text-xl">📈</div>
             </div>
-            <p class="text-2xl font-black">R$ {{ number_format($kpis['faturadoMes'], 0, ',', '.') }}</p>
-            <p class="text-xs text-blue-200 mt-1">Faturado em {{ now()->translatedFormat('F') }}</p>
+            <p class="text-3xl font-black">R$ {{ number_format($kpis['faturadoMes'], 0, ',', '.') }}</p>
+            <p class="text-sm text-blue-200 mt-1">Faturado em {{ now()->translatedFormat('F') }}</p>
         </div>
     </div>
 
     {{-- ─── KPI Cards (linha 2 — Clientes + Suporte + Financeiro) ──── --}}
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {{-- Clientes --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">👥 Clientes</p>
-            <p class="text-2xl font-black text-gray-900 dark:text-white">{{ $kpis['totalClientes'] }}</p>
-            <div class="flex gap-3 mt-2 text-xs">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">👥 Clientes</p>
+            <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $kpis['totalClientes'] }}</p>
+            <div class="flex gap-3 mt-2 text-sm">
                 <span class="text-emerald-600 font-bold">+{{ $kpis['novosClientesMes'] }} este mês</span>
                 @if($kpis['clientesPendentes'] > 0)
                     <span class="text-orange-500 font-bold">{{ $kpis['clientesPendentes'] }} pendente(s)</span>
@@ -117,36 +117,36 @@
         </div>
 
         {{-- Pedidos pendentes --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['pedidosPendentes'] > 0 ? 'border-orange-300 dark:border-orange-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-4">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">⏳ Pendentes</p>
-            <p class="text-2xl font-black {{ $kpis['pedidosPendentes'] > 0 ? 'text-orange-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['pedidosPendentes'] }}</p>
-            <p class="text-xs text-gray-400 mt-2">Pedidos aguardando ação</p>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['pedidosPendentes'] > 0 ? 'border-orange-300 dark:border-orange-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">⏳ Pendentes</p>
+            <p class="text-3xl font-black {{ $kpis['pedidosPendentes'] > 0 ? 'text-orange-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['pedidosPendentes'] }}</p>
+            <p class="text-sm text-gray-400 mt-2">Pedidos aguardando ação</p>
         </div>
 
         {{-- Tickets --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['ticketsUrgentes'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-4">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">🎫 Tickets</p>
-            <p class="text-2xl font-black {{ $kpis['ticketsUrgentes'] > 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['ticketsAbertos'] }}</p>
-            <div class="flex gap-3 mt-2 text-xs">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['ticketsUrgentes'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">🎫 Tickets</p>
+            <p class="text-3xl font-black {{ $kpis['ticketsUrgentes'] > 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">{{ $kpis['ticketsAbertos'] }}</p>
+            <div class="flex gap-3 mt-2 text-sm">
                 @if($kpis['ticketsUrgentes'] > 0) <span class="text-red-500 font-bold">🔴 {{ $kpis['ticketsUrgentes'] }} urgente(s)</span> @endif
                 @if($kpis['ticketsWa'] > 0) <span class="text-green-500 font-bold">💬 {{ $kpis['ticketsWa'] }} WhatsApp</span> @endif
             </div>
         </div>
 
         {{-- A Receber --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['vencidos'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-4">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">💰 A Receber</p>
-            <p class="text-xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['aReceber'], 0, ',', '.') }}</p>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border {{ $kpis['vencidos'] > 0 ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-700' }} shadow-sm p-5">
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">💰 A Receber</p>
+            <p class="text-2xl font-black text-gray-900 dark:text-white">R$ {{ number_format($kpis['aReceber'], 0, ',', '.') }}</p>
             @if($kpis['vencidos'] > 0)
-                <p class="text-xs text-red-500 font-bold mt-2">⚠️ {{ $kpis['vencidos'] }} vencido(s)</p>
+                <p class="text-sm text-red-500 font-bold mt-2">⚠️ {{ $kpis['vencidos'] }} vencido(s)</p>
             @endif
         </div>
 
         {{-- Recebido no mês --}}
-        <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 shadow-sm p-4">
-            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wide mb-2">✅ Recebido</p>
-            <p class="text-xl font-black text-emerald-700 dark:text-emerald-300">R$ {{ number_format($kpis['pagosMes'], 0, ',', '.') }}</p>
-            <p class="text-xs text-emerald-500 mt-2">Este mês</p>
+        <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 shadow-sm p-5">
+            <p class="text-sm text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wide mb-2">✅ Recebido</p>
+            <p class="text-2xl font-black text-emerald-700 dark:text-emerald-300">R$ {{ number_format($kpis['pagosMes'], 0, ',', '.') }}</p>
+            <p class="text-sm text-emerald-500 mt-2">Este mês</p>
         </div>
     </div>
 
@@ -154,19 +154,19 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         {{-- Gráfico de faturamento (2/3) --}}
         <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
-            <h3 class="font-black text-gray-900 dark:text-white mb-4">📊 Faturamento — Últimos 6 Meses</h3>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">📊 Faturamento — Últimos 6 Meses</h3>
             <canvas id="revenueChart" class="w-full" style="height: 260px;"></canvas>
         </div>
 
         {{-- Timeline de atividades (1/3) --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 overflow-hidden">
-            <h3 class="font-black text-gray-900 dark:text-white mb-4">⏱️ Atividades Recentes</h3>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">⏱️ Atividades Recentes</h3>
             <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
                 @foreach($this->atividadesRecentes as $a)
                     <div class="flex gap-3 items-start">
                         <span class="text-lg flex-shrink-0 mt-0.5">{{ $a['icon'] }}</span>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm text-gray-800 dark:text-gray-200 font-semibold truncate">{{ $a['msg'] }}</p>
+                            <p class="text-base text-gray-800 dark:text-gray-200 font-semibold truncate">{{ $a['msg'] }}</p>
                             <div class="flex items-center gap-2 mt-0.5">
                                 @php
                                     $statusBg = match($a['status'] ?? '') {
@@ -176,8 +176,8 @@
                                         default                  => 'bg-blue-100 text-blue-700',
                                     };
                                 @endphp
-                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {{ $statusBg }}">{{ $a['status'] }}</span>
-                                <span class="text-[10px] text-gray-400">{{ $a['data']->diffForHumans() }}</span>
+                                <span class="text-xs font-bold px-1.5 py-0.5 rounded-full {{ $statusBg }}">{{ $a['status'] }}</span>
+                                <span class="text-xs text-gray-400">{{ $a['data']->diffForHumans() }}</span>
                             </div>
                         </div>
                     </div>
@@ -188,7 +188,7 @@
 
     {{-- ─── Atalhos Rápidos ───────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
-        <h3 class="font-black text-gray-900 dark:text-white mb-4">⚡ Ações Rápidas</h3>
+        <h3 class="text-lg font-black text-gray-900 dark:text-white mb-4">⚡ Ações Rápidas</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             @php
                 $atalhos = [
@@ -209,8 +209,8 @@
             @foreach($atalhos as $at)
                 <a href="{{ $at['url'] }}"
                     class="flex flex-col items-center gap-2 p-4 rounded-xl border transition text-center {{ $at['color'] }}">
-                    <span class="text-2xl">{{ $at['icon'] }}</span>
-                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">{{ $at['label'] }}</span>
+                    <span class="text-3xl">{{ $at['icon'] }}</span>
+                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ $at['label'] }}</span>
                 </a>
             @endforeach
         </div>
@@ -261,12 +261,12 @@
                             grid: { color: 'rgba(0,0,0,0.04)' },
                             ticks: {
                                 callback: function(v) { return 'R$ ' + (v/1000).toFixed(0) + 'k'; },
-                                font: { weight: 'bold', size: 11 }
+                                font: { weight: 'bold', size: 13 }
                             }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { font: { weight: 'bold', size: 11 } }
+                            ticks: { font: { weight: 'bold', size: 13 } }
                         }
                     }
                 }

@@ -27,18 +27,18 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 py-6">
+    <div class="page-container py-6">
 
-        {{-- ─── KPI Cards ─────────────────────────────────────────────── --}}
+        {{-- ─── KPI Cards ───────────────────────────────────────────── --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
             {{-- Gasto no Mês --}}
-            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <div class="kpi-card">
                 <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Gasto no Mês</p>
-                    <span class="text-xl">💳</span>
+                    <p class="kpi-label">Gasto no Mês</p>
+                    <span class="text-2xl">💳</span>
                 </div>
-                <p class="text-2xl font-black text-gray-900">R$ {{ number_format($gastoMes, 0, ',', '.') }}</p>
+                <p class="kpi-value">R$ {{ number_format($gastoMes, 0, ',', '.') }}</p>
                 @if($variacaoGasto !== null)
                     <p class="text-xs mt-1 font-semibold {{ $variacaoGasto >= 0 ? 'text-green-600' : 'text-red-500' }}">
                         {{ $variacaoGasto >= 0 ? '▲' : '▼' }} {{ abs($variacaoGasto) }}% vs mês anterior
@@ -49,36 +49,36 @@
             </div>
 
             {{-- Chamados --}}
-            <a href="{{ route('suporte') }}" class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition block">
+            <a href="{{ route('suporte') }}" class="kpi-card hover:shadow-md transition block">
                 <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Chamados Abertos</p>
-                    <span class="text-xl">💬</span>
+                    <p class="kpi-label">Chamados Abertos</p>
+                    <span class="text-2xl">💬</span>
                 </div>
-                <p class="text-2xl font-black text-gray-900">{{ $ticketsAbertos }}</p>
+                <p class="kpi-value">{{ $ticketsAbertos }}</p>
                 <p class="text-xs mt-1 font-semibold {{ $ticketsAbertos > 0 ? 'text-red-500' : 'text-green-600' }}">
                     {{ $ticketsAbertos > 0 ? 'Clique para ver' : 'Tudo ok ✅' }}
                 </p>
             </a>
 
             {{-- Documentos --}}
-            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <div class="kpi-card">
                 <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Documentos</p>
-                    <span class="text-xl">📄</span>
+                    <p class="kpi-label">Documentos</p>
+                    <span class="text-2xl">📄</span>
                 </div>
-                <p class="text-2xl font-black text-gray-900">{{ $documentosPendentes }}</p>
+                <p class="kpi-value">{{ $documentosPendentes }}</p>
                 <p class="text-xs mt-1 font-semibold {{ $documentosPendentes > 0 ? 'text-yellow-600' : 'text-green-600' }}">
                     {{ $documentosPendentes > 0 ? 'Pendentes de análise' : 'Todos verificados ✅' }}
                 </p>
             </div>
 
             {{-- Contratos --}}
-            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <div class="kpi-card">
                 <div class="flex items-start justify-between mb-2">
-                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Contratos</p>
-                    <span class="text-xl">✍️</span>
+                    <p class="kpi-label">Contratos</p>
+                    <span class="text-2xl">✍️</span>
                 </div>
-                <p class="text-2xl font-black text-gray-900">{{ $contratosPendentes }}</p>
+                <p class="kpi-value">{{ $contratosPendentes }}</p>
                 <p class="text-xs mt-1 font-semibold {{ $contratosPendentes > 0 ? 'text-orange-500' : 'text-green-600' }}">
                     {{ $contratosPendentes > 0 ? 'Aguardando assinatura' : 'Nenhum pendente ✅' }}
                 </p>
@@ -93,24 +93,24 @@
             <div class="lg:col-span-2 space-y-5">
 
                 {{-- Gráfico + Filtros --}}
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                        <h2 class="font-black text-gray-800">📈 Histórico de Compras (6 meses)</h2>
-                        <div class="flex gap-1.5 flex-wrap">
+                <div class="elite-card p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                        <h2 class="section-title">📈 Histórico de Compras (6 meses)</h2>
+                        <div class="flex gap-2 flex-wrap">
                             <button wire:click="$set('abaPedidos', 'todos')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg {{ $abaPedidos === 'todos' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'todos' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Todos
                             </button>
                             <button wire:click="$set('abaPedidos', 'pendente')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg {{ $abaPedidos === 'pendente' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'pendente' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Pendente
                             </button>
                             <button wire:click="$set('abaPedidos', 'confirmado')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg {{ $abaPedidos === 'confirmado' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'confirmado' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Confirmado
                             </button>
                             <button wire:click="$set('abaPedidos', 'cancelado')"
-                                class="px-3 py-1.5 text-xs font-bold rounded-lg {{ $abaPedidos === 'cancelado' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'cancelado' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Cancelado
                             </button>
                         </div>
@@ -121,10 +121,10 @@
                 </div>
 
                 {{-- Lista de Pedidos --}}
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                        <h2 class="font-black text-gray-800">🛍️ Meus Pedidos</h2>
-                        <span class="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full font-semibold">
+                <div class="elite-card overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+                        <h2 class="section-title">🛒️ Meus Pedidos</h2>
+                        <span class="badge bg-gray-100 text-gray-600">
                             {{ $pedidos->count() }} resultado{{ $pedidos->count() != 1 ? 's' : '' }}
                         </span>
                     </div>
@@ -137,10 +137,10 @@
                     @endif
 
                     @if($pedidos->isEmpty())
-                        <div class="py-16 text-center">
-                            <div class="text-5xl mb-3">🛒</div>
-                            <p class="text-gray-400 font-semibold">Nenhum pedido encontrado.</p>
-                            <a href="{{ route('dashboard') }}" class="inline-block mt-4 px-5 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition">
+                        <div class="py-20 text-center">
+                            <div class="text-6xl mb-4">🛒</div>
+                            <p class="text-lg text-gray-400 font-semibold">Nenhum pedido encontrado.</p>
+                            <a href="{{ route('dashboard') }}" class="btn-cta-md inline-block mt-6">
                                 Ver Vitrine
                             </a>
                         </div>
@@ -165,10 +165,10 @@
 
                                 {{-- Linha principal --}}
                                 <button wire:click="abrirDetalhe({{ $pedido->id }})"
-                                    class="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition text-left {{ $isOpen ? 'bg-orange-50/50' : '' }}">
+                                    class="w-full flex items-center gap-4 px-6 py-5 hover:bg-gray-50 transition text-left {{ $isOpen ? 'bg-orange-50/50' : '' }}">
 
                                     {{-- Thumb do veículo --}}
-                                    <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                                    <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
                                         @if($thumb)
                                             <img src="{{ $thumb }}" alt="" class="w-full h-full object-cover"/>
                                         @else
@@ -178,16 +178,16 @@
 
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 flex-wrap">
-                                            <span class="text-sm font-black text-gray-900 font-mono">{{ $pedido->numero }}</span>
-                                            <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $statusLabel }}</span>
+                                            <span class="text-base font-black text-gray-900 font-mono">{{ $pedido->numero }}</span>
+                                            <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                                         </div>
-                                        <p class="text-sm text-gray-700 font-semibold truncate mt-0.5">
+                                        <p class="text-base text-gray-700 font-semibold truncate mt-0.5">
                                             {{ $v ? "{$v->brand} {$v->model} {$v->model_year}" : 'Veículo não encontrado' }}
                                         </p>
-                                        <p class="text-xs text-gray-400 mt-0.5">{{ $pedido->created_at->format('d/m/Y') }} · {{ $pedido->created_at->diffForHumans() }}</p>
+                                        <p class="text-sm text-gray-400 mt-0.5">{{ $pedido->created_at->format('d/m/Y') }} · {{ $pedido->created_at->diffForHumans() }}</p>
                                     </div>
                                     <div class="text-right flex-shrink-0">
-                                        <p class="text-lg font-black text-gray-900">R$ {{ number_format($pedido->valor_compra, 0, ',', '.') }}</p>
+                                        <p class="text-xl font-black text-gray-900">R$ {{ number_format($pedido->valor_compra, 0, ',', '.') }}</p>
                                         @if($pedido->paymentMethod)
                                             <p class="text-xs text-gray-400">{{ $pedido->paymentMethod->nome }}</p>
                                         @endif
@@ -335,9 +335,9 @@
             <div class="space-y-5">
 
                 {{-- Resumo Financeiro --}}
-                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-5 text-white shadow-lg">
-                    <p class="text-xs font-bold uppercase tracking-widest opacity-80 mb-4">Resumo Financeiro</p>
-                    <div class="space-y-3 text-sm">
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+                    <p class="text-sm font-bold uppercase tracking-widest opacity-80 mb-5">Resumo Financeiro</p>
+                    <div class="space-y-4 text-base">
                         <div class="flex justify-between">
                             <span class="opacity-90">Total investido</span>
                             <span class="font-black">R$ {{ number_format($totalGasto, 0, ',', '.') }}</span>
@@ -362,8 +362,8 @@
                 </div>
 
                 {{-- Acesso Rápido --}}
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                    <h3 class="font-black text-gray-800 mb-4 text-sm">⚡ Acesso Rápido</h3>
+                <div class="elite-card p-6">
+                    <h3 class="font-black text-gray-800 mb-4 text-base">⚡ Acesso Rápido</h3>
                     <div class="space-y-1">
                         @foreach([
                             ['route' => 'dashboard',    'icon' => '🔍', 'label' => 'Ver Vitrine',    'sub' => 'Novos veículos',     'bg' => 'bg-orange-100'],
@@ -373,11 +373,11 @@
                             ['route' => 'notificacoes', 'icon' => '🔔', 'label' => 'Notificações',   'sub' => 'Ver todas',          'bg' => 'bg-purple-100'],
                         ] as $link)
                             <a href="{{ route($link['route']) }}" wire:navigate
-                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition group">
-                                <div class="w-8 h-8 rounded-lg {{ $link['bg'] }} flex items-center justify-center text-sm flex-shrink-0">{{ $link['icon'] }}</div>
+                                class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition group">
+                                <div class="w-10 h-10 rounded-lg {{ $link['bg'] }} flex items-center justify-center text-lg flex-shrink-0">{{ $link['icon'] }}</div>
                                 <div class="flex-1">
-                                    <p class="text-sm font-bold text-gray-800 group-hover:text-orange-600 transition leading-tight">{{ $link['label'] }}</p>
-                                    <p class="text-xs text-gray-400">{{ $link['sub'] }}</p>
+                                    <p class="text-base font-bold text-gray-800 group-hover:text-orange-600 transition leading-tight">{{ $link['label'] }}</p>
+                                    <p class="text-sm text-gray-400">{{ $link['sub'] }}</p>
                                 </div>
                                 <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
@@ -386,24 +386,24 @@
                 </div>
 
                 {{-- Status Geral --}}
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                    <h3 class="font-black text-gray-800 mb-4 text-sm">📋 Status Geral</h3>
-                    <div class="space-y-3">
+                <div class="elite-card p-6">
+                    <h3 class="font-black text-gray-800 mb-4 text-base">📋 Status Geral</h3>
+                    <div class="space-y-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Tickets abertos</span>
-                            <span class="font-black text-sm {{ $ticketsAbertos > 0 ? 'text-red-500' : 'text-green-500' }}">
+                            <span class="text-base text-gray-600">Tickets abertos</span>
+                            <span class="font-black text-base {{ $ticketsAbertos > 0 ? 'text-red-500' : 'text-green-500' }}">
                                 {{ $ticketsAbertos > 0 ? $ticketsAbertos : '✅' }}
                             </span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Docs pendentes</span>
-                            <span class="font-black text-sm {{ $documentosPendentes > 0 ? 'text-yellow-500' : 'text-green-500' }}">
+                            <span class="text-base text-gray-600">Docs pendentes</span>
+                            <span class="font-black text-base {{ $documentosPendentes > 0 ? 'text-yellow-500' : 'text-green-500' }}">
                                 {{ $documentosPendentes > 0 ? $documentosPendentes : '✅' }}
                             </span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Contratos p/ assinar</span>
-                            <span class="font-black text-sm {{ $contratosPendentes > 0 ? 'text-orange-500' : 'text-green-500' }}">
+                            <span class="text-base text-gray-600">Contratos p/ assinar</span>
+                            <span class="font-black text-base {{ $contratosPendentes > 0 ? 'text-orange-500' : 'text-green-500' }}">
                                 {{ $contratosPendentes > 0 ? $contratosPendentes : '✅' }}
                             </span>
                         </div>
@@ -415,20 +415,7 @@
         </div>{{-- /grid --}}
     </div>{{-- /container --}}
 
-    {{-- Bottom Nav Mobile --}}
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
-        <div class="flex">
-            @foreach([['dashboard','🏠','Vitrine'],['meus-pedidos','📋','Pedidos'],['financeiro','💳','Financeiro'],['suporte','💬','Suporte'],['favoritos','❤️','Favoritos']] as [$rt,$ico,$lbl])
-                <a href="{{ route($rt) }}" wire:navigate
-                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
-                        {{ request()->routeIs($rt) ? 'text-[#1a3a5c]' : 'text-gray-400 hover:text-gray-600' }}">
-                    <span class="text-lg leading-none">{{ $ico }}</span>
-                    <span class="text-[9px] font-bold mt-0.5">{{ $lbl }}</span>
-                </a>
-            @endforeach
-        </div>
-    </nav>
-    <div class="lg:hidden h-16"></div>
+    {{-- Bottom nav agora no layout compartilhado --}}
 
     {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>

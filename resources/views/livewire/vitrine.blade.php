@@ -1,12 +1,12 @@
 <div class="min-h-screen bg-[#f1f5f9]">
 
     {{-- ─── Hero Search Bar ──────────────────────────────────────────── --}}
-    <div class="bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] py-6 px-6">
+    <div class="page-hero py-8 sm:py-10 px-5 sm:px-6">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex flex-col md:flex-row md:items-center gap-5">
                 <div class="flex-1">
-                    <h1 class="text-white font-black text-2xl tracking-tight mb-1">Vitrine de Veículos</h1>
-                    <p class="text-blue-200 text-sm">{{ $totalSemFiltro }} veículo(s) disponíveis</p>
+                    <h1 class="text-white font-black text-3xl sm:text-4xl tracking-tight mb-1">Vitrine de Veículos</h1>
+                    <p class="text-blue-200 text-base font-medium">{{ $totalSemFiltro }} veículo(s) disponíveis</p>
                 </div>
                 {{-- Search --}}
                 <div class="relative flex-1 max-w-xl">
@@ -16,10 +16,10 @@
                     <input wire:model.live.debounce.400ms="searchTerm"
                         type="text"
                         placeholder="Marca, modelo, versão ou placa..."
-                        class="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm focus:ring-2 focus:ring-orange-400 focus:border-transparent border-0 shadow-lg"/>
+                        class="w-full pl-12 pr-4 py-4 rounded-2xl text-base focus:ring-2 focus:ring-orange-400 focus:border-transparent border-0 shadow-lg font-medium"/>
                     @if($searchTerm)
-                        <button wire:click="$set('searchTerm', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button wire:click="$set('searchTerm', '')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -28,7 +28,7 @@
             </div>
 
             {{-- Quick switches --}}
-            <div class="flex gap-3 mt-4 flex-wrap">
+            <div class="flex gap-3 mt-5 flex-wrap">
                 @php
                     $tags = [
                         'vehiclesOnSale'  => ['🏷️ Em Promoção',   'orange'],
@@ -39,7 +39,7 @@
                 @endphp
                 @foreach($tags as $prop => [$label, $color])
                     <button wire:click="$toggle('{{ $prop }}')"
-                        class="px-3 py-1.5 rounded-full text-xs font-bold border transition
+                        class="px-4 py-2 rounded-full text-sm font-bold border transition
                             {{ $this->$prop
                                 ? "bg-{$color}-500 border-{$color}-500 text-white"
                                 : 'bg-white bg-opacity-15 border-white border-opacity-30 text-white hover:bg-opacity-25' }}">
@@ -50,14 +50,14 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5">
+    <div class="page-container py-6">
         <div class="flex gap-6">
 
             {{-- ─── Sidebar de Filtros ───────────────────────────────── --}}
-            <aside class="hidden lg:block w-64 flex-shrink-0">
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sticky top-24 space-y-6">
+            <aside class="hidden lg:block w-72 flex-shrink-0">
+                <div class="elite-card p-6 sticky top-24 space-y-6">
                     <div class="flex items-center justify-between">
-                        <h3 class="font-black text-gray-900">Filtros</h3>
+                        <h3 class="text-lg font-black text-gray-900">Filtros</h3>
                         @if($this->activeFiltersCount > 0)
                             <button wire:click="clearFilters"
                                 class="text-xs text-red-500 font-bold hover:underline">
@@ -68,9 +68,9 @@
 
                     {{-- Ordenar --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Ordenar por</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ordenar por</label>
                         <select wire:model.live="ordenar"
-                            class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full text-base rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="recentes">Mais Recentes</option>
                             <option value="preco_asc">Menor Preço</option>
                             <option value="preco_desc">Maior Preço</option>
@@ -81,20 +81,20 @@
 
                     {{-- Faixa de Preço --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Preço (R$)</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Preço (R$)</label>
                         <div class="flex gap-2">
                             <input wire:model.blur="priceMin" type="number" placeholder="Mínimo"
-                                class="w-full text-xs rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                                class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                             <input wire:model.blur="priceMax" type="number" placeholder="Máximo"
-                                class="w-full text-xs rounded-xl border border-gray-200 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                                class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                         </div>
                     </div>
 
                     {{-- Ano --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Ano mínimo</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ano mínimo</label>
                         <input wire:model.blur="yearMin" type="number" placeholder="Ex: 2020" min="2000" max="{{ date('Y') }}"
-                            class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                            class="w-full text-base rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                     </div>
 
                     {{-- Marcas --}}
@@ -171,20 +171,20 @@
             <div class="flex-1 min-w-0">
 
                 {{-- Toolbar --}}
-                <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
                     <div class="flex items-center gap-3">
                         {{-- Filtros mobile --}}
                         <button wire:click="$toggle('showFilters')"
-                            class="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="lg:hidden flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-xl text-base font-bold shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                             </svg>
                             Filtros
                             @if($this->activeFiltersCount > 0)
-                                <span class="bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{{ $this->activeFiltersCount }}</span>
+                                <span class="bg-blue-600 text-white text-xs font-black px-2 py-0.5 rounded-full">{{ $this->activeFiltersCount }}</span>
                             @endif
                         </button>
-                        <p class="text-sm text-gray-500">
+                        <p class="text-base text-gray-500">
                             <span class="font-black text-gray-900">{{ $vehicles->total() }}</span> resultado(s)
                             @if($vehicles->total() != $totalSemFiltro)
                                 de {{ $totalSemFiltro }}
@@ -255,19 +255,19 @@
 
                 {{-- Empty State --}}
                 @if($vehicles->isEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm py-20 text-center">
-                        <div class="text-5xl mb-4">🔍</div>
-                        <h3 class="text-lg font-bold text-gray-700 mb-1">Nenhum veículo encontrado</h3>
-                        <p class="text-gray-400 text-sm mb-6">Tente ajustar os filtros ou buscar por outros termos.</p>
+                    <div class="elite-card py-24 text-center">
+                        <div class="text-6xl mb-5">🔍</div>
+                        <h3 class="text-xl font-black text-gray-700 mb-2">Nenhum veículo encontrado</h3>
+                        <p class="text-gray-400 text-base mb-8">Tente ajustar os filtros ou buscar por outros termos.</p>
                         <button wire:click="clearFilters"
-                            class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">
+                            class="btn-cta-md">
                             Limpar Filtros
                         </button>
                     </div>
 
                 {{-- Grid View --}}
                 @elseif($viewMode === 'grid')
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach($vehicles as $vehicle)
                             @php
                                 $isFav   = in_array($vehicle->id, $userFavorites);
@@ -275,9 +275,9 @@
                                 $thumb   = $media[0] ?? null;
                                 $discPct = $vehicle->fipe_price > 0 ? (($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100 : 0;
                             @endphp
-                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition group">
+                            <div class="elite-card overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition group">
                                 {{-- Imagem --}}
-                                <div class="relative h-44 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                                <div class="relative h-48 sm:h-52 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                                     @if($thumb)
                                         <img src="{{ $thumb }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
                                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
@@ -286,22 +286,22 @@
                                     @endif
 
                                     {{-- Badges --}}
-                                    <div class="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+                                    <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
                                         @if($vehicle->is_on_sale)
-                                            <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🏷️ OFERTA</span>
+                                            <span class="badge bg-orange-500 text-white">🏷️ OFERTA</span>
                                         @endif
                                         @if($vehicle->is_just_arrived)
-                                            <span class="bg-purple-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🆕 NOVO</span>
+                                            <span class="badge bg-purple-600 text-white">🆕 NOVO</span>
                                         @endif
                                         @if($vehicle->has_factory_warranty)
-                                            <span class="bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">🛡️ GARANTIA</span>
+                                            <span class="badge bg-green-500 text-white">🛡️ GARANTIA</span>
                                         @endif
                                     </div>
 
                                     {{-- Favorito --}}
                                     <button wire:click="toggleFavorite({{ $vehicle->id }})"
-                                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center transition hover:scale-110">
-                                        <svg class="w-4 h-4 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                        class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-sm flex items-center justify-center transition hover:scale-110">
+                                        <svg class="w-5 h-5 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                         </svg>
                                     </button>
@@ -315,17 +315,17 @@
                                 </div>
 
                                 {{-- Info --}}
-                                <div class="p-4">
+                                <div class="p-5">
                                     <div class="flex items-start justify-between mb-1">
                                         <div>
-                                            <h3 class="font-black text-gray-900 leading-tight">{{ $vehicle->brand }} {{ $vehicle->model }}</h3>
-                                            <p class="text-xs text-gray-500 truncate max-w-[200px]">{{ $vehicle->version }}</p>
+                                            <h3 class="text-lg font-black text-gray-900 leading-tight">{{ $vehicle->brand }} {{ $vehicle->model }}</h3>
+                                            <p class="text-sm text-gray-500 truncate max-w-[220px]">{{ $vehicle->version }}</p>
                                         </div>
-                                        <span class="text-xs bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-lg flex-shrink-0">{{ $vehicle->model_year }}</span>
+                                        <span class="badge bg-gray-100 text-gray-600 flex-shrink-0">{{ $vehicle->model_year }}</span>
                                     </div>
 
                                     {{-- Specs mini --}}
-                                    <div class="flex gap-3 text-xs text-gray-500 font-semibold my-2.5">
+                                    <div class="flex gap-3 text-sm text-gray-500 font-semibold my-3">
                                         <span>{{ number_format($vehicle->mileage, 0, ',', '.') }} km</span>
                                         <span>·</span>
                                         <span>{{ ucfirst($vehicle->fuel_type) }}</span>
@@ -334,23 +334,23 @@
                                     </div>
 
                                     {{-- Preço --}}
-                                    <div class="flex items-end justify-between mt-3">
+                                    <div class="flex items-end justify-between mt-4">
                                         <div>
                                             @if($vehicle->fipe_price && $discPct > 0)
-                                                <p class="text-xs text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
+                                                <p class="text-sm text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
                                             @endif
-                                            <p class="text-xl font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
+                                            <p class="text-2xl font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
                                         </div>
                                         <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate
-                                            class="px-4 py-2 bg-[#1a3a5c] hover:bg-[#1e4f8a] text-white rounded-xl text-xs font-black transition">
+                                            class="btn-cta-sm">
                                             Ver Mais
                                         </a>
                                     </div>
 
                                     {{-- Laudo --}}
                                     @if($vehicle->has_report)
-                                        <div class="mt-2.5 pt-2.5 border-t border-gray-100 flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm text-emerald-600 font-semibold">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                             Laudo disponível
@@ -363,7 +363,7 @@
 
                 {{-- List View --}}
                 @else
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         @foreach($vehicles as $vehicle)
                             @php
                                 $isFav  = in_array($vehicle->id, $userFavorites);
@@ -371,48 +371,48 @@
                                 $thumb  = $media[0] ?? null;
                                 $discPct = $vehicle->fipe_price > 0 ? (($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100 : 0;
                             @endphp
-                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex gap-0">
+                            <div class="elite-card overflow-hidden hover:shadow-md transition flex gap-0">
                                 {{-- Thumb --}}
-                                <div class="w-36 h-28 sm:w-48 sm:h-36 flex-shrink-0 bg-gray-100 overflow-hidden">
+                                <div class="w-40 h-32 sm:w-52 sm:h-40 flex-shrink-0 bg-gray-100 overflow-hidden">
                                     @if($thumb)
                                         <img src="{{ $thumb }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}" class="w-full h-full object-cover"/>
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-3xl">🚗</div>
+                                        <div class="w-full h-full flex items-center justify-center text-4xl">🚗</div>
                                     @endif
                                 </div>
                                 {{-- Info --}}
-                                <div class="flex-1 min-w-0 p-4 flex flex-col justify-between">
+                                <div class="flex-1 min-w-0 p-5 flex flex-col justify-between">
                                     <div>
                                         <div class="flex items-center gap-2 flex-wrap">
-                                            <h3 class="font-black text-gray-900">{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->model_year }}</h3>
-                                            @if($vehicle->is_on_sale) <span class="text-[10px] bg-orange-100 text-orange-700 font-black px-1.5 py-0.5 rounded-full">🏷️ OFERTA</span> @endif
-                                            @if($vehicle->has_report) <span class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-1.5 py-0.5 rounded-full">📋 LAUDO</span> @endif
+                                            <h3 class="text-lg font-black text-gray-900">{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->model_year }}</h3>
+                                            @if($vehicle->is_on_sale) <span class="badge bg-orange-100 text-orange-700">🏷️ OFERTA</span> @endif
+                                            @if($vehicle->has_report) <span class="badge bg-emerald-100 text-emerald-700">📋 LAUDO</span> @endif
                                         </div>
-                                        <p class="text-xs text-gray-500 mt-0.5">{{ $vehicle->version }}</p>
-                                        <div class="flex gap-3 text-xs text-gray-500 font-semibold mt-1.5">
+                                        <p class="text-sm text-gray-500 mt-0.5">{{ $vehicle->version }}</p>
+                                        <div class="flex gap-3 text-sm text-gray-500 font-semibold mt-2">
                                             <span>{{ number_format($vehicle->mileage, 0, ',', '.') }} km</span>
                                             <span>·</span><span>{{ ucfirst($vehicle->fuel_type) }}</span>
                                             <span>·</span><span>{{ ucfirst($vehicle->transmission) }}</span>
                                             @if($vehicle->color) <span>·</span><span>{{ $vehicle->color }}</span> @endif
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between mt-3">
+                                    <div class="flex items-center justify-between mt-4">
                                         <div>
                                             @if($discPct > 0)
-                                                <p class="text-xs text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
+                                                <p class="text-sm text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
                                             @endif
-                                            <p class="text-lg font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
-                                            @if($discPct > 0) <p class="text-xs text-emerald-500 font-bold">↓ {{ number_format($discPct, 0) }}% abaixo FIPE</p> @endif
+                                            <p class="text-xl font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
+                                            @if($discPct > 0) <p class="text-sm text-emerald-500 font-bold">↓ {{ number_format($discPct, 0) }}% abaixo FIPE</p> @endif
                                         </div>
                                         <div class="flex gap-2">
                                             <button wire:click="toggleFavorite({{ $vehicle->id }})"
-                                                class="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center hover:border-red-300 transition">
-                                                <svg class="w-4 h-4 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                class="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center hover:border-red-300 transition">
+                                                <svg class="w-5 h-5 {{ $isFav ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isFav ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                                 </svg>
                                             </button>
                                             <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate
-                                                class="px-4 py-2 bg-[#1a3a5c] hover:bg-[#1e4f8a] text-white rounded-xl text-xs font-black transition">
+                                                class="btn-cta-sm">
                                                 Ver Detalhes
                                             </a>
                                         </div>
@@ -431,30 +431,6 @@
         </div>
     </div>
 
-    {{-- ─── Bottom Nav Mobile ───────────────────────────────────────── --}}
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
-        <div class="flex">
-            @php
-                $navItems = [
-                    ['route' => 'dashboard',      'icon' => '🏠', 'label' => 'Vitrine'],
-                    ['route' => 'meus-pedidos',   'icon' => '📋', 'label' => 'Pedidos'],
-                    ['route' => 'financeiro',      'icon' => '💳', 'label' => 'Financeiro'],
-                    ['route' => 'suporte',         'icon' => '💬', 'label' => 'Suporte'],
-                    ['route' => 'favoritos',       'icon' => '❤️', 'label' => 'Favoritos'],
-                ];
-            @endphp
-            @foreach($navItems as $item)
-                <a href="{{ route($item['route']) }}" wire:navigate
-                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
-                        {{ request()->routeIs($item['route'])
-                            ? 'text-[#1a3a5c]'
-                            : 'text-gray-400 hover:text-gray-600' }}">
-                    <span class="text-lg leading-none">{{ $item['icon'] }}</span>
-                    <span class="text-[9px] font-bold mt-0.5 tracking-wide">{{ $item['label'] }}</span>
-                </a>
-            @endforeach
-        </div>
-    </nav>
-    <div class="lg:hidden h-16"></div>
+    {{-- Bottom nav agora no layout compartilhado --}}
 
 </div>

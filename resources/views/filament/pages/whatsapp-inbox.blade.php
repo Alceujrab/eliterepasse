@@ -7,8 +7,8 @@
             <div class="flex items-center gap-4 text-white">
                 <div class="w-12 h-12 rounded-2xl bg-white bg-opacity-20 flex items-center justify-center text-2xl">📩</div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tight">Caixa de Entrada — WhatsApp</h1>
-                    <p class="text-green-200 text-sm">Evolution GO · Mensagens recebidas via WhatsApp</p>
+                    <h1 class="text-3xl font-black tracking-tight">Caixa de Entrada — WhatsApp</h1>
+                    <p class="text-green-200 text-base">Evolution GO · Mensagens recebidas via WhatsApp</p>
                 </div>
             </div>
             <div class="flex gap-3 flex-wrap">
@@ -16,10 +16,10 @@
                     $total  = $this->tickets->count();
                     $aberto = Ticket::where('type','whatsapp')->where('status','aberto')->count();
                 @endphp
-                <div class="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-2 rounded-xl text-white text-sm font-semibold">
+                <div class="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-2.5 rounded-xl text-white text-base font-semibold">
                     📋 {{ $total }} conversa(s)
                 </div>
-                <div class="bg-red-400 bg-opacity-80 px-4 py-2 rounded-xl text-white text-sm font-bold">
+                <div class="bg-red-400 bg-opacity-80 px-4 py-2.5 rounded-xl text-white text-base font-bold">
                     🔴 {{ $aberto }} aberta(s)
                 </div>
             </div>
@@ -37,7 +37,7 @@
                 <div class="grid grid-cols-2 gap-1.5">
                     @foreach(['aberto' => '🔴 Abertos', 'aguardando_cliente' => '🔵 Aguardando', 'resolvido' => '🟢 Resolvidos', 'todos' => '📋 Todos'] as $val => $label)
                         <button wire:click="$set('filtroStatus', '{{ $val }}')"
-                            class="text-xs font-bold py-1.5 rounded-lg transition
+                            class="text-sm font-bold py-2 rounded-lg transition
                                 {{ $filtroStatus === $val
                                     ? 'bg-[#128C7E] text-white'
                                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
@@ -62,33 +62,33 @@
                         };
                     @endphp
                     <button wire:click="abrirTicket({{ $t->id }})"
-                        class="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition
+                        class="w-full text-left px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition
                             {{ $isSelected ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-[#128C7E]' : '' }}">
                         <div class="flex items-start justify-between gap-2 mb-1">
                             <div class="flex items-center gap-2 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-[#128C7E] bg-opacity-10 flex items-center justify-center text-sm flex-shrink-0">
+                                <div class="w-9 h-9 rounded-full bg-[#128C7E] bg-opacity-10 flex items-center justify-center text-sm flex-shrink-0">
                                     {{ strtoupper(substr($t->user?->razao_social ?? $t->user?->name ?? '?', 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-xs font-black text-gray-900 dark:text-white truncate">
+                                    <p class="text-sm font-black text-gray-900 dark:text-white truncate">
                                         {{ $t->user?->razao_social ?? $t->user?->name ?? 'Cliente WhatsApp' }}
                                     </p>
-                                    <p class="text-[10px] text-gray-400 font-mono">{{ $t->numero }}</p>
+                                    <p class="text-xs text-gray-400 font-mono">{{ $t->numero }}</p>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 {{ $statusBg }}">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 {{ $statusBg }}">
                                 {{ Ticket::statusLabels()[$t->status] ?? $t->status }}
                             </span>
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 pl-10">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1 pl-11">
                             {{ $lastMsg?->mensagem ?? mb_strimwidth($t->titulo, 0, 60, '...') }}
                         </p>
-                        <p class="text-[10px] text-gray-400 mt-1 pl-10">{{ $t->created_at->diffForHumans() }}</p>
+                        <p class="text-xs text-gray-400 mt-1 pl-11">{{ $t->created_at->diffForHumans() }}</p>
                     </button>
                 @empty
                     <div class="py-12 text-center text-gray-400">
-                        <div class="text-4xl mb-2">📭</div>
-                        <p class="text-sm font-semibold">Nenhuma conversa</p>
+                        <div class="text-5xl mb-2">📭</div>
+                        <p class="text-base font-semibold">Nenhuma conversa</p>
                     </div>
                 @endforelse
             </div>
@@ -159,7 +159,7 @@
                         @endphp
                         <div class="flex {{ $isAdmin ? 'justify-end' : 'justify-start' }}">
                             <div class="max-w-[80%] {{ $isAdmin ? 'order-2' : '' }}">
-                                <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed
+                                <div class="px-4 py-3 rounded-2xl text-base leading-relaxed
                                     {{ $isInternal
                                         ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200'
                                         : ($isAdmin
@@ -167,7 +167,7 @@
                                             : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200') }}"
                                     style="white-space: pre-line;">{{ $isInternal ? '🔒 ' : '' }}{{ $msg->mensagem }}</div>
                                 <div class="flex items-center gap-1.5 mt-1 {{ $isAdmin ? 'justify-end' : '' }}">
-                                    <p class="text-[10px] text-gray-400">
+                                    <p class="text-xs text-gray-400">
                                         {{ $isAdmin ? ($msg->user?->name ?? 'Admin') : ($ticket->user?->razao_social ?? 'Cliente') }}
                                         · {{ $msg->created_at->format('d/m H:i') }}
                                         @if($isInternal) · 🔒 Nota interna @endif
@@ -198,9 +198,9 @@
                             <textarea wire:model="respostaTexto"
                                 placeholder="{{ $isInternal ? 'Escreva uma nota interna...' : 'Responder via WhatsApp...' }}"
                                 rows="3"
-                                class="flex-1 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-[#128C7E] focus:border-transparent resize-none"></textarea>
+                                class="flex-1 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-base focus:ring-2 focus:ring-[#128C7E] focus:border-transparent resize-none"></textarea>
                             <button wire:click="responder"
-                                class="self-end px-5 py-3 rounded-xl font-black text-sm transition shadow-lg
+                                class="self-end px-5 py-3 rounded-xl font-black text-base transition shadow-lg
                                     {{ $isInternal
                                         ? 'bg-yellow-400 hover:bg-yellow-500 text-yellow-900'
                                         : 'bg-[#128C7E] hover:bg-[#0a7a6e] text-white shadow-green-700/20' }}">
@@ -210,7 +210,7 @@
                         @error('respostaTexto') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 @else
-                    <div class="border-t border-gray-100 dark:border-gray-700 p-4 text-center text-xs text-gray-400">
+                    <div class="border-t border-gray-100 dark:border-gray-700 p-4 text-center text-sm text-gray-400">
                         🔒 Ticket fechado. <button wire:click="reabrirTicket({{ $ticket->id }})" class="text-orange-500 font-bold hover:underline">Reabrir para responder.</button>
                     </div>
                 @endif
@@ -222,8 +222,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
                     <div class="text-center">
-                        <p class="font-bold text-lg text-gray-400 dark:text-gray-500">Selecione uma conversa</p>
-                        <p class="text-sm text-gray-400 dark:text-gray-600">As mensagens recebidas via WhatsApp aparecerão à esquerda</p>
+                        <p class="font-bold text-xl text-gray-400 dark:text-gray-500">Selecione uma conversa</p>
+                        <p class="text-base text-gray-400 dark:text-gray-600">As mensagens recebidas via WhatsApp aparecerão à esquerda</p>
                     </div>
 
                     {{-- Info do webhook --}}
