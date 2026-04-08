@@ -10,7 +10,9 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ContractService
 {
@@ -124,7 +126,29 @@ class ContractService
         // 4. Marcar veículo como vendido
         $contract->vehicle?->update(['status' => 'sold']);
 
+        // 5. Gerar e salvar PDF Final
+        $this->gerarPdfContrato($contract->fresh(), $signature);
+
         return $signature;
+    }
+
+    /**
+     * Gera o PDF do contrato assinado e salva no storage local.
+     */
+    public function gerarPdfContrato(Contract $contract, ContractSignature $signature): string
+    {
+        $pdf = Pdf::loadView('pdf.contrato', [
+            'contract' => $contract,
+            'signature' => $signature,
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $fileName = "contratos/{$contract->numero}_" . Str::slug($contract->dados_comprador['razao_social'] ?? $contract->dados_comprador['name']) . ".pdf";
+        
+        Storage::disk('local')->put($fileName, $pdf->output());
+
+        return $fileName;
     }
 
     /**

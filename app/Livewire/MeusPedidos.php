@@ -39,7 +39,7 @@ class MeusPedidos extends Component
         $userId  = $user->id;
 
         // ─── Pedidos (filtrado por aba) ───────────────────────────────
-        $query = Order::with(['vehicle', 'paymentMethod'])
+        $query = Order::with(['vehicle', 'paymentMethod', 'contract'])
             ->where('user_id', $userId)
             ->latest();
 

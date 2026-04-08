@@ -84,6 +84,11 @@ class Order extends Model
         return $this->hasOne(Financial::class);
     }
 
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────────
     public function getNumeroAttribute(): string
     {

@@ -268,6 +268,17 @@
                                                         </div>
                                                     </a>
 
+                                                    @if($pedido->contract && $pedido->contract->status === 'assinado')
+                                                        <a href="{{ route('contrato.download', $pedido->contract->id) }}" target="_blank"
+                                                            class="flex items-center gap-3 bg-white border border-gray-200 hover:border-indigo-300 rounded-xl px-4 py-3 transition group w-full">
+                                                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-sm">📄</div>
+                                                            <div class="flex-1">
+                                                                <p class="text-sm font-bold text-gray-800 group-hover:text-indigo-600 transition">Baixar Contrato</p>
+                                                                <p class="text-xs text-gray-400">PDF Assinado</p>
+                                                            </div>
+                                                        </a>
+                                                    @endif
+
                                                     <a href="{{ route('suporte') }}" wire:navigate
                                                         class="flex items-center gap-3 bg-white border border-gray-200 hover:border-purple-300 rounded-xl px-4 py-3 transition group w-full">
                                                         <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-sm">💬</div>

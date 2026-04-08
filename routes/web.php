@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsApproved::class])->group(func
     Route::get('suporte', \App\Livewire\Suporte::class)->name('suporte');
 
     Route::get('meus-documentos', \App\Livewire\MeusDocumentos::class)->name('meus-documentos');
+    Route::get('meus-documentos/{id}/download', [\App\Http\Controllers\DocumentDownloadController::class, 'downloadContract'])->name('contrato.download');
 
     Route::get('documentos-elite', \App\Livewire\DocumentosElite::class)->name('documentos-elite');
 
