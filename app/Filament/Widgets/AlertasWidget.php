@@ -18,7 +18,7 @@ class AlertasWidget extends BaseWidget
     protected function getStats(): array
     {
         $ticketsUrgentes   = Ticket::where('prioridade', 'urgente')->where('status', 'aberto')->count();
-        $clientesPendentes = User::where('aprovado', false)->where('is_admin', false)->count();
+        $clientesPendentes = User::where('status', 'pendente')->where('is_admin', false)->count();
         $docsPendentes     = Document::where('status', 'pendente')->count();
         $pedidosAtrasados  = Order::where('status', 'pendente')
             ->where('created_at', '<=', now()->subHours(24))

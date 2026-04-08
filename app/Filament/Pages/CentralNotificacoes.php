@@ -134,7 +134,7 @@ class CentralNotificacoes extends Page
                 ])
                 ->action(function (array $data) {
                     $clientes = User::where('is_admin', false)
-                        ->where('aprovado', true)
+                        ->where('status', 'ativo')
                         ->get();
 
                     foreach ($clientes as $user) {
