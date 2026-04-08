@@ -1,53 +1,114 @@
-<div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-3xl font-black text-gray-900 tracking-tight">Meus Favoritos</h1>
-            <p class="text-gray-500 mt-2 font-medium">Acompanhe rápido os veículos que você gostou. Não deixe a oportunidade passar!</p>
+<div class="min-h-screen bg-[#f1f5f9]">
+
+    {{-- ─── Header ─────────────────────────────────────────────────── --}}
+    <div class="bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div class="text-white">
+                <p class="text-orange-300 text-xs font-bold uppercase tracking-widest mb-1">Portal do Lojista</p>
+                <h1 class="text-2xl font-black tracking-tight">❤️ Meus Favoritos</h1>
+                <p class="text-blue-200 text-sm mt-1">{{ $favorites->count() }} veículo{{ $favorites->count() != 1 ? 's' : '' }} salvo{{ $favorites->count() != 1 ? 's' : '' }}</p>
+            </div>
+            <a href="{{ route('dashboard') }}" wire:navigate
+                class="flex items-center gap-2 bg-white bg-opacity-10 border border-white border-opacity-20 text-white font-bold px-5 py-3 rounded-xl transition hover:bg-opacity-20 text-sm backdrop-blur-sm">
+                🔍 Ver Vitrine
+            </a>
         </div>
-        <a href="{{ route('dashboard') }}" class="text-[13px] font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-4 py-2 rounded-lg flex items-center transition" wire:navigate>
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Voltar para Vitrine
-        </a>
     </div>
 
-    @if($favorites->isEmpty())
-        <div class="bg-white rounded border border-gray-200 p-12 text-center h-[300px] flex flex-col justify-center items-center mt-6">
-            <svg class="mx-auto h-14 w-14 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            <h3 class="mt-4 text-[16px] font-bold text-gray-800">Sua lista está vazia</h3>
-            <p class="mt-1 text-sm text-gray-500">Volte à vitrine e clique no coração dos veículos de seu interesse.</p>
-        </div>
-    @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach($favorites as $fav)
-                @if($fav->vehicle)
-                    @php 
-                        $vehicle = $fav->vehicle;
-                        $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media; 
-                        $image = (is_array($media) && count($media) > 0) ? $media[0] : 'https://placehold.co/600x400?text=Sem+Foto';
-                    @endphp
-                    <div class="bg-white rounded border border-gray-200 overflow-hidden flex flex-col group relative">
-                        <a href="{{ route('vehicle.details', $vehicle->id) }}" class="block absolute inset-0 z-0" wire:navigate></a>
-                        
-                        <!-- Header Image -->
-                        <div class="relative h-[200px] bg-gray-100 overflow-hidden">
-                            <img src="{{ $image }}" class="w-full h-full object-cover">
-                            <button wire:click="removeFavorite({{ $fav->id }})" title="Remover dos favoritos" class="absolute top-2 right-2 p-2 bg-white/80 hover:bg-white rounded-full text-red-500 shadow-sm transition z-10">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-                            </button>
-                        </div>
+    <div class="max-w-7xl mx-auto px-6 py-6">
 
-                        <!-- Info -->
-                        <div class="p-4 flex flex-col z-10 pointer-events-none">
-                            <h3 class="text-[15px] font-black text-gray-900 uppercase leading-tight mb-1 truncate">{{ $vehicle->brand }} {{ $vehicle->model }}</h3>
-                            <p class="text-[12px] text-gray-500 mb-3">{{ $vehicle->manufacture_year }}/{{ $vehicle->model_year }} &bull; {{ number_format($vehicle->mileage, 0, ',', '.') }} km</p>
-                            
-                            <div class="mt-auto flex items-end justify-between">
-                                <div class="text-[18px] font-black text-primary">R$ {{ number_format($vehicle->sale_price, 2, ',', '.') }}</div>
+        @if($favorites->isEmpty())
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center py-20 px-6 mt-4">
+                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4 text-3xl">❤️</div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Nenhum favorito ainda</h3>
+                <p class="text-sm text-gray-400 mb-6 max-w-sm">Navegue pela vitrine e clique no ❤️ dos veículos que gostar. Eles aparecerão aqui!</p>
+                <a href="{{ route('dashboard') }}" wire:navigate
+                    class="bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3 rounded-xl transition flex items-center gap-2 shadow-lg text-sm">
+                    🔍 Explorar Vitrine
+                </a>
+            </div>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                @foreach($favorites as $fav)
+                    @if($fav->vehicle)
+                        @php
+                            $vehicle = $fav->vehicle;
+                            $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media;
+                            $image = is_array($media) && count($media) > 0 ? $media[0] : null;
+                            $margin = $vehicle->fipe_price > 0 ? round(($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price * 100) : 0;
+                        @endphp
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition group relative">
+
+                            {{-- Imagem --}}
+                            <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate class="block">
+                                <div class="h-44 bg-gray-100 overflow-hidden relative">
+                                    @if($image)
+                                        <img src="{{ $image }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-4xl">🚗</div>
+                                    @endif
+
+                                    {{-- Badges --}}
+                                    <div class="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+                                        @if($vehicle->is_on_sale)
+                                            <span class="bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow">🏷️ OFERTA</span>
+                                        @endif
+                                        @if($margin > 0)
+                                            <span class="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow">↓{{ $margin }}% FIPE</span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Status --}}
+                                    @if($vehicle->status !== 'disponivel')
+                                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                            <span class="bg-red-500 text-white font-black px-4 py-2 rounded-lg text-sm">
+                                                {{ $vehicle->status === 'vendido' ? '🔴 VENDIDO' : '⏳ RESERVADO' }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </a>
+
+                            {{-- Info --}}
+                            <div class="p-4">
+                                <a href="{{ route('vehicle.details', $vehicle->id) }}" wire:navigate class="block">
+                                    <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">{{ $vehicle->brand }}</p>
+                                    <h3 class="text-sm font-black text-gray-900 leading-tight mt-0.5">{{ $vehicle->model }}</h3>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ $vehicle->manufacture_year }}/{{ $vehicle->model_year }} · {{ number_format($vehicle->mileage, 0, ',', '.') }} km</p>
+                                </a>
+
+                                <div class="flex items-end justify-between mt-3 pt-3 border-t border-gray-100">
+                                    <div>
+                                        @if($vehicle->fipe_price && $margin > 0)
+                                            <p class="text-xs text-gray-400 line-through">R$ {{ number_format($vehicle->fipe_price, 0, ',', '.') }}</p>
+                                        @endif
+                                        <p class="text-lg font-black text-[#1a3a5c]">R$ {{ number_format($vehicle->sale_price, 0, ',', '.') }}</p>
+                                    </div>
+                                    <button wire:click="removeFavorite({{ $fav->id }})" wire:confirm="Remover dos favoritos?"
+                                        class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition flex-shrink-0">
+                                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+    {{-- Bottom Nav Mobile --}}
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-xl z-50">
+        <div class="flex">
+            @foreach([['dashboard','🏠','Vitrine'],['meus-pedidos','📋','Pedidos'],['financeiro','💳','Financeiro'],['suporte','💬','Suporte'],['favoritos','❤️','Favoritos']] as [$rt,$ico,$lbl])
+                <a href="{{ route($rt) }}" wire:navigate
+                    class="flex-1 flex flex-col items-center justify-center py-2.5 transition
+                        {{ request()->routeIs($rt) ? 'text-[#1a3a5c]' : 'text-gray-400 hover:text-gray-600' }}">
+                    <span class="text-lg leading-none">{{ $ico }}</span>
+                    <span class="text-[9px] font-bold mt-0.5">{{ $lbl }}</span>
+                </a>
             @endforeach
         </div>
-    @endif
+    </nav>
+    <div class="lg:hidden h-16"></div>
 </div>
