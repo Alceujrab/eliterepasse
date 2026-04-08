@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
+use App\Services\ContractService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -19,11 +20,12 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('numero')
+                TextColumn::make('id')
                     ->label('Nº Compra')
+                    ->formatStateUsing(fn ($state) => 'ORD-' . str_pad($state, 6, '0', STR_PAD_LEFT))
                     ->fontFamily('mono')
                     ->weight('bold')
-                    ->searchable(query: fn ($q, $s) => $q->where('id', ltrim($s, '0ORD-'))),
+                    ->searchable(),
 
                 TextColumn::make('user.razao_social')
                     ->label('Cliente')
@@ -79,14 +81,27 @@ class OrdersTable
                     ->visible(fn (Order $r) => $r->status === 'pendente')
                     ->action(function (Order $record) {
                         $record->update([
-                            'status'          => 'confirmado',
-                            'confirmado_em'   => now(),
-                            'confirmado_por'  => auth()->id(),
+                            'status'         => 'confirmado',
+                            'confirmado_em'  => now(),
+                            'confirmado_por' => auth()->id(),
                         ]);
-                        // Marcar veículo como reservado
                         $record->vehicle?->update(['status' => 'reserved']);
-
                         Notification::make()->title('Compra confirmada!')->success()->send();
+                    }),
+
+                Action::make('gerar_contrato')
+                    ->label('Gerar Contrato')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('Gerar contrato de compra e venda?')
+                    ->modalDescription('Será gerado um contrato com os dados atuais do pedido.')
+                    ->visible(fn (Order $r) => $r->status === 'confirmado')
+                    ->action(function (Order $record) {
+                        $contract = app(ContractService::class)->gerarDeOrdem($record);
+                        Notification::make()
+                            ->title("Contrato {$contract->numero} gerado!")
+                            ->success()->send();
                     }),
 
                 Action::make('cancelar')
@@ -98,7 +113,6 @@ class OrdersTable
                     ->action(function (Order $record) {
                         $status_anterior = $record->status;
                         $record->update(['status' => 'cancelado']);
-                        // Devolver veículo ao estoque
                         if ($status_anterior === 'confirmado') {
                             $record->vehicle?->update(['status' => 'available']);
                         }

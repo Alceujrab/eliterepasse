@@ -1,9 +1,15 @@
 <?php
 
+use App\Http\Controllers\ContractSignatureController;
 use App\Http\Middleware\EnsureUserIsApproved;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\Livewire\LandingPage::class)->name('home');
+
+// ─── Rotas Públicas de Contrato (acesso via token único) ─────────────
+Route::get('/contrato/assinar/{token}',  [ContractSignatureController::class, 'show'])->name('contrato.assinar.show');
+Route::post('/contrato/assinar/{token}', [ContractSignatureController::class, 'store'])->name('contrato.assinar.store');
+Route::get('/contrato/assinado',         fn () => view('contratos.assinado'))->name('contrato.assinado');
 
 // Página de aguardando aprovação (pública para usuários logados)
 Route::get('aguardando-aprovacao', function () {
