@@ -21,6 +21,8 @@ class LoginForm extends Form
     #[Validate('boolean')]
     public bool $remember = false;
 
+    public ?string $recaptcha_token = null;
+
     /**
      * Attempt to authenticate the request's credentials.
      *
@@ -34,6 +36,21 @@ class LoginForm extends Form
 
         // Remove mascara se for considerado CPF
         $loginValue = $loginType === 'cpf' ? preg_replace('/[^0-9]/', '', $this->login) : $this->login;
+
+        // Validar reCAPTCHA
+        if (config('services.recaptcha.secret_key')) {
+            $response = \Illuminate\Support\Facades\Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret'   => config('services.recaptcha.secret_key'),
+                'response' => $this->recaptcha_token,
+                'remoteip' => request()->ip(),
+            ]);
+
+            if (! $response->json('success') || $response->json('score') < 0.5) {
+                throw ValidationException::withMessages([
+                    'form.login' => 'Falha na verificação de segurança (Bot detectado). Tente novamente.',
+                ]);
+            }
+        }
 
         if (! Auth::attempt([$loginType => $loginValue, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
