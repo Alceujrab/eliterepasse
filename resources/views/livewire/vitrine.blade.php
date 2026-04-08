@@ -272,7 +272,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     @foreach($vehicles as $vehicle)
                         @php 
-                            $media = json_decode($vehicle->media, true); 
+                            $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media; 
                             $image = (is_array($media) && count($media) > 0) ? $media[0] : 'https://placehold.co/600x400?text=Sem+Foto';
                             $margin = $vehicle->fipe_price > 0 ? round((($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100) : 0;
                             $isFav = in_array($vehicle->id, $userFavorites);

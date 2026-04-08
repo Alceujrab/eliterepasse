@@ -20,7 +20,7 @@
     </div>
 
     @php 
-        $media = json_decode($vehicle->media, true); 
+        $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media; 
         $images = (is_array($media) && count($media) > 0) ? $media : ['https://placehold.co/800x600?text=Sem+Foto'];
         $margin = $vehicle->fipe_price > 0 ? round((($vehicle->fipe_price - $vehicle->sale_price) / $vehicle->fipe_price) * 100) : 0;
         

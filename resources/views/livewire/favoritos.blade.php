@@ -22,7 +22,7 @@
                 @if($fav->vehicle)
                     @php 
                         $vehicle = $fav->vehicle;
-                        $media = json_decode($vehicle->media, true); 
+                        $media = is_string($vehicle->media) ? json_decode($vehicle->media, true) : $vehicle->media; 
                         $image = (is_array($media) && count($media) > 0) ? $media[0] : 'https://placehold.co/600x400?text=Sem+Foto';
                     @endphp
                     <div class="bg-white rounded border border-gray-200 overflow-hidden flex flex-col group relative">
