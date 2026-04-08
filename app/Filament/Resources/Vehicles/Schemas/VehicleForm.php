@@ -2,12 +2,17 @@
 
 namespace App\Filament\Resources\Vehicles\Schemas;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Http;
 
 class VehicleForm
 {
@@ -15,228 +20,349 @@ class VehicleForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Group::make()->schema([
-                    \Filament\Forms\Components\Section::make('Integração FIPE')
-                        ->description('Selecione os dados via FIPE para preencher a ficha automaticamente.')
+
+                // ─── Coluna Principal (2/3) ──────────────────────────────────
+                Group::make()->schema([
+
+                    // ── Integração FIPE ───────────────────────────────────────
+                    Section::make('🔍 Integração FIPE Automática')
+                        ->description('Selecione Marca → Modelo → Ano para preencher os dados da tabela FIPE automaticamente.')
                         ->schema([
-                            \Filament\Forms\Components\Select::make('fipe_brand_id')
-                                ->label('Busca por Marca')
+                            Select::make('fipe_brand_id')
+                                ->label('Marca (FIPE)')
                                 ->options(function () {
                                     return cache()->remember('fipe.brands', 86400, function () {
-                                        $response = \Illuminate\Support\Facades\Http::get('https://parallelum.com.br/fipe/api/v1/carros/marcas');
-                                        if ($response->successful()) {
-                                            return collect($response->json())->pluck('nome', 'codigo')->toArray();
-                                        }
-                                        return [];
+                                        $r = Http::timeout(5)->get('https://parallelum.com.br/fipe/api/v1/carros/marcas');
+                                        return $r->successful()
+                                            ? collect($r->json())->pluck('nome', 'codigo')->toArray()
+                                            : [];
                                     });
                                 })
                                 ->searchable()
                                 ->live()
                                 ->dehydrated(false)
-                                ->afterStateUpdated(function ($state, \Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                ->afterStateUpdated(function ($state, Set $set) {
                                     $set('fipe_model_id', null);
                                     $set('fipe_year_id', null);
-                                    
-                                    // Set the real brand name
                                     $brands = cache('fipe.brands', []);
-                                    if(isset($brands[$state])) {
+                                    if (isset($brands[$state])) {
                                         $set('brand', $brands[$state]);
                                     }
                                 }),
 
-                            \Filament\Forms\Components\Select::make('fipe_model_id')
-                                ->label('Busca por Modelo')
-                                ->options(function (\Filament\Forms\Get $get) {
+                            Select::make('fipe_model_id')
+                                ->label('Modelo (FIPE)')
+                                ->options(function (Get $get) {
                                     $brand = $get('fipe_brand_id');
                                     if (! $brand) return [];
-                                    
                                     return cache()->remember("fipe.models.{$brand}", 86400, function () use ($brand) {
-                                        $response = \Illuminate\Support\Facades\Http::get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos");
-                                        if ($response->successful()) {
-                                            return collect($response->json()['modelos'])->pluck('nome', 'codigo')->toArray();
-                                        }
-                                        return [];
+                                        $r = Http::timeout(5)->get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos");
+                                        return $r->successful()
+                                            ? collect($r->json()['modelos'])->pluck('nome', 'codigo')->toArray()
+                                            : [];
                                     });
                                 })
                                 ->searchable()
                                 ->live()
                                 ->dehydrated(false)
-                                ->disabled(fn (\Filament\Forms\Get $get) => empty($get('fipe_brand_id')))
-                                ->afterStateUpdated(function ($state, \Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                ->disabled(fn (Get $get) => empty($get('fipe_brand_id')))
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                     $set('fipe_year_id', null);
                                     $brand = $get('fipe_brand_id');
                                     $models = cache("fipe.models.{$brand}", []);
-                                    if(isset($models[$state])) {
+                                    if (isset($models[$state])) {
                                         $set('model', $models[$state]);
                                     }
                                 }),
 
-                            \Filament\Forms\Components\Select::make('fipe_year_id')
-                                ->label('Ano / Emissão FIPE')
-                                ->options(function (\Filament\Forms\Get $get) {
+                            Select::make('fipe_year_id')
+                                ->label('Ano / Emissão (FIPE)')
+                                ->options(function (Get $get) {
                                     $brand = $get('fipe_brand_id');
                                     $model = $get('fipe_model_id');
                                     if (! $brand || ! $model) return [];
-
-                                    $response = \Illuminate\Support\Facades\Http::get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos/{$model}/anos");
-                                    if ($response->successful()) {
-                                        return collect($response->json())->pluck('nome', 'codigo')->toArray();
-                                    }
-                                    return [];
+                                    $r = Http::timeout(5)->get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos/{$model}/anos");
+                                    return $r->successful()
+                                        ? collect($r->json())->pluck('nome', 'codigo')->toArray()
+                                        : [];
                                 })
                                 ->searchable()
                                 ->live()
                                 ->dehydrated(false)
-                                ->disabled(fn (\Filament\Forms\Get $get) => empty($get('fipe_model_id')))
-                                ->afterStateUpdated(function ($state, \Filament\Forms\Set $set, \Filament\Forms\Get $get) {
+                                ->disabled(fn (Get $get) => empty($get('fipe_model_id')))
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                     $brand = $get('fipe_brand_id');
                                     $model = $get('fipe_model_id');
                                     if ($brand && $model && $state) {
-                                        $response = \Illuminate\Support\Facades\Http::get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos/{$model}/anos/{$state}");
-                                        if ($response->successful()) {
-                                            $data = $response->json();
-                                            // Atualiza os campos reais com os dados da FIPE
-                                            $set('fipe_code', $data['CodigoFipe']);
-                                            $set('fuel_type', $data['Combustivel']);
-                                            $set('model_year', $data['AnoModelo']);
-                                            
-                                            // Converte "R$ 15.000,00" para float
-                                            $valorStr = str_replace(['R$', '.', ' ', ','], ['', '', '', '.'], $data['Valor']);
-                                            $set('fipe_price', (float) $valorStr);
-                                            
+                                        $r = Http::timeout(5)->get("https://parallelum.com.br/fipe/api/v1/carros/marcas/{$brand}/modelos/{$model}/anos/{$state}");
+                                        if ($r->successful()) {
+                                            $data = $r->json();
+                                            $set('fipe_code', $data['CodigoFipe'] ?? null);
+                                            $set('fuel_type', $data['Combustivel'] ?? null);
+                                            $set('model_year', $data['AnoModelo'] ?? null);
+
+                                            // Converte "R$ 15.000,00" → float
+                                            $valor = (float) str_replace(
+                                                ['R$', '.', ' ', ','],
+                                                ['',   '',  '',  '.'],
+                                                $data['Valor'] ?? '0'
+                                            );
+                                            $set('fipe_price', $valor);
+
                                             \Filament\Notifications\Notification::make()
-                                                ->title('Dados FIPE importados com sucesso!')
-                                                ->success()
-                                                ->send();
+                                                ->title("✅ FIPE importada: R$ " . number_format($valor, 0, ',', '.'))
+                                                ->success()->send();
                                         }
                                     }
                                 }),
 
                         ])->columns(3),
 
-                    \Filament\Forms\Components\Section::make('Identificação do Veículo')
+                    // ── Identificação ──────────────────────────────────────────
+                    Section::make('🚗 Identificação do Veículo')
                         ->schema([
                             TextInput::make('brand')
                                 ->label('Marca')
-                                ->required(),
+                                ->required()
+                                ->maxLength(60),
+
                             TextInput::make('model')
                                 ->label('Modelo')
-                                ->required(),
-                            TextInput::make('version')
-                                ->label('Versão do Carro')
                                 ->required()
-                                ->columnSpanFull(),
+                                ->maxLength(80),
+
+                            TextInput::make('version')
+                                ->label('Versão')
+                                ->required()
+                                ->columnSpanFull()
+                                ->maxLength(120)
+                                ->placeholder('Ex: 2.0 XRE Hybrid CVT'),
+
                             TextInput::make('plate')
                                 ->label('Placa')
-                                ->required(),
+                                ->required()
+                                ->mask('aaa-9*99')
+                                ->placeholder('ABC-1234')
+                                ->fontFamily('mono')
+                                ->maxLength(8),
+
                             TextInput::make('manufacture_year')
                                 ->label('Ano Fabricação')
                                 ->required()
-                                ->numeric(),
+                                ->numeric()
+                                ->minValue(1990)
+                                ->maxValue(now()->year + 1),
+
                             TextInput::make('model_year')
                                 ->label('Ano Modelo')
                                 ->required()
-                                ->numeric(),
-                            TextInput::make('category')
+                                ->numeric()
+                                ->minValue(1990)
+                                ->maxValue(now()->year + 2),
+
+                            Select::make('category')
                                 ->label('Carroceria')
-                                ->default(null),
+                                ->options([
+                                    'SUV'         => '🚙 SUV',
+                                    'Sedan'       => '🚗 Sedan',
+                                    'Hatch'       => '🚘 Hatch',
+                                    'Pickup'      => '🛻 Pickup',
+                                    'Minivan'     => '🚐 Minivan',
+                                    'Conversível' => '🏎️ Conversível',
+                                    'Outro'       => '🔹 Outro',
+                                ])
+                                ->searchable()
+                                ->native(false),
+
                             TextInput::make('fipe_code')
                                 ->label('Código FIPE')
-                                ->default(null),
+                                ->fontFamily('mono')
+                                ->maxLength(10),
                         ])->columns(2),
-                        
-                    \Filament\Forms\Components\Section::make('Especificações Técnicas')
+
+                    // ── Especificações Técnicas ────────────────────────────────
+                    Section::make('⚙️ Especificações Técnicas')
                         ->schema([
                             TextInput::make('mileage')
                                 ->label('Quilometragem')
                                 ->required()
                                 ->numeric()
-                                ->default(0),
-                            TextInput::make('fuel_type')
+                                ->default(0)
+                                ->minValue(0)
+                                ->suffix('km'),
+
+                            Select::make('fuel_type')
                                 ->label('Combustível')
-                                ->default(null),
-                            TextInput::make('transmission')
+                                ->options([
+                                    'Flex'      => '⛽ Flex',
+                                    'Gasolina'  => '🔴 Gasolina',
+                                    'Diesel'    => '🟤 Diesel',
+                                    'Elétrico'  => '⚡ Elétrico',
+                                    'Híbrido'   => '🌿 Híbrido',
+                                    'GNV'       => '🔵 GNV',
+                                    'Etanol'    => '🌽 Etanol',
+                                ])
+                                ->native(false),
+
+                            Select::make('transmission')
                                 ->label('Câmbio')
-                                ->default(null),
+                                ->options([
+                                    'Manual'          => '🔧 Manual',
+                                    'Automático'      => '🤖 Automático',
+                                    'CVT'             => '〰️ CVT',
+                                    'Automatizado'    => '🔄 Automatizado',
+                                    'Automático (8AT)'=> '🤖 Automático (8AT)',
+                                    'Automático (9AT)'=> '🤖 Automático (9AT)',
+                                    'Automático (7DCT)'=> '🤖 Automático (7DCT)',
+                                ])
+                                ->native(false),
+
                             TextInput::make('engine')
                                 ->label('Motor')
-                                ->default(null),
+                                ->placeholder('Ex: 2.0 TwinPower Turbo')
+                                ->maxLength(60),
+
                             TextInput::make('color')
                                 ->label('Cor')
-                                ->default(null),
+                                ->placeholder('Ex: Prata Metálico')
+                                ->maxLength(40),
+
                             TextInput::make('doors')
                                 ->label('Portas')
                                 ->numeric()
-                                ->default(null),
+                                ->default(4)
+                                ->minValue(2)
+                                ->maxValue(5),
                         ])->columns(3),
-                        
-                    \Filament\Forms\Components\Section::make('Mídias e Fotos')
+
+                    // ── Mídias ─────────────────────────────────────────────────
+                    Section::make('📷 Fotos do Veículo')
                         ->schema([
-                            \Filament\Forms\Components\FileUpload::make('media')
-                                ->label('Fotos do Veículo')
+                            FileUpload::make('media')
+                                ->label('Galeria de Imagens')
                                 ->multiple()
                                 ->image()
                                 ->reorderable()
                                 ->appendFiles()
                                 ->directory('vehicles')
+                                ->imageEditor()
+                                ->maxSize(5120)
+                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                ->helperText('Máx. 5 MB por foto. A primeira imagem será a capa.')
                                 ->columnSpanFull(),
-                        ])
+                        ]),
+
                 ])->columnSpan(2),
 
-                \Filament\Forms\Components\Group::make()->schema([
-                    \Filament\Forms\Components\Section::make('Financeiro')
+                // ─── Coluna Lateral (1/3) ────────────────────────────────────
+                Group::make()->schema([
+
+                    // ── Financeiro ────────────────────────────────────────────
+                    Section::make('💰 Precificação')
                         ->schema([
                             TextInput::make('fipe_price')
-                                ->label('Preço FIPE')
+                                ->label('Tabela FIPE')
                                 ->numeric()
-                                ->default(null)
-                                ->prefix('R$'),
+                                ->prefix('R$')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                    self::calcularMargem($get, $set);
+                                }),
+
                             TextInput::make('sale_price')
                                 ->label('Preço de Venda')
                                 ->numeric()
-                                ->default(null)
-                                ->prefix('R$'),
+                                ->required()
+                                ->prefix('R$')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                    self::calcularMargem($get, $set);
+                                }),
+
                             TextInput::make('profit_margin')
-                                ->label('Margem Lucro')
+                                ->label('% abaixo da FIPE')
                                 ->numeric()
-                                ->default(null)
-                                ->prefix('R$'),
+                                ->suffix('%')
+                                ->readOnly()
+                                ->helperText('Calculado automaticamente'),
                         ]),
-                        
-                    \Filament\Forms\Components\Section::make('Status & Destaques')
+
+                    // ── Localização ───────────────────────────────────────────
+                    Section::make('📍 Localização')
+                        ->schema([
+                            TextInput::make('location.name')
+                                ->label('Nome do Pátio')
+                                ->placeholder('Ex: Pátio São Paulo')
+                                ->maxLength(80),
+
+                            TextInput::make('location.city')
+                                ->label('Cidade')
+                                ->placeholder('Ex: São Paulo')
+                                ->maxLength(60),
+
+                            TextInput::make('location.state')
+                                ->label('UF')
+                                ->maxLength(2)
+                                ->placeholder('SP'),
+                        ]),
+
+                    // ── Status & Destaques ────────────────────────────────────
+                    Section::make('🏷️ Status & Destaques')
                         ->schema([
                             Select::make('status')
                                 ->label('Disponibilidade')
                                 ->options([
-                                    'available' => 'Disponível',
-                                    'reserved' => 'Reservado',
-                                    'sold' => 'Vendido'
+                                    'available' => '✅ Disponível',
+                                    'reserved'  => '⏳ Reservado',
+                                    'sold'      => '🔴 Vendido',
                                 ])
                                 ->default('available')
-                                ->required(),
-                                
-                            Toggle::make('has_report')
-                                ->label('Carro com Laudo Cautelar')
-                                ->default(false),
-                            Toggle::make('has_factory_warranty')
-                                ->label('Garantia de Fábrica')
-                                ->default(false),
+                                ->required()
+                                ->native(false),
+
                             Toggle::make('is_on_sale')
-                                ->label('Veículo em Oferta')
+                                ->label('🏷️ Em Oferta')
+                                ->helperText('Destaque especial de preço')
                                 ->default(false),
+
                             Toggle::make('is_just_arrived')
-                                ->label('Acabou de chegar')
+                                ->label('🆕 Recém Chegado')
+                                ->helperText('Badge "Novo no estoque"')
+                                ->default(false),
+
+                            Toggle::make('has_report')
+                                ->label('📋 Possui Laudo Cautelar')
+                                ->default(false),
+
+                            Toggle::make('has_factory_warranty')
+                                ->label('🛡️ Garantia de Fábrica')
                                 ->default(false),
                         ]),
-                        
-                    \Filament\Forms\Components\Section::make('Acessórios')
+
+                    // ── Acessórios ────────────────────────────────────────────
+                    Section::make('✨ Acessórios')
                         ->schema([
-                            // Por enquanto JSON raw (Pode ser refatorado pra TagsInput futuramente)
-                            \Filament\Forms\Components\TagsInput::make('accessories')
-                                ->label('Acessórios (Pressione Enter)')
+                            TagsInput::make('accessories')
+                                ->label('Lista de Acessórios')
+                                ->placeholder('Digite e pressione Enter')
+                                ->helperText('Ex: Teto Solar, Câmera 360°, Bancos de Couro')
                                 ->default([]),
-                        ])
+                        ]),
+
                 ])->columnSpan(1),
+
             ])->columns(3);
+    }
+
+    /** Calcula % desconto FIPE e atualiza profit_margin */
+    private static function calcularMargem(Get $get, Set $set): void
+    {
+        $fipe  = (float) ($get('fipe_price') ?? 0);
+        $venda = (float) ($get('sale_price') ?? 0);
+
+        if ($fipe > 0 && $venda > 0) {
+            $margem = round((1 - $venda / $fipe) * 100, 1);
+            $set('profit_margin', $margem);
+        }
     }
 }
