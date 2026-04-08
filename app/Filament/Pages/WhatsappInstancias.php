@@ -167,6 +167,18 @@ class WhatsappInstancias extends Page
         $this->testPhone      = '';
     }
 
+    public function logout(int $id): void
+    {
+        $inst = EvolutionInstance::findOrFail($id);
+        $ok   = $inst->logout();
+
+        if ($ok) {
+            Notification::make()->title("🔴 {$inst->nome} — Desconectado.")->warning()->send();
+        } else {
+            Notification::make()->title('Não foi possível desconectar.')->danger()->send();
+        }
+    }
+
     public function getInstanciasProperty()
     {
         return EvolutionInstance::orderByDesc('padrao')->orderBy('nome')->get();

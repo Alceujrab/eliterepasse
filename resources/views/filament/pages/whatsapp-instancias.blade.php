@@ -267,10 +267,10 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/>
                             </svg>
-                            Testar
+                            Testar Status
                         </button>
 
-                        {{-- QR Code --}}
+                        {{-- QR Code (só quando desconectado) --}}
                         <button wire:click="verQrCode({{ $inst->id }})"
                             class="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold
                                 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400
@@ -278,7 +278,7 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                             </svg>
-                            QR Code
+                            Ver QR Code
                         </button>
 
                         {{-- Enviar Teste --}}
@@ -302,6 +302,20 @@
                             </svg>
                             Editar
                         </button>
+
+                        {{-- Logout (visível só quando conectado, span 2 colunas) --}}
+                        @if($inst->status_conexao === 'open')
+                            <button wire:click="logout({{ $inst->id }})"
+                                wire:confirm="Desconectar o WhatsApp da instância '{{ $inst->nome }}'?"
+                                class="col-span-2 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold
+                                    bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400
+                                    hover:bg-red-100 dark:hover:bg-red-900/40 transition border border-red-200 dark:border-red-800">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                Desconectar WhatsApp (Logout)
+                            </button>
+                        @endif
                     </div>
 
                     {{-- Excluir (footer discreto) --}}
@@ -312,7 +326,7 @@
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
-                            Excluir
+                            Excluir do Painel
                         </button>
                     </div>
                 </div>
