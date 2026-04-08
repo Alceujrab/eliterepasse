@@ -86,15 +86,10 @@ class AdminPanelProvider extends PanelProvider
             // ─── Resources e Pages ────────────────────────────────
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([Dashboard::class])
 
-            // ─── Widgets do Dashboard ─────────────────────────────
+            // ─── Widgets (auto-discover) ──────────────────────────
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                AlertasWidget::class,
-                StatsOverview::class,
-                RecentVehiclesWidget::class,
-            ])
+            ->widgets([])
 
             // ─── Middleware ────────────────────────────────────────
             ->middleware([
