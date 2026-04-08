@@ -7,8 +7,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 
 class VehiclesTable
 {
@@ -16,110 +20,191 @@ class VehiclesTable
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\ImageColumn::make('media')
+                // ─── Foto ──────────────────────────────────────────────────
+                ImageColumn::make('media')
                     ->label('Foto')
                     ->circular()
-                    ->getStateUsing(function ($record) {
-                        return $record->media ? (is_array($record->media) ? $record->media[0] : json_decode($record->media)[0] ?? null) : null;
-                    }),
+                    ->getStateUsing(fn ($record) =>
+                        is_array($record->media) ? ($record->media[0] ?? null) : null
+                    ),
+
+                // ─── Identificação ─────────────────────────────────────────
                 TextColumn::make('plate')
                     ->label('Placa')
-                    ->searchable(),
+                    ->searchable()
+                    ->fontFamily('mono')
+                    ->badge()
+                    ->color('gray'),
+
                 TextColumn::make('brand')
                     ->label('Marca')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('model')
                     ->label('Modelo')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn ($record) => $record->version ? mb_strimwidth($record->version, 0, 35, '…') : null),
+
                 TextColumn::make('model_year')
                     ->label('Ano')
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) => "{$record->manufacture_year}/{$record->model_year}"),
+
+                // ─── Preços ────────────────────────────────────────────────
                 TextColumn::make('sale_price')
-                    ->label('Preço (R$)')
+                    ->label('Preço Venda')
                     ->money('BRL')
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('success'),
+
+                TextColumn::make('fipe_price')
+                    ->label('FIPE')
+                    ->money('BRL')
+                    ->sortable()
+                    ->color('gray')
+                    ->description(fn ($record) => $record->fipe_price && $record->sale_price
+                        ? '↓ ' . number_format((1 - $record->sale_price / $record->fipe_price) * 100, 1) . '% abaixo'
+                        : null
+                    ),
+
+                // ─── Km ────────────────────────────────────────────────────
+                TextColumn::make('mileage')
+                    ->label('Km')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => number_format($state, 0, ',', '.') . ' km'),
+
+                // ─── Status ────────────────────────────────────────────────
                 TextColumn::make('status')
-                    ->label('Disponibilidade')
+                    ->label('Status')
                     ->badge()
-                    ->colors([
-                        'success' => 'available',
-                        'warning' => 'reserved',
-                        'danger' => 'sold',
-                    ]),
+                    ->formatStateUsing(fn ($state) => match($state) {
+                        'available' => '✅ Disponível',
+                        'reserved'  => '⏳ Reservado',
+                        'sold'      => '🔴 Vendido',
+                        default     => $state,
+                    })
+                    ->color(fn ($state) => match($state) {
+                        'available' => 'success',
+                        'reserved'  => 'warning',
+                        'sold'      => 'danger',
+                        default     => 'gray',
+                    }),
+
+                // ─── Badges ────────────────────────────────────────────────
                 IconColumn::make('is_on_sale')
                     ->label('Oferta')
-                    ->boolean(),
-                    
-                // Hidden by default columns
-                TextColumn::make('version')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('manufacture_year')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('mileage')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('fuel_type')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('transmission')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('engine')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('color')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('doors')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('category')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('fipe_code')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('fipe_price')
-                    ->money('BRL')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('profit_margin')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->boolean()
+                    ->trueIcon('heroicon-o-tag')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('warning')
+                    ->falseColor('gray'),
+
                 IconColumn::make('has_report')
+                    ->label('Laudo')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 IconColumn::make('has_factory_warranty')
+                    ->label('Garantia')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_just_arrived')
-                    ->boolean()
+
+                TextColumn::make('category')
+                    ->label('Categoria')
+                    ->badge()
+                    ->color('info')
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('color')
+                    ->label('Cor')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('fuel_type')
+                    ->label('Combustível')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('transmission')
+                    ->label('Câmbio')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Cadastrado')
+                    ->dateTime('d/m/Y')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
+                    ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
+            ->defaultSort('created_at', 'desc')
+
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'available' => '✅ Disponível',
+                        'reserved'  => '⏳ Reservado',
+                        'sold'      => '🔴 Vendido',
+                    ]),
+
+                SelectFilter::make('category')
+                    ->label('Categoria')
+                    ->options([
+                        'SUV'    => 'SUV',
+                        'Sedan'  => 'Sedan',
+                        'Hatch'  => 'Hatch',
+                        'Pickup' => 'Pickup',
+                    ]),
+
+                SelectFilter::make('brand')
+                    ->label('Marca')
+                    ->options(fn () =>
+                        \App\Models\Vehicle::distinct()->orderBy('brand')->pluck('brand', 'brand')->toArray()
+                    ),
+
+                TernaryFilter::make('is_on_sale')
+                    ->label('Em Oferta'),
+
+                TernaryFilter::make('has_report')
+                    ->label('Com Laudo'),
             ])
+
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('marcar_disponivel')
+                    ->label('Disponibilizar')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->status !== 'available')
+                    ->action(fn ($record) => $record->update(['status' => 'available']))
+                    ->requiresConfirmation(),
+                Action::make('marcar_vendido')
+                    ->label('Marcar Vendido')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn ($record) => $record->status === 'available')
+                    ->action(fn ($record) => $record->update(['status' => 'sold']))
+                    ->requiresConfirmation(),
             ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    \Filament\Actions\BulkAction::make('disponibilizar_todos')
+                        ->label('Marcar Disponíveis')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(fn ($records) => $records->each->update(['status' => 'available']))
+                        ->requiresConfirmation(),
+                    \Filament\Actions\BulkAction::make('marcar_vendidos')
+                        ->label('Marcar Vendidos')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->action(fn ($records) => $records->each->update(['status' => 'sold']))
+                        ->requiresConfirmation(),
                 ]),
             ]);
     }
