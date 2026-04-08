@@ -46,13 +46,4 @@ class Dashboard extends BaseDashboard
         $disponiveis = Vehicle::where('status', 'available')->count();
         return "Você tem {$disponiveis} veículos disponíveis de {$total} no estoque.";
     }
-
-    public function getWidgets(): array
-    {
-        return [
-            \App\Filament\Widgets\AlertasWidget::class,
-            \App\Filament\Widgets\StatsOverview::class,
-            \App\Filament\Widgets\RecentVehiclesWidget::class,
-        ];
-    }
 }

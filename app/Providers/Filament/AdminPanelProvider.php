@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Widgets\AlertasWidget;
 use App\Filament\Widgets\RecentVehiclesWidget;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Pages\ConfiguracoesGerais;
@@ -70,6 +71,11 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Clientes')
                     ->collapsible(),
 
+                NavigationGroup::make('Comunicação')
+                    ->label('Comunicação')
+                    ->icon('heroicon-o-bell')
+                    ->collapsible(),
+
                 NavigationGroup::make('Configurações')
                     ->label('Configurações')
                     ->icon('heroicon-o-cog-6-tooth')
@@ -85,6 +91,7 @@ class AdminPanelProvider extends PanelProvider
             // ─── Widgets do Dashboard ─────────────────────────────
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                AlertasWidget::class,
                 StatsOverview::class,
                 RecentVehiclesWidget::class,
             ])
