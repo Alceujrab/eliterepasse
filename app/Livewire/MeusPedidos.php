@@ -15,7 +15,23 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class MeusPedidos extends Component
 {
-    public string $abaPedidos = 'todos'; // todos | pendente | confirmado | cancelado
+    public string $abaPedidos = 'todos';
+    public ?int   $pedidoOpenId = null;
+
+    public function abrirDetalhe(int $id): void
+    {
+        $this->pedidoOpenId = $this->pedidoOpenId === $id ? null : $id;
+    }
+
+    public function cancelarPedido(int $id): void
+    {
+        $pedido = Order::where('user_id', auth()->id())->where('id', $id)->firstOrFail();
+
+        if (in_array($pedido->status, ['pendente'])) {
+            $pedido->update(['status' => 'cancelado']);
+            session()->flash('message', "Pedido {$pedido->numero} cancelado.");
+        }
+    }
 
     public function render()
     {
