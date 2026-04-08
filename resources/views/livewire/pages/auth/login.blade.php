@@ -25,44 +25,100 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="text-left mb-8">
-        <h2 class="text-[26px] leading-[32px] font-black text-gray-800 tracking-tight">Olá, bom ter você no Portal do Lojista!</h2>
-        <p class="mt-3 text-[15px] text-gray-500 font-medium">Para acessar a sua conta, insira o e-mail ou CPF e senha cadastrados:</p>
+    {{-- Header --}}
+    <div class="text-center mb-8">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] flex items-center justify-center text-white text-2xl mb-4 shadow-lg">
+            🚗
+        </div>
+        <h2 class="text-2xl font-black text-gray-900 tracking-tight">Bem-vindo de volta!</h2>
+        <p class="mt-2 text-sm text-gray-500 font-medium">Acesse o Portal do Lojista com seu e-mail e senha</p>
     </div>
 
     <x-auth-session-status class="mb-5" :status="session('status')" />
 
     <form wire:submit="login" class="space-y-5">
+        {{-- Login --}}
         <div>
-            <label for="login" class="block text-sm font-bold text-gray-700 mb-1.5">Login</label>
-            <input wire:model="form.login" id="login" class="block w-full bg-[#f8fafc] border border-gray-300 text-gray-900 text-base rounded-md focus:ring-2 focus:ring-primary focus:border-primary shadow-sm px-4 py-3 transition hover:bg-white" type="text" name="login" placeholder="E-mail ou CPF" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('form.login')" class="mt-2" />
-        </div>
-
-        <div>
-            <label for="password" class="block text-sm font-bold text-gray-700 mb-1.5">Senha</label>
+            <label for="login" class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">E-mail ou CPF</label>
             <div class="relative">
-                <input wire:model="form.password" id="password" class="block w-full bg-[#f8fafc] border border-gray-300 text-gray-900 text-base rounded-md focus:ring-2 focus:ring-primary focus:border-primary shadow-sm px-4 py-3 transition hover:bg-white" type="password" name="password" placeholder="Sua senha" required autocomplete="current-password" />
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <input wire:model="form.login" id="login"
+                    class="block w-full bg-[#f8fafc] border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm pl-11 pr-4 py-3.5 text-sm transition hover:bg-white hover:border-gray-300"
+                    type="text" name="login" placeholder="seu@email.com" required autofocus autocomplete="username" />
             </div>
-            <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('form.login')" class="mt-1.5" />
         </div>
 
-        <div class="flex items-center justify-end pt-2">
+        {{-- Senha --}}
+        <div x-data="{ show: false }">
+            <label for="password" class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Senha</label>
+            <div class="relative">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <input wire:model="form.password" id="password"
+                    class="block w-full bg-[#f8fafc] border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm pl-11 pr-12 py-3.5 text-sm transition hover:bg-white hover:border-gray-300"
+                    :type="show ? 'text' : 'password'" name="password" placeholder="••••••••" required autocomplete="current-password" />
+                <button type="button" @click="show = !show"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                    <svg x-show="!show" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg x-show="show" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
+                </button>
+            </div>
+            <x-input-error :messages="$errors->get('form.password')" class="mt-1.5" />
+        </div>
+
+        {{-- Esqueceu senha --}}
+        <div class="flex items-center justify-end">
             @if (Route::has('password.request'))
-                <a class="text-sm font-bold text-primary hover:text-blue-800 transition underline decoration-2 underline-offset-4" href="{{ route('password.request') }}" wire:navigate>
-                    Esqueceu sua senha?
+                <a class="text-xs font-bold text-[#1a3a5c] hover:text-orange-500 transition" href="{{ route('password.request') }}" wire:navigate>
+                    Esqueceu a senha?
                 </a>
             @endif
         </div>
 
-        <button type="submit" class="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-lg shadow-orange_cta/20 text-[17px] font-black text-white bg-orange_cta hover:bg-[#e06512] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange_cta transition-all transform hover:-translate-y-0.5 mt-4">
-            Entrar
+        {{-- Botão --}}
+        <button type="submit"
+            class="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-xl text-white font-black text-base bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/20 transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            Entrar no Portal
         </button>
 
-        <div class="text-center mt-8 cursor-pointer group">
-            <p class="text-sm text-gray-500 font-bold flex items-center justify-center gap-2 group-hover:text-gray-800 transition">
-                <svg class="w-5 h-5 text-gray-400 group-hover:text-primary transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Problemas para acessar? <span class="underline decoration-1 underline-offset-4 decoration-gray-400 group-hover:decoration-gray-800">Clique aqui e confira o tutorial</span>
+        {{-- Divider --}}
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+            <div class="relative flex justify-center"><span class="bg-white px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">ou</span></div>
+        </div>
+
+        {{-- Cadastrar --}}
+        @if (Route::has('register'))
+            <a href="{{ route('register') }}" wire:navigate
+                class="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-sm text-[#1a3a5c] bg-[#f0f4f8] hover:bg-[#e2e8f0] border border-gray-200 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+                Cadastrar minha empresa
+            </a>
+        @endif
+
+        {{-- Help --}}
+        <div class="text-center mt-6">
+            <p class="text-xs text-gray-400">
+                Problemas para acessar?
+                <a href="mailto:suporte@eliterepasse.com.br" class="font-bold text-gray-500 hover:text-orange-500 transition">Fale conosco</a>
             </p>
         </div>
     </form>

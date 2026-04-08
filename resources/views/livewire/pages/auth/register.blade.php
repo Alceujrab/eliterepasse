@@ -33,19 +33,20 @@ new #[Layout('layouts.guest')] class extends Component
     public string $password = '';
     public string $password_confirmation = '';
 
-    /**
-     * Busca endereço via ViaCEP (chamado via Alpine.js no blur do CEP)
-     */
+    // Step wizard
+    public int $step = 1;
+
+    public function nextStep(): void  { $this->step = min($this->step + 1, 4); }
+    public function prevStep(): void  { $this->step = max($this->step - 1, 1); }
+
     public function buscarCep(): void
     {
         $cep = preg_replace('/\D/', '', $this->cep);
-
         if (strlen($cep) !== 8) return;
 
         try {
             $response = \Illuminate\Support\Facades\Http::get("https://viacep.com.br/ws/{$cep}/json/");
             $data = $response->json();
-
             if ($response->ok() && !isset($data['erro'])) {
                 $this->logradouro = $data['logradouro'] ?? '';
                 $this->bairro     = $data['bairro'] ?? '';
@@ -82,11 +83,10 @@ new #[Layout('layouts.guest')] class extends Component
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['status']   = 'pendente'; // aguarda aprovação
+        $validated['status']   = 'pendente';
 
         event(new Registered($user = User::create($validated)));
 
-        // NÃO faz auto-login: usuário deve aguardar aprovação
         session()->flash('cadastro_pendente', true);
 
         $this->redirect(route('login'), navigate: true);
@@ -94,142 +94,195 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="text-left mb-8">
-        <h2 class="text-[24px] leading-[30px] font-black text-gray-800 tracking-tight">Cadastre sua empresa</h2>
-        <p class="mt-2 text-[14px] text-gray-500 font-medium">Preencha os dados abaixo. Após análise da equipe, seu acesso será liberado.</p>
+    {{-- Header --}}
+    <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#1a3a5c] to-[#1e4f8a] flex items-center justify-center text-white text-2xl mb-4 shadow-lg">
+            🏢
+        </div>
+        <h2 class="text-xl font-black text-gray-900 tracking-tight">Cadastre sua empresa</h2>
+        <p class="mt-1 text-sm text-gray-500">Após análise da equipe, seu acesso será liberado</p>
     </div>
 
-    <form wire:submit="register" class="space-y-5">
+    {{-- Step indicators --}}
+    <div class="flex items-center justify-center gap-1.5 mb-6">
+        @foreach(['Empresa', 'Responsável', 'Endereço', 'Senha'] as $idx => $label)
+            @php $s = $idx + 1; @endphp
+            <button wire:click="$set('step', {{ $s }})"
+                class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition
+                    {{ $step === $s ? 'bg-[#1a3a5c] text-white' : ($step > $s ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400') }}">
+                @if($step > $s) ✓ @else {{ $s }} @endif
+                <span class="hidden sm:inline">{{ $label }}</span>
+            </button>
+        @endforeach
+    </div>
 
-        {{-- Dados da Empresa --}}
-        <div class="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
-            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">🏢 Dados da Empresa</h3>
+    <form wire:submit="register">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Step 1: Empresa --}}
+        @if($step === 1)
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Razão Social *</label>
-                    <input wire:model="razao_social" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500" placeholder="Empresa Ltda" required>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Razão Social *</label>
+                    <input wire:model="razao_social" type="text" placeholder="Empresa Ltda"
+                        class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
                     <x-input-error :messages="$errors->get('razao_social')" class="mt-1"/>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nome Fantasia</label>
-                    <input wire:model="nome_fantasia" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500" placeholder="Nome Fantasia">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Nome Fantasia</label>
+                    <input wire:model="nome_fantasia" type="text" placeholder="Nome para exibição"
+                        class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">CNPJ *</label>
-                    <input wire:model="cnpj" type="text" x-mask="99.999.999/9999-99" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-orange-500" placeholder="00.000.000/0000-00" required>
-                    <x-input-error :messages="$errors->get('cnpj')" class="mt-1"/>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">CNPJ *</label>
+                        <input wire:model="cnpj" type="text" x-mask="99.999.999/9999-99" placeholder="00.000.000/0000-00"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
+                        <x-input-error :messages="$errors->get('cnpj')" class="mt-1"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Inscrição Estadual</label>
+                        <input wire:model="inscricao_estadual" type="text" placeholder="Isento ou nº"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Inscrição Estadual</label>
-                    <input wire:model="inscricao_estadual" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm" placeholder="Isento ou número">
-                </div>
+                <button type="button" wire:click="nextStep"
+                    class="w-full py-3.5 rounded-xl bg-[#1a3a5c] text-white font-black text-sm hover:bg-[#0f2d4e] transition shadow-sm">
+                    Próximo →
+                </button>
             </div>
-        </div>
+        @endif
 
-        {{-- Dados do Responsável --}}
-        <div class="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
-            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">👤 Responsável</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Step 2: Responsável --}}
+        @if($step === 2)
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nome Completo *</label>
-                    <input wire:model="name" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500" required>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Nome Completo *</label>
+                    <input wire:model="name" type="text" placeholder="Seu nome"
+                        class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
                     <x-input-error :messages="$errors->get('name')" class="mt-1"/>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">E-mail *</label>
-                    <input wire:model="email" type="email" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-orange-500" required>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">E-mail *</label>
+                    <input wire:model="email" type="email" placeholder="seu@empresa.com.br"
+                        class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
                     <x-input-error :messages="$errors->get('email')" class="mt-1"/>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">WhatsApp</label>
-                    <input wire:model="phone" type="text" x-mask="(99) 9 9999-9999" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm" placeholder="(00) 9 0000-0000">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">WhatsApp</label>
+                    <input wire:model="phone" type="text" x-mask="(99) 9 9999-9999" placeholder="(00) 9 0000-0000"
+                        class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" wire:click="prevStep" class="px-5 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition">← Voltar</button>
+                    <button type="button" wire:click="nextStep" class="flex-1 py-3.5 rounded-xl bg-[#1a3a5c] text-white font-black text-sm hover:bg-[#0f2d4e] transition shadow-sm">Próximo →</button>
                 </div>
             </div>
-        </div>
+        @endif
 
-        {{-- Endereço com busca automática CEP --}}
-        <div class="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
-            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">📍 Endereço</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">CEP</label>
-                    <input wire:model.blur="cep" wire:change="buscarCep" type="text" x-mask="99999-999"
-                        class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-mono"
-                        placeholder="00000-000">
+        {{-- Step 3: Endereço --}}
+        @if($step === 3)
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">CEP</label>
+                        <input wire:model.blur="cep" wire:change="buscarCep" type="text" x-mask="99999-999" placeholder="00000-000"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Logradouro</label>
+                        <input wire:model="logradouro" type="text"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
                 </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Logradouro</label>
-                    <input wire:model="logradouro" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Número</label>
+                        <input wire:model="numero" type="text"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Complemento</label>
+                        <input wire:model="complemento" type="text"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Número</label>
-                    <input wire:model="numero" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Bairro</label>
+                        <input wire:model="bairro" type="text"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Cidade</label>
+                        <input wire:model="cidade" type="text"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Estado</label>
+                        <select wire:model="estado"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                            <option value="">UF</option>
+                            @foreach(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] as $uf)
+                                <option value="{{ $uf }}" @selected($estado === $uf)>{{ $uf }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Complemento</label>
-                    <input wire:model="complemento" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Bairro</label>
-                    <input wire:model="bairro" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Cidade</label>
-                    <input wire:model="cidade" type="text" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Estado</label>
-                    <select wire:model="estado" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm bg-white">
-                        <option value="">UF</option>
-                        @foreach(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] as $uf)
-                            <option value="{{ $uf }}" @selected($estado === $uf)>{{ $uf }}</option>
-                        @endforeach
-                    </select>
+                <div class="flex gap-3">
+                    <button type="button" wire:click="prevStep" class="px-5 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition">← Voltar</button>
+                    <button type="button" wire:click="nextStep" class="flex-1 py-3.5 rounded-xl bg-[#1a3a5c] text-white font-black text-sm hover:bg-[#0f2d4e] transition shadow-sm">Próximo →</button>
                 </div>
             </div>
-        </div>
+        @endif
 
-        {{-- Senha com olhinho --}}
-        <div class="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
-            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">🔒 Senha de Acesso</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Step 4: Senha --}}
+        @if($step === 4)
+            <div class="space-y-4">
                 <div x-data="{ show: false }">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Senha *</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Senha *</label>
                     <div class="relative">
-                        <input wire:model="password" :type="show ? 'text' : 'password'" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-12 text-sm focus:ring-2 focus:ring-orange-500" placeholder="Mínimo 8 caracteres" required>
-                        <button type="button" @click="show = !show" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition">
-                            <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                        <input wire:model="password" :type="show ? 'text' : 'password'" placeholder="Mínimo 8 caracteres"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
+                        <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition">
+                            <svg x-show="!show" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <svg x-show="show" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
                         </button>
                     </div>
                     <x-input-error :messages="$errors->get('password')" class="mt-1"/>
                 </div>
                 <div x-data="{ show: false }">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Confirmar Senha *</label>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Confirmar Senha *</label>
                     <div class="relative">
-                        <input wire:model="password_confirmation" :type="show ? 'text' : 'password'" class="block w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-12 text-sm focus:ring-2 focus:ring-orange-500" placeholder="Repita a senha" required>
-                        <button type="button" @click="show = !show" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition">
-                            <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                        <input wire:model="password_confirmation" :type="show ? 'text' : 'password'" placeholder="Repita a senha"
+                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition" required>
+                        <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition">
+                            <svg x-show="!show" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <svg x-show="show" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
                         </button>
                     </div>
                 </div>
+
+                {{-- Info box --}}
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <p class="text-xs text-blue-700 font-semibold">📋 Após o envio, nossa equipe analisará seu cadastro e enviará um e-mail quando o acesso for liberado.</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" wire:click="prevStep" class="px-5 py-3.5 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition">← Voltar</button>
+                    <button type="submit"
+                        class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-black text-sm hover:opacity-90 transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                        ✅ Enviar Cadastro
+                    </button>
+                </div>
             </div>
-        </div>
-
-        {{-- Termos e Submit --}}
-        <div class="flex flex-col gap-4 pt-2">
-            <button type="submit"
-                class="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-xl text-white font-black text-[16px] bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/20 transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Enviar Cadastro para Análise
-            </button>
-
-            <p class="text-center text-sm text-gray-500">
-                Já tem conta?
-                <a href="{{ route('login') }}" wire:navigate class="text-orange-600 font-bold hover:underline">Fazer login</a>
-            </p>
-        </div>
+        @endif
     </form>
+
+    {{-- Login link --}}
+    <div class="mt-6 text-center">
+        <p class="text-xs text-gray-500">
+            Já tem conta?
+            <a href="{{ route('login') }}" wire:navigate class="font-bold text-orange-500 hover:text-orange-600 transition">Fazer login</a>
+        </p>
+    </div>
 </div>
