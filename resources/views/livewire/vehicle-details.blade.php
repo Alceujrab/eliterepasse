@@ -160,7 +160,7 @@
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-xl">🏢</div>
                             <div>
-                                <p class="text-base font-bold text-gray-800">{{ $vehicle->location }}</p>
+                                <p class="text-base font-bold text-gray-800">{{ $vehicle->location['name'] ?? '' }}</p>
                                 <p class="text-sm text-gray-400">Pátio de armazenamento</p>
                             </div>
                         </div>
