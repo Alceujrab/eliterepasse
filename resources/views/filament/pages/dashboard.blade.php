@@ -172,8 +172,23 @@
                                         'cancelado', 'fechado'   => 'bg-gray-100 text-gray-500',
                                         default                  => 'bg-blue-100 text-blue-700',
                                     };
+                                    $statusLabel = match($a['status'] ?? '') {
+                                        'pendente'            => 'Pendente',
+                                        'confirmado'          => 'Confirmado',
+                                        'faturado'            => 'Faturado',
+                                        'cancelado'           => 'Cancelado',
+                                        'aberto'              => 'Aberto',
+                                        'em_atendimento'      => 'Em Atendimento',
+                                        'aguardando_cliente'  => 'Aguardando Cliente',
+                                        'resolvido'           => 'Resolvido',
+                                        'fechado'             => 'Fechado',
+                                        'ativo'               => 'Ativo',
+                                        'bloqueado'           => 'Bloqueado',
+                                        'aprovado'            => 'Aprovado',
+                                        default               => ucfirst(str_replace('_', ' ', $a['status'] ?? '-')),
+                                    };
                                 @endphp
-                                <span class="badge {{ $statusBg }}">{{ $a['status'] }}</span>
+                                <span class="badge {{ $statusBg }}">{{ $statusLabel }}</span>
                                 <span class="text-xs text-gray-400">{{ $a['data']->diffForHumans() }}</span>
                             </div>
                         </div>
