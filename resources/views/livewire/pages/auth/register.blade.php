@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Company;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -86,6 +87,19 @@ new #[Layout('layouts.guest')] class extends Component
         $validated['status']   = 'pendente';
 
         event(new Registered($user = User::create($validated)));
+
+        // Criar a empresa e vincular ao usuário
+        $company = Company::create([
+            'razao_social'       => $this->razao_social,
+            'cnpj'               => $this->cnpj,
+            'whatsapp'           => $this->phone,
+            'inscricao_estadual' => $this->inscricao_estadual ?: null,
+            'address'            => trim(($this->logradouro ? $this->logradouro . ', ' : '') . $this->numero),
+            'city'               => $this->cidade ?: null,
+            'state'              => $this->estado ?: null,
+            'zipcode'            => $this->cep ?: null,
+        ]);
+        $user->companies()->attach($company);
 
         // Notificar admins sobre novo cadastro (email + WhatsApp)
         app(\App\Services\NotificationService::class)->novoCadastroParaAdmin($user);

@@ -76,6 +76,7 @@ class VehicleDetails extends Component
                 'status'     => 'pendente',
             ],
             [
+                'company_id'   => auth()->user()->companies()->first()?->id,
                 'valor_compra' => $this->vehicle->sale_price,
                 'valor_fipe'   => $this->vehicle->fipe_price,
                 'observacoes'  => $this->observacoes,
