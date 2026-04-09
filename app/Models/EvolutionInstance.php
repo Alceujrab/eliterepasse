@@ -96,11 +96,15 @@ class EvolutionInstance extends Model
                 'delay'  => 1200,
             ]);
 
-            return [
-                'success' => $response->successful(),
-                'status'  => $response->status(),
-                'body'    => $response->json(),
-            ];
+            $json = $response->json();
+
+            if ($response->successful()) {
+                return ['success' => true, 'status' => $response->status(), 'body' => $json];
+            }
+
+            $error = $json['error'] ?? $json['message'] ?? $json['data']['message'] ?? 'HTTP ' . $response->status();
+
+            return ['success' => false, 'error' => $error, 'status' => $response->status(), 'body' => $json];
         } catch (\Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }
