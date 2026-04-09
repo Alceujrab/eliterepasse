@@ -204,44 +204,71 @@
 
                                             {{-- Timeline do pedido --}}
                                             <div>
-                                                <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">📋 Status do Pedido</h4>
-                                                @php
-                                                    $etapas = [
-                                                        ['label' => 'Proposta enviada', 'data' => $pedido->created_at, 'done' => true],
-                                                        ['label' => 'Análise da equipe', 'data' => null, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
-                                                        ['label' => 'Pedido confirmado', 'data' => $pedido->confirmado_em, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
-                                                        ['label' => 'Faturamento', 'data' => null, 'done' => $pedido->status === 'faturado'],
-                                                    ];
-                                                @endphp
-                                                <div class="space-y-3">
-                                                    @foreach($etapas as $idx => $etapa)
-                                                        <div class="flex items-start gap-3">
-                                                            <div class="flex flex-col items-center">
-                                                                <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black
-                                                                    {{ $etapa['done'] ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-400' }}">
-                                                                    {{ $etapa['done'] ? '✓' : ($idx + 1) }}
+                                                <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">📋 Histórico do Pedido</h4>
+                                                @if($pedido->histories && $pedido->histories->count() > 0)
+                                                    <div class="space-y-3">
+                                                        @foreach($pedido->histories->reverse() as $idx => $hist)
+                                                            @php
+                                                                $icon = \App\Models\OrderHistory::acaoIcons()[$hist->acao] ?? '📌';
+                                                                $label = $hist->descricao ?? (\App\Models\OrderHistory::acaoLabels()[$hist->acao] ?? $hist->acao);
+                                                                $isLast = $loop->last;
+                                                            @endphp
+                                                            <div class="flex items-start gap-3">
+                                                                <div class="flex flex-col items-center">
+                                                                    <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm">
+                                                                        {{ $icon }}
+                                                                    </div>
+                                                                    @if(! $isLast)
+                                                                        <div class="w-0.5 h-5 bg-emerald-300"></div>
+                                                                    @endif
                                                                 </div>
-                                                                @if($idx < count($etapas) - 1)
-                                                                    <div class="w-0.5 h-5 {{ $etapa['done'] ? 'bg-emerald-300' : 'bg-gray-200' }}"></div>
-                                                                @endif
+                                                                <div>
+                                                                    <p class="text-sm font-semibold text-gray-800">{{ $label }}</p>
+                                                                    <p class="text-xs text-gray-400">{{ $hist->created_at->format('d/m/Y H:i') }}</p>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <p class="text-sm font-semibold {{ $etapa['done'] ? 'text-gray-800' : 'text-gray-400' }}">{{ $etapa['label'] }}</p>
-                                                                @if($etapa['data'])
-                                                                    <p class="text-xs text-gray-400">{{ $etapa['data']->format('d/m/Y H:i') }}</p>
-                                                                @endif
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    {{-- Fallback: timeline estática --}}
+                                                    @php
+                                                        $etapas = [
+                                                            ['label' => 'Proposta enviada', 'data' => $pedido->created_at, 'done' => true],
+                                                            ['label' => 'Análise da equipe', 'data' => null, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
+                                                            ['label' => 'Pedido confirmado', 'data' => $pedido->confirmado_em, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
+                                                            ['label' => 'Faturamento', 'data' => null, 'done' => $pedido->status === 'faturado'],
+                                                        ];
+                                                    @endphp
+                                                    <div class="space-y-3">
+                                                        @foreach($etapas as $idx => $etapa)
+                                                            <div class="flex items-start gap-3">
+                                                                <div class="flex flex-col items-center">
+                                                                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black
+                                                                        {{ $etapa['done'] ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-400' }}">
+                                                                        {{ $etapa['done'] ? '✓' : ($idx + 1) }}
+                                                                    </div>
+                                                                    @if($idx < count($etapas) - 1)
+                                                                        <div class="w-0.5 h-5 {{ $etapa['done'] ? 'bg-emerald-300' : 'bg-gray-200' }}"></div>
+                                                                    @endif
+                                                                </div>
+                                                                <div>
+                                                                    <p class="text-sm font-semibold {{ $etapa['done'] ? 'text-gray-800' : 'text-gray-400' }}">{{ $etapa['label'] }}</p>
+                                                                    @if($etapa['data'])
+                                                                        <p class="text-xs text-gray-400">{{ $etapa['data']->format('d/m/Y H:i') }}</p>
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    </div>
+                                                @endif
 
-                                                    {{-- Cancelado --}}
-                                                    @if($pedido->status === 'cancelado')
-                                                        <div class="flex items-center gap-3 mt-1">
-                                                            <div class="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-black">✕</div>
-                                                            <p class="text-sm font-bold text-red-600">Pedido Cancelado</p>
-                                                        </div>
-                                                    @endif
-                                                </div>
+                                                {{-- Cancelado --}}
+                                                @if($pedido->status === 'cancelado')
+                                                    <div class="flex items-center gap-3 mt-3">
+                                                        <div class="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-black">✕</div>
+                                                        <p class="text-sm font-bold text-red-600">Pedido Cancelado</p>
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             {{-- Ações e links --}}

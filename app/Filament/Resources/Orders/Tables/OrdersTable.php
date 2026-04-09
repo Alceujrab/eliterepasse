@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
+use App\Models\Financial;
+use App\Models\OrderHistory;
 use App\Services\ContractService;
 use App\Services\NotificationService;
 use Filament\Actions\Action;
@@ -10,6 +12,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -107,6 +113,80 @@ class OrdersTable
                         app(NotificationService::class)->contratoParaAssinar($contract, $linkAssinatura);
                         Notification::make()
                             ->title("Contrato {$contract->numero} gerado! Notificação enviada.")
+                            ->success()->send();
+                    }),
+
+                Action::make('gerar_fatura')
+                    ->label('Gerar Fatura')
+                    ->icon('heroicon-o-banknotes')
+                    ->color('warning')
+                    ->modalHeading('Gerar Fatura')
+                    ->modalDescription('Preencha os dados da fatura para o cliente.')
+                    ->visible(fn (Order $r) => in_array($r->status, ['confirmado', 'faturado']) && ! $r->financial)
+                    ->form([
+                        TextInput::make('descricao')
+                            ->label('Descrição')
+                            ->default(fn (Order $r) => "Compra veículo " . ($r->vehicle ? "{$r->vehicle->brand} {$r->vehicle->model}" : ''))
+                            ->required(),
+                        TextInput::make('valor')
+                            ->label('Valor (R$)')
+                            ->numeric()
+                            ->default(fn (Order $r) => $r->valor_compra)
+                            ->required(),
+                        Select::make('forma_pagamento')
+                            ->label('Forma de Pagamento')
+                            ->options(Financial::formasPagamento())
+                            ->default(fn (Order $r) => $r->paymentMethod?->slug ?? 'boleto')
+                            ->required(),
+                        DatePicker::make('data_vencimento')
+                            ->label('Vencimento')
+                            ->default(now()->addDays(3)->format('Y-m-d'))
+                            ->required(),
+                        Textarea::make('observacoes')
+                            ->label('Observações')
+                            ->rows(2),
+                    ])
+                    ->action(function (Order $record, array $data) {
+                        $financial = Financial::create([
+                            'order_id'        => $record->id,
+                            'numero'          => Financial::gerarNumero(),
+                            'descricao'       => $data['descricao'],
+                            'valor'           => $data['valor'],
+                            'forma_pagamento' => $data['forma_pagamento'],
+                            'data_vencimento' => $data['data_vencimento'],
+                            'status'          => 'em_aberto',
+                            'criado_por'      => auth()->id(),
+                            'observacoes'     => $data['observacoes'] ?? null,
+                        ]);
+
+                        $record->update(['status' => Order::STATUS_FATURADO]);
+
+                        app(NotificationService::class)->faturaGerada($financial);
+
+                        Notification::make()
+                            ->title("Fatura {$financial->numero} gerada! Cliente notificado.")
+                            ->success()->send();
+                    }),
+
+                Action::make('confirmar_pagamento')
+                    ->label('Confirmar Pagamento')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar recebimento do pagamento?')
+                    ->modalDescription('O cliente será notificado por e-mail e WhatsApp.')
+                    ->visible(fn (Order $r) => $r->status === 'faturado' && $r->financial && $r->financial->status === 'em_aberto')
+                    ->action(function (Order $record) {
+                        $financial = $record->financial;
+                        $financial->update([
+                            'status'         => 'pago',
+                            'data_pagamento' => now(),
+                        ]);
+
+                        app(NotificationService::class)->pagamentoConfirmado($financial->fresh());
+
+                        Notification::make()
+                            ->title("Pagamento {$financial->numero} confirmado! Cliente notificado.")
                             ->success()->send();
                     }),
 

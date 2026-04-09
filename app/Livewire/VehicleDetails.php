@@ -84,6 +84,7 @@ class VehicleDetails extends Component
 
         // Notificar admins sobre novo pedido (email + WhatsApp)
         if ($order->wasRecentlyCreated) {
+            \App\Models\OrderHistory::registrar($order->id, 'pedido_criado', null, 'pendente');
             app(NotificationService::class)->novoPedidoParaAdmin($order->load(['user', 'vehicle']));
         }
 

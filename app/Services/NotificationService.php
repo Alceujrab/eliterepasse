@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Contract;
 use App\Models\Document;
+use App\Models\Financial;
 use App\Models\Order;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
@@ -13,8 +14,10 @@ use App\Notifications\ContratoAssinado;
 use App\Notifications\ContratoAssinadoAdmin;
 use App\Notifications\ContratoParaAssinar;
 use App\Notifications\DocumentoVerificado;
+use App\Notifications\FaturaGerada;
 use App\Notifications\NovoCadastroAdmin;
 use App\Notifications\NovoPedidoAdmin;
+use App\Notifications\PagamentoConfirmado;
 use App\Notifications\PedidoConfirmado;
 use App\Notifications\TicketAtualizado;
 use Illuminate\Support\Facades\Log;
@@ -259,6 +262,68 @@ class NotificationService
             }
         } catch (\Exception $e) {
             Log::error('NotificationService::contratoAssinado', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Fatura Gerada ────────────────────────────────────────────────
+
+    public function faturaGerada(Financial $financial): void
+    {
+        try {
+            $order = $financial->order;
+            $user  = $order?->user;
+            if (! $user) return;
+
+            // 1. Notificação database + email
+            $user->notify(new FaturaGerada($financial));
+
+            // 2. WhatsApp
+            if ($user->phone) {
+                $nome       = $user->razao_social ?? $user->name;
+                $valor      = number_format((float) $financial->valor, 2, ',', '.');
+                $vencimento = $financial->data_vencimento?->format('d/m/Y') ?? '—';
+                $forma      = Financial::formasPagamento()[$financial->forma_pagamento] ?? $financial->forma_pagamento;
+
+                $this->whatsapp->faturaGerada(
+                    $user->phone,
+                    $nome,
+                    $financial->numero,
+                    $valor,
+                    $vencimento,
+                    $forma
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('NotificationService::faturaGerada', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Pagamento Confirmado ─────────────────────────────────────────
+
+    public function pagamentoConfirmado(Financial $financial): void
+    {
+        try {
+            $order = $financial->order;
+            $user  = $order?->user;
+            if (! $user) return;
+
+            // 1. Notificação database + email
+            $user->notify(new PagamentoConfirmado($financial));
+
+            // 2. WhatsApp
+            if ($user->phone) {
+                $nome  = $user->razao_social ?? $user->name;
+                $valor = number_format((float) $financial->valor, 2, ',', '.');
+
+                $this->whatsapp->pagamentoConfirmado(
+                    $user->phone,
+                    $nome,
+                    $financial->numero,
+                    $valor
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('NotificationService::pagamentoConfirmado', ['error' => $e->getMessage()]);
         }
     }
 }

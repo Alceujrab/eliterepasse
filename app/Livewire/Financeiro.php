@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Financial;
 use App\Models\Order;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -28,6 +29,9 @@ class Financeiro extends Component
                        ->orWhereHas('vehicle', fn ($v) =>
                             $v->where('brand', 'LIKE', "%{$this->busca}%")
                               ->orWhere('model', 'LIKE', "%{$this->busca}%")
+                       )
+                       ->orWhereHas('financial', fn ($f) =>
+                            $f->where('numero', 'LIKE', "%{$this->busca}%")
                        );
                 });
             })
@@ -44,9 +48,9 @@ class Financeiro extends Component
 
     public function getTotalPendenteProperty(): float
     {
-        return Order::where('user_id', auth()->id())
-            ->where('status', 'aguardando_pgto')
-            ->sum('valor_compra');
+        return Financial::whereHas('order', fn ($q) => $q->where('user_id', auth()->id()))
+            ->where('status', 'em_aberto')
+            ->sum('valor');
     }
 
     public function getTotalMesProperty(): float

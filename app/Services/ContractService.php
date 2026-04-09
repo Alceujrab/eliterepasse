@@ -149,7 +149,20 @@ class ContractService
             'visivel_cliente' => true,
         ]);
 
-        // 8. Notificar cliente + admins sobre contrato assinado
+        // 8. Registrar no histórico do pedido
+        if ($contract->order_id) {
+            \App\Models\OrderHistory::registrar(
+                $contract->order_id,
+                'contrato_assinado',
+                null,
+                null,
+                null,
+                $contract->user_id,
+                ['contract_id' => $contract->id, 'numero' => $contract->numero]
+            );
+        }
+
+        // 9. Notificar cliente + admins sobre contrato assinado
         app(NotificationService::class)->contratoAssinado($contract->fresh());
 
         return $signature;

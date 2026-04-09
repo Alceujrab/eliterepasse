@@ -192,6 +192,36 @@ class EvolutionService
         return $this->enviar($phone, $msg);
     }
 
+    public function faturaGerada(string $phone, string $nome, string $numeroFatura, string $valor, string $vencimento, string $formaPagamento): bool
+    {
+        $msg = "💰 *Nova Fatura Gerada*\n\n"
+            . "Olá, *{$nome}*!\n\n"
+            . "Uma fatura foi gerada para o seu pedido:\n"
+            . "📋 *Fatura:* {$numeroFatura}\n"
+            . "💵 *Valor:* R$ {$valor}\n"
+            . "📅 *Vencimento:* {$vencimento}\n"
+            . "💳 *Pagamento:* {$formaPagamento}\n\n"
+            . "👉 Acesse o portal para mais detalhes:\n"
+            . url('/financeiro') . "\n\n"
+            . "_Elite Repasse — Portal B2B_";
+
+        return $this->enviar($phone, $msg);
+    }
+
+    public function pagamentoConfirmado(string $phone, string $nome, string $numeroFatura, string $valor): bool
+    {
+        $msg = "💚 *Pagamento Confirmado!*\n\n"
+            . "Olá, *{$nome}*!\n\n"
+            . "O pagamento da fatura *{$numeroFatura}* foi confirmado!\n\n"
+            . "💵 *Valor:* R$ {$valor}\n"
+            . "📅 *Data:* " . now()->format('d/m/Y') . "\n\n"
+            . "Obrigado pela confiança! 🤝\n\n"
+            . "👉 Acompanhe no portal: " . url('/financeiro') . "\n\n"
+            . "_Elite Repasse — Portal B2B_";
+
+        return $this->enviar($phone, $msg);
+    }
+
     // ─── Status da Instância ──────────────────────────────────────────
 
     public function testarConexao(?EvolutionInstance $instance = null): bool

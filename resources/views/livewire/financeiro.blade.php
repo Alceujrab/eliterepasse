@@ -172,7 +172,65 @@
                                     {{-- Dados Financeiros --}}
                                     <div>
                                         <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">💳 Dados de Cobrança</h3>
-                                        @if($fin)
+                                        @if($fin && $fin->numero)
+                                            <div class="space-y-2.5">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Fatura</span>
+                                                    <span class="font-bold font-mono text-gray-800">{{ $fin->numero }}</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Valor</span>
+                                                    <span class="font-bold text-gray-800">R$ {{ number_format($fin->valor, 2, ',', '.') }}</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Status</span>
+                                                    @php
+                                                        $finStatusBadge = match($fin->status) {
+                                                            'pago'      => 'bg-emerald-100 text-emerald-700',
+                                                            'vencido'   => 'bg-red-100 text-red-700',
+                                                            'estornado' => 'bg-blue-100 text-blue-700',
+                                                            'cancelado' => 'bg-gray-100 text-gray-600',
+                                                            default     => 'bg-yellow-100 text-yellow-700',
+                                                        };
+                                                    @endphp
+                                                    <span class="badge {{ $finStatusBadge }}">{{ \App\Models\Financial::statusLabels()[$fin->status] ?? $fin->status }}</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Forma de Pagamento</span>
+                                                    <span class="font-semibold text-gray-700">{{ \App\Models\Financial::formasPagamento()[$fin->forma_pagamento] ?? $fin->forma_pagamento ?? '—' }}</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-500">Vencimento</span>
+                                                    <span class="font-semibold {{ $fin->esta_vencido ? 'text-red-600' : 'text-gray-700' }}">
+                                                        {{ $fin->data_vencimento?->format('d/m/Y') ?? '—' }}
+                                                        @if($fin->esta_vencido) <span class="text-xs text-red-500">⚠️ Vencido</span> @endif
+                                                    </span>
+                                                </div>
+                                                @if($fin->data_pagamento)
+                                                    <div class="flex justify-between text-sm">
+                                                        <span class="text-gray-500">Data Pagamento</span>
+                                                        <span class="font-semibold text-emerald-600">{{ $fin->data_pagamento->format('d/m/Y') }}</span>
+                                                    </div>
+                                                @endif
+                                                @if($fin->observacoes)
+                                                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 text-xs text-blue-700">
+                                                        💬 {{ $fin->observacoes }}
+                                                    </div>
+                                                @endif
+                                                @if($fin->digitable_line)
+                                                    <div>
+                                                        <p class="text-xs text-gray-500 mb-1">Linha Digitável</p>
+                                                        <div class="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-2">
+                                                            <code class="text-xs text-gray-700 flex-1 break-all">{{ $fin->digitable_line }}</code>
+                                                            <button onclick="navigator.clipboard.writeText('{{ $fin->digitable_line }}')"
+                                                                class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-200 transition flex-shrink-0">
+                                                                Copiar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @elseif($fin)
                                             <div class="space-y-2.5">
                                                 <div class="flex justify-between text-sm">
                                                     <span class="text-gray-500">Status do Pagamento</span>

@@ -65,6 +65,22 @@ class Financial extends Model
         };
     }
 
+    // ─── Geração de Número ───────────────────────────────────────────
+
+    public static function gerarNumero(): string
+    {
+        $ano = now()->format('Y');
+        $ultimo = static::where('numero', 'like', "FAT-{$ano}-%")
+            ->orderByDesc('numero')
+            ->value('numero');
+
+        $seq = $ultimo
+            ? ((int) substr($ultimo, -6)) + 1
+            : 1;
+
+        return "FAT-{$ano}-" . str_pad($seq, 6, '0', STR_PAD_LEFT);
+    }
+
     // ─── Relações ─────────────────────────────────────────────────────
 
     public function order()

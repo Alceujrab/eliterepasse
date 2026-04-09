@@ -89,6 +89,11 @@ class Order extends Model
         return $this->hasOne(Contract::class);
     }
 
+    public function histories()
+    {
+        return $this->hasMany(OrderHistory::class)->latest();
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────────
     public function getNumeroAttribute(): string
     {
