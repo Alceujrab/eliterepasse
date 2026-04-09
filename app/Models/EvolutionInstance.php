@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
  *   POST   {url_base}/instance/pair      — Código numérico de pareamento
  *   DELETE {url_base}/instance/logout    — Desconectar
  *
- * Autenticação: Header  Authorization: Bearer {token}
+ * Autenticação: Header  apikey: {token}
  * O token é o campo `api_key` cadastrado no painel.
  */
 class EvolutionInstance extends Model
@@ -65,8 +65,8 @@ class EvolutionInstance extends Model
     private function http(int $timeout = 10)
     {
         return Http::timeout($timeout)->withHeaders([
-            'Authorization' => 'Bearer ' . $this->api_key,
-            'Content-Type'  => 'application/json',
+            'apikey'       => $this->api_key,
+            'Content-Type' => 'application/json',
         ]);
     }
 
@@ -110,15 +110,25 @@ class EvolutionInstance extends Model
 
     /**
      * Chama a API e atualiza status_conexao + verificado_em na BD.
-     * Retorna true se a instância estiver conectada (state === 'open').
+     * Retorna true se a instância estiver conectada (connected + loggedIn).
+     *
+     * Evolution Go retorna:
+     *   { "data": { "connected": bool, "loggedIn": bool, "name": "...", "myJid": "..." } }
      */
     public function testarConexao(): bool
     {
         try {
             $response = $this->http(8)->get($this->baseUrl() . '/instance/status');
 
-            // A API retorna: { "state": "open" | "connecting" | "close" }
-            $state = $response->json('state') ?? 'close';
+            $connected = $response->json('data.connected', false);
+            $loggedIn  = $response->json('data.loggedIn', false);
+
+            // Mapear para os 3 estados usados no painel
+            $state = match (true) {
+                $connected && $loggedIn  => 'open',
+                $connected && !$loggedIn => 'connecting',
+                default                  => 'close',
+            };
 
             $this->update([
                 'status_conexao' => $state,
@@ -138,6 +148,9 @@ class EvolutionInstance extends Model
      * Retorna o QR Code em base64 para exibição no painel.
      * Funciona apenas quando a instância está desconectada.
      * Se já estiver conectada, retorna null.
+     *
+     * Evolution Go retorna:
+     *   { "data": { "qrcode": "2@abcd...", "code": "data:image/png;base64,..." } }
      */
     public function getQrCode(): ?string
     {
@@ -148,8 +161,7 @@ class EvolutionInstance extends Model
                 return null;
             }
 
-            // A API retorna: { "qr": "data:image/png;base64,..." }
-            return $response->json('qr');
+            return $response->json('data.code');
         } catch (\Exception $e) {
             return null;
         }
@@ -158,16 +170,16 @@ class EvolutionInstance extends Model
     // ─── Conectar / Iniciar sessão (POST /instance/connect) ──────────
 
     /**
-     * Inicia conexão. Pode retornar QR Code se não tiver phone.
-     * @param string|null $phone Para pareamento por código numérico (opcional).
+     * Inicia conexão. Retorna QR Code se não estiver conectada.
      * @param string|null $webhookUrl URL para receber eventos (opcional).
+     * @param array       $subscribe  Eventos para webhook (opcional).
      */
-    public function conectar(?string $phone = null, ?string $webhookUrl = null): array
+    public function conectar(?string $webhookUrl = null, array $subscribe = []): array
     {
         try {
-            $payload = ['immediate' => true];
-            if ($phone) $payload['phone'] = $phone;
+            $payload = [];
             if ($webhookUrl) $payload['webhookUrl'] = $webhookUrl;
+            if ($subscribe)  $payload['subscribe']  = $subscribe;
 
             $response = $this->http(15)->post($this->baseUrl() . '/instance/connect', $payload);
 
@@ -215,7 +227,7 @@ class EvolutionInstance extends Model
                 'phone' => $phone,
             ]);
 
-            return $response->json('code');
+            return $response->json('data.code');
         } catch (\Exception $e) {
             return null;
         }
