@@ -137,15 +137,29 @@ class EvolutionInstance extends Model
                 'body'     => $response->json(),
             ]);
 
-            $connected = $response->json('data.connected', false);
-            $loggedIn  = $response->json('data.loggedIn', false);
+            $data = $response->json('data', []);
 
-            // Mapear para os 3 estados usados no painel
-            $state = match (true) {
-                $connected && $loggedIn  => 'open',
-                $connected && !$loggedIn => 'connecting',
-                default                  => 'close',
-            };
+            // Evolution Go pode retornar dois formatos:
+            // Formato 1: { "data": { "connected": true, "loggedIn": true } }
+            // Formato 2: { "data": { "status": "open" } }
+            if (isset($data['status'])) {
+                // Formato com status string direto
+                $state = in_array($data['status'], ['open', 'connecting', 'close', 'created'])
+                    ? $data['status']
+                    : 'close';
+                // "created" mapeia para "close" no painel (não conectado)
+                if ($state === 'created') $state = 'close';
+            } else {
+                // Formato com connected/loggedIn booleans
+                $connected = $data['connected'] ?? false;
+                $loggedIn  = $data['loggedIn'] ?? false;
+
+                $state = match (true) {
+                    $connected && $loggedIn  => 'open',
+                    $connected && !$loggedIn => 'connecting',
+                    default                  => 'close',
+                };
+            }
 
             $this->update([
                 'status_conexao' => $state,
@@ -154,6 +168,10 @@ class EvolutionInstance extends Model
 
             return $state === 'open';
         } catch (\Exception $e) {
+            \Log::error('Evolution Go status exception', [
+                'instance' => $this->nome,
+                'error'    => $e->getMessage(),
+            ]);
             $this->update(['status_conexao' => 'close', 'verificado_em' => now()]);
             return false;
         }
@@ -172,31 +190,36 @@ class EvolutionInstance extends Model
     public function getQrCode(): ?string
     {
         try {
-            // 1) Primeiro, iniciar conexão para gerar QR
+            // 1) Iniciar conexão — gera QR internamente no servidor
+            //    POST /instance/connect NÃO retorna QR no body, apenas inicia o processo.
             $connectResult = $this->conectar();
 
-            // Se a connect retornou QR direto, usar
-            $qr = $connectResult['body']['data']['qrcode'] ?? $connectResult['body']['qrcode'] ?? null;
-            if ($qr && str_starts_with($qr, 'data:')) {
-                return $qr;
+            if (! ($connectResult['success'] ?? false)) {
+                $error = $connectResult['body']['error'] ?? $connectResult['error'] ?? 'connect falhou';
+                \Log::warning('Evolution Go connect antes do QR falhou', ['error' => $error]);
+                // Mesmo com falha (ex: "session already logged in"), tenta buscar QR
             }
 
-            // 2) Buscar QR pelo endpoint dedicado
+            // 2) Buscar QR pelo endpoint dedicado: GET /instance/qr
+            //    Resposta: { "data": { "qrcode": "2@abc...", "code": "data:image/png;base64,..." } }
             $response = $this->http(12)->get($this->baseUrl() . '/instance/qr');
 
+            $json = $response->json();
+            \Log::info('Evolution Go QR response', [
+                'http'   => $response->status(),
+                'json'   => $json,
+            ]);
+
             if (! $response->successful()) {
-                \Log::warning('Evolution Go QR falhou', [
-                    'status' => $response->status(),
-                    'body'   => $response->json(),
-                ]);
                 return null;
             }
 
-            $json = $response->json();
-            \Log::info('Evolution Go QR response', ['json' => $json]);
-
-            // Tentar vários caminhos possíveis de resposta
-            return $json['data']['code'] ?? $json['data']['qrcode'] ?? $json['qrcode'] ?? $json['code'] ?? null;
+            // "code" contém a imagem base64, "qrcode" contém o texto do QR
+            return $json['data']['code']
+                ?? $json['data']['qrcode']
+                ?? $json['code']
+                ?? $json['qrcode']
+                ?? null;
         } catch (\Exception $e) {
             \Log::error('Evolution Go QR exception', ['error' => $e->getMessage()]);
             return null;
@@ -206,21 +229,24 @@ class EvolutionInstance extends Model
     // ─── Conectar / Iniciar sessão (POST /instance/connect) ──────────
 
     /**
-     * Inicia conexão. Retorna QR Code se não estiver conectada.
-     * @param string|null $webhookUrl URL para receber eventos (opcional).
-     * @param array       $subscribe  Eventos para webhook (opcional).
-     * @param bool        $immediate  Conectar imediatamente (default true).
-     * @param string|null $phone      Número para pair code (opcional).
+     * Inicia conexão via QR Code.
+     * O body aceita apenas webhookUrl e subscribe (ambos opcionais).
+     * A instância é identificada pelo header apikey (token da instância).
      */
-    public function conectar(?string $webhookUrl = null, array $subscribe = [], bool $immediate = true, ?string $phone = null): array
+    public function conectar(?string $webhookUrl = null, array $subscribe = []): array
     {
         try {
-            $payload = ['immediate' => $immediate];
-            if ($webhookUrl) $payload['webhookUrl'] = $webhookUrl;
-            if ($subscribe)  $payload['subscribe']  = $subscribe;
-            if ($phone)      $payload['phone']      = $phone;
+            $payload = new \stdClass(); // body vazio = {} em JSON
+            if ($webhookUrl) { $payload = (object) ['webhookUrl' => $webhookUrl]; }
+            if ($subscribe)  { $payload->subscribe = $subscribe; }
 
-            $response = $this->http(15)->post($this->baseUrl() . '/instance/connect', $payload);
+            $response = $this->http(15)->post($this->baseUrl() . '/instance/connect', (array) $payload);
+
+            \Log::info('Evolution Go connect response', [
+                'instance' => $this->nome,
+                'http'     => $response->status(),
+                'body'     => $response->json(),
+            ]);
 
             return [
                 'success' => $response->successful(),
@@ -228,6 +254,7 @@ class EvolutionInstance extends Model
                 'body'    => $response->json(),
             ];
         } catch (\Exception $e) {
+            \Log::error('Evolution Go connect exception', ['error' => $e->getMessage()]);
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
@@ -237,7 +264,16 @@ class EvolutionInstance extends Model
     public function logout(): bool
     {
         try {
-            $response = $this->http()->delete($this->baseUrl() . '/instance/logout');
+            // DELETE /instance/logout requer Content-Type: application/json + body {}
+            $response = $this->http()->send('DELETE', $this->baseUrl() . '/instance/logout', [
+                'json' => new \stdClass(), // envia {} no body
+            ]);
+
+            \Log::info('Evolution Go logout response', [
+                'instance' => $this->nome,
+                'http'     => $response->status(),
+                'body'     => $response->json(),
+            ]);
 
             if ($response->successful()) {
                 $this->update(['status_conexao' => 'close', 'verificado_em' => now()]);
@@ -245,6 +281,7 @@ class EvolutionInstance extends Model
 
             return $response->successful();
         } catch (\Exception $e) {
+            \Log::error('Evolution Go logout exception', ['error' => $e->getMessage()]);
             return false;
         }
     }

@@ -331,19 +331,33 @@
     {{-- ─── Info Box ──────────────────────────────────────────────────── --}}
     <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-5">
         <h4 class="text-base font-black text-blue-800 dark:text-blue-200 mb-3">ℹ️ Como configurar uma instância Evolution GO</h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-700 dark:text-blue-300">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700 dark:text-blue-300 mb-4">
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">1.</span>
-                <p>No painel do Evolution Go, crie uma instância e copie o <strong>Token da Instância</strong> (não a API Key Global).</p>
+                <p>No Evolution Go, crie uma instância via <code>POST /instance/create</code> usando a <strong>API Key Global</strong> (admin). O retorno contém o <strong>token</strong> da instância.</p>
             </div>
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">2.</span>
-                <p>Cadastre aqui com a URL base (ex: <code>https://api.auto.inf.br</code>) e cole o <strong>Token da Instância</strong> no campo apikey.</p>
+                <p>Cadastre aqui com a URL base (ex: <code>https://api.auto.inf.br</code>) e cole o <strong>Token da Instância</strong> (NÃO a API Key Global).</p>
             </div>
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">3.</span>
-                <p>Clique em <strong>QR Code</strong> para conectar seu WhatsApp. Após conectado, clique em <strong>Testar</strong> para validar.</p>
+                <p>Clique em <strong>Ver QR Code</strong> para conectar seu WhatsApp. Escaneie com o app em até ~40 segundos.</p>
             </div>
+            <div class="flex gap-2">
+                <span class="font-black flex-shrink-0">4.</span>
+                <p>Após escanear, clique em <strong>Testar Status</strong> para confirmar. O badge deve mudar para 🟢 Conectado.</p>
+            </div>
+        </div>
+
+        {{-- Alerta sobre tipos de chave --}}
+        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-xl p-3 text-sm">
+            <p class="font-black text-amber-800 dark:text-amber-200 mb-1">⚠️ Atenção — Dois tipos de chave no Evolution Go:</p>
+            <ul class="list-disc ml-5 text-amber-700 dark:text-amber-300 space-y-0.5">
+                <li><strong>API Key Global</strong> (GLOBAL_API_KEY no servidor) — Apenas para criar/deletar instâncias. <em>NÃO use aqui.</em></li>
+                <li><strong>Token da Instância</strong> — É o <code>token</code> retornado ao criar a instância. <em>USE ESSE aqui.</em></li>
+            </ul>
+            <p class="mt-1 text-amber-600 dark:text-amber-400">Se receber erro <code>"not authorized"</code>, provavelmente está usando a API Key Global em vez do Token da Instância.</p>
         </div>
     </div>
 
