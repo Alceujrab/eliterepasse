@@ -5,13 +5,13 @@ namespace App\Filament\Resources\Orders\Schemas;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Models\Vehicle;
-use Filament\Schemas\Components\DateTimePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Placeholder;
+use Filament\Forms\Components\Placeholder;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Select;
-use Filament\Schemas\Components\Textarea;
-use Filament\Schemas\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 

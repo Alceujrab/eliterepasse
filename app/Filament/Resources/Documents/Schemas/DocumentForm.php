@@ -5,12 +5,12 @@ namespace App\Filament\Resources\Documents\Schemas;
 use App\Models\Document;
 use App\Models\User;
 use App\Models\Vehicle;
-use Filament\Schemas\Components\DatePicker;
-use Filament\Schemas\Components\FileUpload;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Select;
-use Filament\Schemas\Components\TextInput;
-use Filament\Schemas\Components\Toggle;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class DocumentForm
