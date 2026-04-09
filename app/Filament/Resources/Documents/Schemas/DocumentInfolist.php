@@ -29,7 +29,7 @@ class DocumentInfolist
                     ->placeholder('—'),
                 TextEntry::make('vehicle.plate')
                     ->label('Veículo')
-                    ->description(fn ($record) => $record->vehicle ? "{$record->vehicle->brand} {$record->vehicle->model}" : null)
+                    ->formatStateUsing(fn ($state, $record) => $record->vehicle ? "{$record->vehicle->brand} {$record->vehicle->model} — {$state}" : null)
                     ->placeholder('—'),
                 TextEntry::make('nome_original')
                     ->label('Arquivo Original')

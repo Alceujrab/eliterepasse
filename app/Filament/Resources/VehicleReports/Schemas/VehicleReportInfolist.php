@@ -25,7 +25,7 @@ class VehicleReportInfolist
                     ->color(fn ($state) => VehicleReport::statusColors()[$state] ?? 'gray'),
                 TextEntry::make('vehicle.plate')
                     ->label('Veículo')
-                    ->description(fn ($record) => $record->vehicle ? "{$record->vehicle->brand} {$record->vehicle->model} {$record->vehicle->model_year}" : '—'),
+                    ->formatStateUsing(fn ($state, $record) => $record->vehicle ? "{$record->vehicle->brand} {$record->vehicle->model} {$record->vehicle->model_year} — {$state}" : '—'),
                 TextEntry::make('nota_geral')
                     ->label('Nota Geral')
                     ->placeholder('—')

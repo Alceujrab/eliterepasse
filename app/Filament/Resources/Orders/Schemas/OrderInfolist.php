@@ -20,11 +20,10 @@ class OrderInfolist
                     ->formatStateUsing(fn ($state) => Order::statusLabels()[$state] ?? $state)
                     ->color(fn ($state) => Order::statusColors()[$state] ?? 'gray'),
                 TextEntry::make('user.name')
-                    ->label('Cliente')
-                    ->description(fn ($record) => $record->user?->cnpj),
+                    ->label('Cliente'),
                 TextEntry::make('vehicle.brand')
                     ->label('Veículo')
-                    ->description(fn ($record) => $record->vehicle ? "{$record->vehicle->model} {$record->vehicle->model_year} — {$record->vehicle->plate}" : '—'),
+                    ->formatStateUsing(fn ($state, $record) => $record->vehicle ? "{$state} {$record->vehicle->model} {$record->vehicle->model_year} — {$record->vehicle->plate}" : '—'),
                 TextEntry::make('valor_compra')
                     ->label('Valor de Compra')
                     ->formatStateUsing(fn ($state) => 'R$ ' . number_format((float) $state, 2, ',', '.'))

@@ -20,11 +20,10 @@ class ContractInfolist
                     ->formatStateUsing(fn ($state) => Contract::statusLabels()[$state] ?? $state)
                     ->color(fn ($state) => Contract::statusColors()[$state] ?? 'gray'),
                 TextEntry::make('user.razao_social')
-                    ->label('Comprador')
-                    ->description(fn ($record) => $record->user?->cnpj),
+                    ->label('Comprador'),
                 TextEntry::make('vehicle.brand')
                     ->label('Veículo')
-                    ->description(fn ($record) => $record->vehicle ? "{$record->vehicle->model} {$record->vehicle->model_year} — {$record->vehicle->plate}" : '—'),
+                    ->formatStateUsing(fn ($state, $record) => $record->vehicle ? "{$state} {$record->vehicle->model} {$record->vehicle->model_year} — {$record->vehicle->plate}" : '—'),
                 TextEntry::make('valor_contrato')
                     ->label('Valor do Contrato')
                     ->formatStateUsing(fn ($state) => 'R$ ' . number_format((float) $state, 2, ',', '.'))
