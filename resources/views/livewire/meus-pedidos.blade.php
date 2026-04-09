@@ -109,6 +109,14 @@
                                 class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'confirmado' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Confirmado
                             </button>
+                            <button wire:click="$set('abaPedidos', 'faturado')"
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'faturado' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                Faturado
+                            </button>
+                            <button wire:click="$set('abaPedidos', 'pago')"
+                                class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'pago' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
+                                Pago
+                            </button>
                             <button wire:click="$set('abaPedidos', 'cancelado')"
                                 class="px-4 py-2 text-sm font-bold rounded-xl {{ $abaPedidos === 'cancelado' ? 'bg-orange-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }} transition">
                                 Cancelado

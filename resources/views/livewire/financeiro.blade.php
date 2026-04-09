@@ -36,6 +36,7 @@
             $statusCard = [
                 'confirmado'      => ['label' => 'Confirmados',  'emoji' => '✅', 'color' => 'border-emerald-300 bg-emerald-50', 'val' => 'success'],
                 'faturado'        => ['label' => 'Faturados',    'emoji' => '🧾', 'color' => 'border-blue-300 bg-blue-50',    'val' => 'info'],
+                'pago'            => ['label' => 'Pagos',        'emoji' => '💚', 'color' => 'border-emerald-300 bg-emerald-50', 'val' => 'success'],
                 'aguardando_pgto' => ['label' => 'Aguard. Pgt.', 'emoji' => '⏳', 'color' => 'border-orange-300 bg-orange-50','val' => 'warning'],
                 'cancelado'       => ['label' => 'Cancelados',   'emoji' => '❌', 'color' => 'border-red-300 bg-red-50',      'val' => 'danger'],
             ];
@@ -72,7 +73,7 @@
                         class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                 </div>
                 <div class="flex gap-2 flex-wrap">
-                    @foreach(['todos' => 'Todos', 'confirmado' => '✅ Confirmados', 'faturado' => '🧾 Faturados', 'aguardando_pgto' => '⏳ Pendentes', 'cancelado' => '❌ Cancelados'] as $val => $label)
+                    @foreach(['todos' => 'Todos', 'confirmado' => '✅ Confirmados', 'faturado' => '🧾 Faturados', 'pago' => '💚 Pagos', 'aguardando_pgto' => '⏳ Pendentes', 'cancelado' => '❌ Cancelados'] as $val => $label)
                         <button wire:click="$set('filtro', '{{ $val }}')"
                             class="px-4 py-2.5 text-sm font-bold rounded-xl transition
                                 {{ $filtro === $val ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
