@@ -93,6 +93,7 @@ class OrdersTable
                             'confirmado_por' => auth()->id(),
                         ]);
                         $record->vehicle?->update(['status' => 'reserved']);
+                        OrderHistory::registrar($record->id, 'pedido_confirmado', 'pendente', 'confirmado');
                         // Notificar cliente
                         app(NotificationService::class)->pedidoConfirmado($record->fresh());
                         Notification::make()->title('Compra confirmada!')->success()->send();
@@ -109,6 +110,7 @@ class OrdersTable
                     ->action(function (Order $record) {
                         $contract      = app(ContractService::class)->gerarDeOrdem($record);
                         $linkAssinatura = route('contrato.assinar.show', $contract->token_assinatura);
+                        OrderHistory::registrar($record->id, 'contrato_gerado', null, null, "Contrato {$contract->numero} gerado");
                         // Notificar cliente para assinar
                         app(NotificationService::class)->contratoParaAssinar($contract, $linkAssinatura);
                         Notification::make()
@@ -160,6 +162,7 @@ class OrdersTable
                         ]);
 
                         $record->update(['status' => Order::STATUS_FATURADO]);
+                        OrderHistory::registrar($record->id, 'fatura_gerada', 'confirmado', 'faturado', "Fatura {$financial->numero} gerada");
 
                         app(NotificationService::class)->faturaGerada($financial);
 
@@ -182,6 +185,7 @@ class OrdersTable
                             'status'         => 'pago',
                             'data_pagamento' => now(),
                         ]);
+                        OrderHistory::registrar($record->id, 'pagamento_confirmado', 'faturado', 'faturado', "Pagamento {$financial->numero} confirmado");
 
                         app(NotificationService::class)->pagamentoConfirmado($financial->fresh());
 
@@ -199,6 +203,7 @@ class OrdersTable
                     ->action(function (Order $record) {
                         $status_anterior = $record->status;
                         $record->update(['status' => 'cancelado']);
+                        OrderHistory::registrar($record->id, 'pedido_cancelado', $status_anterior, 'cancelado');
                         if ($status_anterior === 'confirmado') {
                             $record->vehicle?->update(['status' => 'available']);
                         }
