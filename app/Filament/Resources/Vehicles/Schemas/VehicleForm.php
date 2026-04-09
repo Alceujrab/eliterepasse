@@ -176,7 +176,7 @@ class VehicleForm
 
                             TextInput::make('fipe_code')
                                 ->label('Código FIPE')
-                                ->fontFamily('mono')
+                                ->extraInputAttributes(['style' => 'font-family: monospace'])
                                 ->maxLength(10),
                         ])->columns(2),
 
