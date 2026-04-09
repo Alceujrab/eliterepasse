@@ -30,9 +30,11 @@ class ContratoParaAssinar extends Notification implements ShouldQueue
             $this->contract->dados_veiculo['model_year'] ?? '',
         ]));
 
+        $nome = $notifiable->razao_social ?? $notifiable->name;
+
         return (new MailMessage)
             ->subject("✍️ Contrato {$this->contract->numero} — Assinatura Necessária")
-            ->greeting("Olá, {$notifiable->razao_social ?? $notifiable->name}!")
+            ->greeting("Olá, {$nome}!")
             ->line("Seu contrato de compra e venda **{$this->contract->numero}** está pronto para assinatura.")
             ->line("**Veículo:** {$veiculo}")
             ->line("**Valor:** R$ " . number_format((float) $this->contract->valor_contrato, 2, ',', '.'))

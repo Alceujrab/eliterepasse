@@ -30,9 +30,11 @@ class DocumentoVerificado extends Notification implements ShouldQueue
             ? "{$this->document->vehicle->brand} {$this->document->vehicle->model}"
             : 'Veículo';
 
+        $nome = $notifiable->razao_social ?? $notifiable->name;
+
         $mail = (new MailMessage)
             ->subject("{$titulo} — Elite Repasse")
-            ->greeting("Olá, {$notifiable->razao_social ?? $notifiable->name}!")
+            ->greeting("Olá, {$nome}!")
             ->line("O documento **{$tipo}** do veículo **{$veiculo}** foi {$status}.");
 
         if ($status === 'rejeitado' && $this->document->motivo_rejeicao) {

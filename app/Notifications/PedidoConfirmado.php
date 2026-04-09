@@ -28,10 +28,11 @@ class PedidoConfirmado extends Notification implements ShouldQueue
             ? "{$this->order->vehicle->brand} {$this->order->vehicle->model} {$this->order->vehicle->model_year}"
             : 'Veículo';
         $valor = 'R$ ' . number_format((float) $this->order->valor_compra, 2, ',', '.');
+        $nome = $notifiable->razao_social ?? $notifiable->name;
 
         return (new MailMessage)
             ->subject("✅ Pedido {$numero} Confirmado — Elite Repasse")
-            ->greeting("Olá, {$notifiable->razao_social ?? $notifiable->name}!")
+            ->greeting("Olá, {$nome}!")
             ->line("Seu pedido de compra **{$numero}** foi confirmado com sucesso.")
             ->line("**Veículo:** {$veiculo}")
             ->line("**Valor:** {$valor}")
