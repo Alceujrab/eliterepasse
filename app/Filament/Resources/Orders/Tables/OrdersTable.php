@@ -108,8 +108,9 @@ class OrdersTable
                     ->modalDescription('Será gerado um contrato com os dados atuais do pedido.')
                     ->visible(fn (Order $r) => $r->status === 'confirmado')
                     ->action(function (Order $record) {
-                        $contract      = app(ContractService::class)->gerarDeOrdem($record);
-                        $linkAssinatura = route('contrato.assinar.show', $contract->token_assinatura);
+                        $contract       = app(ContractService::class)->gerarDeOrdem($record);
+                        $token          = $contract->assinaturaComprador?->token_assinatura;
+                        $linkAssinatura = $token ? route('contrato.assinar.show', $token) : url('/meus-pedidos');
                         OrderHistory::registrar($record->id, 'contrato_gerado', null, null, "Contrato {$contract->numero} gerado");
                         // Notificar cliente para assinar
                         app(NotificationService::class)->contratoParaAssinar($contract, $linkAssinatura);
