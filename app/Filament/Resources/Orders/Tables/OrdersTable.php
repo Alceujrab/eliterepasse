@@ -106,7 +106,7 @@ class OrdersTable
                     ->requiresConfirmation()
                     ->modalHeading('Gerar contrato de compra e venda?')
                     ->modalDescription('Será gerado um contrato com os dados atuais do pedido.')
-                    ->visible(fn (Order $r) => $r->status === 'confirmado')
+                    ->visible(fn (Order $r) => $r->status === 'confirmado' && ! $r->contract)
                     ->action(function (Order $record) {
                         $contract       = app(ContractService::class)->gerarDeOrdem($record);
                         $token          = $contract->assinaturaComprador?->token_assinatura;
