@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Clients\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\DateTimePicker;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Select;
+use Filament\Schemas\Components\Textarea;
+use Filament\Schemas\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class ClientForm
@@ -57,7 +57,7 @@ class ClientForm
                         ->label('CEP')
                         ->mask('99999-999')
                         ->suffixAction(
-                            \Filament\Forms\Components\Actions\Action::make('buscar_cep')
+                            \Filament\Actions\Action::make('buscar_cep')
                                 ->label('Buscar')
                                 ->icon('heroicon-o-magnifying-glass')
                         ),

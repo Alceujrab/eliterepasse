@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\LandingSettings\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Textarea;
 use Filament\Schemas\Schema;
 
-use Filament\Forms\Components\Repeater;
+use Filament\Schemas\Components\Repeater;
 
 class LandingSettingForm
 {

@@ -5,12 +5,12 @@ namespace App\Filament\Resources\VehicleReports\Schemas;
 use App\Models\Vehicle;
 use App\Models\VehicleReport;
 use App\Models\VehicleReportItem;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\FileUpload;
+use Filament\Schemas\Components\Repeater;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Select;
+use Filament\Schemas\Components\Textarea;
+use Filament\Schemas\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class VehicleReportForm

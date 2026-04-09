@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\GeneralDocuments\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class GeneralDocumentForm

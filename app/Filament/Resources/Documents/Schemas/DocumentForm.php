@@ -5,12 +5,12 @@ namespace App\Filament\Resources\Documents\Schemas;
 use App\Models\Document;
 use App\Models\User;
 use App\Models\Vehicle;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\DatePicker;
+use Filament\Schemas\Components\FileUpload;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Select;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class DocumentForm
@@ -76,7 +76,7 @@ class DocumentForm
                             ->maxSize(5120) // 5MB
                             ->required()
                             ->helperText('Tamanho máximo 5MB. Formatos: PDF, JPG, PNG.')
-                            ->afterStateUpdated(function ($state, \Filament\Forms\Set $set) {
+                            ->afterStateUpdated(function ($state, \Filament\Schemas\Components\Utilities\Set $set) {
                                 if ($state) {
                                     $set('nome_original', $state->getClientOriginalName());
                                     $set('tamanho', $state->getSize());
