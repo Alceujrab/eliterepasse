@@ -38,13 +38,9 @@
     --tw-saturate: ;
     --tw-sepia: ;
     --tw-drop-shadow: ;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
+    /* NÃO inicializar --tw-translate-x/y, --tw-rotate, --tw-skew-x/y, --tw-scale-x/y aqui!
+       O Filament usa essas vars dinamicamente (ex: --tw-translate-x:-100% para esconder sidebar).
+       Resetar para 0/1 impede o sidebar de fechar. */
 }
 
 /* ── Hero Section ──────────────────────────────────────── */
