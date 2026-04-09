@@ -23,6 +23,7 @@ class Order extends Model
     const STATUS_CONFIRMADO  = 'confirmado';
     const STATUS_CANCELADO   = 'cancelado';
     const STATUS_FATURADO    = 'faturado';
+    const STATUS_PAGO        = 'pago';
     const STATUS_AGUARD      = 'aguardando_pgto';
 
     public static function statusLabels(): array
@@ -32,6 +33,7 @@ class Order extends Model
             self::STATUS_AGUARD     => '💳 Aguardando Pagamento',
             self::STATUS_CONFIRMADO => '✅ Confirmado',
             self::STATUS_FATURADO   => '📄 Faturado',
+            self::STATUS_PAGO       => '💚 Pago',
             self::STATUS_CANCELADO  => '❌ Cancelado',
         ];
     }
@@ -43,6 +45,7 @@ class Order extends Model
             self::STATUS_AGUARD     => 'warning',
             self::STATUS_CONFIRMADO => 'success',
             self::STATUS_FATURADO   => 'info',
+            self::STATUS_PAGO       => 'success',
             self::STATUS_CANCELADO  => 'danger',
         ];
     }

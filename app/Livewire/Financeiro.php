@@ -42,7 +42,7 @@ class Financeiro extends Component
     public function getTotalInvestidoProperty(): float
     {
         return Order::where('user_id', auth()->id())
-            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->sum('valor_compra');
     }
 

@@ -186,7 +186,8 @@ class OrdersTable
                             'status'         => 'pago',
                             'data_pagamento' => now(),
                         ]);
-                        OrderHistory::registrar($record->id, 'pagamento_confirmado', 'faturado', 'faturado', "Pagamento {$financial->numero} confirmado");
+                        $record->update(['status' => 'pago']);
+                        OrderHistory::registrar($record->id, 'pagamento_confirmado', 'faturado', 'pago', "Pagamento {$financial->numero} confirmado");
 
                         app(NotificationService::class)->pagamentoConfirmado($financial->fresh());
 

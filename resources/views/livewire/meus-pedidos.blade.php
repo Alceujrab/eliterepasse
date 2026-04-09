@@ -151,6 +151,7 @@
                                     $badgeClass = match($pedido->status) {
                                         'confirmado'      => 'bg-emerald-100 text-emerald-700',
                                         'faturado'        => 'bg-blue-100 text-blue-700',
+                                        'pago'            => 'bg-emerald-100 text-emerald-700',
                                         'cancelado'       => 'bg-red-100 text-red-700',
                                         'pendente'        => 'bg-yellow-100 text-yellow-700',
                                         'aguardando_pgto' => 'bg-purple-100 text-purple-700',
@@ -234,9 +235,9 @@
                                                     @php
                                                         $etapas = [
                                                             ['label' => 'Proposta enviada', 'data' => $pedido->created_at, 'done' => true],
-                                                            ['label' => 'Análise da equipe', 'data' => null, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
-                                                            ['label' => 'Pedido confirmado', 'data' => $pedido->confirmado_em, 'done' => in_array($pedido->status, ['confirmado','faturado','aguardando_pgto'])],
-                                                            ['label' => 'Faturamento', 'data' => null, 'done' => $pedido->status === 'faturado'],
+                                                            ['label' => 'Análise da equipe', 'data' => null, 'done' => in_array($pedido->status, ['confirmado','faturado','pago','aguardando_pgto'])],
+                                                            ['label' => 'Pedido confirmado', 'data' => $pedido->confirmado_em, 'done' => in_array($pedido->status, ['confirmado','faturado','pago','aguardando_pgto'])],
+                                                            ['label' => 'Faturamento', 'data' => null, 'done' => in_array($pedido->status, ['faturado','pago'])],
                                                         ];
                                                     @endphp
                                                     <div class="space-y-3">
@@ -375,7 +376,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="opacity-90">Confirmados</span>
-                            <span class="font-bold">{{ $pedidos->whereIn('status', ['confirmado','faturado'])->count() }}</span>
+                            <span class="font-bold">{{ $pedidos->whereIn('status', ['confirmado','faturado','pago'])->count() }}</span>
                         </div>
                         @if($variacaoGasto !== null)
                             <div class="border-t border-white border-opacity-20 pt-3 flex justify-between">

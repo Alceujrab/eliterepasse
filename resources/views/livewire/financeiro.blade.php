@@ -104,6 +104,7 @@
                         $badgeClass = match($pedido->status) {
                             'confirmado'      => 'bg-emerald-100 text-emerald-700',
                             'faturado'        => 'bg-blue-100 text-blue-700',
+                            'pago'            => 'bg-emerald-100 text-emerald-700',
                             'cancelado'       => 'bg-red-100 text-red-700',
                             'pendente'        => 'bg-yellow-100 text-yellow-700',
                             'aguardando_pgto' => 'bg-orange-100 text-orange-700',

@@ -51,7 +51,7 @@ class MeusPedidos extends Component
 
         // ─── KPIs do Lojista ──────────────────────────────────────────
         $totalGasto = Order::where('user_id', $userId)
-            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->sum('valor_compra');
 
         $totalPedidos = Order::where('user_id', $userId)->count();
@@ -62,13 +62,13 @@ class MeusPedidos extends Component
             ->count();
 
         $gastoMes = Order::where('user_id', $userId)
-            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('valor_compra');
 
         $gastoMesPassado = Order::where('user_id', $userId)
-            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->whereMonth('created_at', now()->subMonth()->month)
             ->whereYear('created_at', now()->subMonth()->year)
             ->sum('valor_compra');
@@ -90,7 +90,7 @@ class MeusPedidos extends Component
 
         // ─── Histórico de gastos por mês (últimos 6 meses) ────────────
         $historicoGastos = Order::where('user_id', $userId)
-            ->whereIn('status', ['confirmado', 'faturado'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
             ->select(
                 DB::raw('YEAR(created_at) as ano'),

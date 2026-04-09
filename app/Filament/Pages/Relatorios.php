@@ -75,11 +75,11 @@ class Relatorios extends Page
             'pedidos_faturados'  => (clone $pedidosPeriodo)->where('status', 'faturado')->count(),
             'pedidos_cancelados' => (clone $pedidosPeriodo)->where('status', 'cancelado')->count(),
             'receita_total'      => (float) (clone $pedidosPeriodo)->whereIn('status', ['confirmado','faturado'])->sum('valor_compra'),
-            'ticket_medio'       => (float) (clone $pedidosPeriodo)->whereIn('status', ['confirmado','faturado'])->avg('valor_compra'),
+            'ticket_medio'       => (float) (clone $pedidosPeriodo)->whereIn('status', ['confirmado','faturado','pago'])->avg('valor_compra'),
         ];
 
         // ─── Gráfico: Receita por dia ──────────────────────────────────
-        $this->dadosGrafico = Order::whereIn('status', ['confirmado', 'faturado'])
+        $this->dadosGrafico = Order::whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->whereBetween('created_at', [$inicio, $fim])
             ->select(
                 DB::raw('DATE(created_at) as data'),
@@ -97,7 +97,7 @@ class Relatorios extends Page
             ->toArray();
 
         // ─── Top Veículos mais vendidos ───────────────────────────────
-        $this->topVendas = Order::whereIn('status', ['confirmado', 'faturado'])
+        $this->topVendas = Order::whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->whereBetween('created_at', [$inicio, $fim])
             ->with('vehicle:id,brand,model,model_year,plate,sale_price')
             ->select('vehicle_id', DB::raw('COUNT(*) as qtd'), DB::raw('SUM(valor_compra) as total'))
@@ -151,7 +151,7 @@ class Relatorios extends Page
         $dias   = (int) $this->periodo;
         $inicio = now()->subDays($dias)->startOfDay();
 
-        $orders = Order::whereIn('status', ['confirmado', 'faturado'])
+        $orders = Order::whereIn('status', ['confirmado', 'faturado', 'pago'])
             ->where('created_at', '>=', $inicio)
             ->with(['user', 'vehicle', 'paymentMethod'])
             ->get();

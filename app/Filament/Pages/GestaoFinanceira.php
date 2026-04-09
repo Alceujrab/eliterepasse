@@ -90,7 +90,7 @@ class GestaoFinanceira extends Page
     public function getPedidosSemFinancieroProperty()
     {
         return Order::whereDoesntHave('financial')
-            ->whereIn('status', ['confirmado', 'faturado', 'aguardando_pgto'])
+            ->whereIn('status', ['confirmado', 'faturado', 'pago', 'aguardando_pgto'])
             ->with('user')
             ->latest()
             ->limit(20)
