@@ -9,14 +9,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('financials', function (Blueprint $table) {
-            $table->string('numero')->unique()->nullable()->after('order_id');
-            $table->string('descricao')->nullable()->after('numero');
-            $table->decimal('valor', 12, 2)->default(0)->after('descricao');
-            $table->string('forma_pagamento')->nullable()->after('valor');
-            $table->date('data_vencimento')->nullable()->after('forma_pagamento');
-            $table->date('data_pagamento')->nullable()->after('data_vencimento');
-            $table->foreignId('criado_por')->nullable()->after('status')->constrained('users')->nullOnDelete();
-            $table->text('observacoes')->nullable()->after('criado_por');
+            if (! Schema::hasColumn('financials', 'numero')) {
+                $table->string('numero')->unique()->nullable()->after('order_id');
+            }
+            if (! Schema::hasColumn('financials', 'descricao')) {
+                $table->string('descricao')->nullable()->after('numero');
+            }
+            if (! Schema::hasColumn('financials', 'valor')) {
+                $table->decimal('valor', 12, 2)->default(0)->after('descricao');
+            }
+            if (! Schema::hasColumn('financials', 'forma_pagamento')) {
+                $table->string('forma_pagamento')->nullable()->after('valor');
+            }
+            if (! Schema::hasColumn('financials', 'data_vencimento')) {
+                $table->date('data_vencimento')->nullable()->after('forma_pagamento');
+            }
+            if (! Schema::hasColumn('financials', 'data_pagamento')) {
+                $table->date('data_pagamento')->nullable()->after('data_vencimento');
+            }
+            if (! Schema::hasColumn('financials', 'criado_por')) {
+                $table->foreignId('criado_por')->nullable()->after('status')->constrained('users')->nullOnDelete();
+            }
+            if (! Schema::hasColumn('financials', 'observacoes')) {
+                $table->text('observacoes')->nullable()->after('criado_por');
+            }
 
             // Atualizar status default de 'pending' para 'em_aberto'
             $table->string('status')->default('em_aberto')->change();
