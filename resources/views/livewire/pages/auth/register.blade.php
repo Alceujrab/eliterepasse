@@ -87,6 +87,9 @@ new #[Layout('layouts.guest')] class extends Component
 
         event(new Registered($user = User::create($validated)));
 
+        // Notificar admins sobre novo cadastro (email + WhatsApp)
+        app(\App\Services\NotificationService::class)->novoCadastroParaAdmin($user);
+
         session()->flash('cadastro_pendente', true);
 
         $this->redirect(route('login'), navigate: true);

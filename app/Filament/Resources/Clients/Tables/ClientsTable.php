@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Clients\Tables;
 
 use App\Models\User;
-use App\Notifications\UserApprovedNotification;
 use App\Notifications\UserBlockedNotification;
+use App\Services\NotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -94,8 +94,8 @@ class ClientsTable
                             'aprovado_em' => now(),
                             'aprovado_por'=> auth()->id(),
                         ]);
-                        // Notificação disparada em fila
-                        $record->notify(new UserApprovedNotification());
+                        // Notificação multicanal: database + email + WhatsApp com dados de acesso
+                        app(NotificationService::class)->clienteAprovado($record);
 
                         Notification::make()
                             ->title('Lojista aprovado com sucesso!')

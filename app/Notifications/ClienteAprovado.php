@@ -18,12 +18,20 @@ class ClienteAprovado extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        $nome = $notifiable->razao_social ?? $notifiable->nome_fantasia ?? $notifiable->name;
+
         return (new MailMessage)
             ->subject('🎉 Cadastro Aprovado — Elite Repasse')
-            ->greeting("Boas-vindas, {$notifiable->razao_social ?? $notifiable->nome_fantasia ?? $notifiable->name}!")
+            ->greeting("Boas-vindas, {$nome}!")
             ->line('Seu cadastro no **Portal B2B Elite Repasse** foi aprovado!')
             ->line('Agora você tem acesso completo à nossa vitrine de veículos com descontos exclusivos.')
-            ->action('Acessar o Portal', url('/'))
+            ->line('---')
+            ->line('**Seus dados de acesso:**')
+            ->line("📧 **E-mail:** {$notifiable->email}")
+            ->line('🔑 **Senha:** A mesma que você definiu no cadastro')
+            ->line('🌐 **Portal:** ' . url('/'))
+            ->line('---')
+            ->action('Acessar o Portal Agora', url('/'))
             ->line('📞 Dúvidas? Abra um chamado na central de suporte a qualquer momento.');
     }
 

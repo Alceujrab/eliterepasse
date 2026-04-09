@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\ClienteAprovado;
 use App\Notifications\ContratoParaAssinar;
 use App\Notifications\DocumentoVerificado;
+use App\Notifications\NovoCadastroAdmin;
 use App\Notifications\PedidoConfirmado;
 use App\Notifications\TicketAtualizado;
 use Illuminate\Support\Facades\Log;
@@ -111,11 +112,44 @@ class NotificationService
             if ($user->phone) {
                 $this->whatsapp->clienteAprovado(
                     $user->phone,
-                    $user->razao_social ?? $user->nome_fantasia ?? $user->name
+                    $user->razao_social ?? $user->nome_fantasia ?? $user->name,
+                    $user->email
                 );
             }
         } catch (\Exception $e) {
             Log::error('NotificationService::clienteAprovado', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Novo Cadastro → Admin ────────────────────────────────────────
+
+    public function novoCadastroParaAdmin(User $cliente): void
+    {
+        try {
+            $admins = User::where('is_admin', true)->get();
+            $nome = $cliente->razao_social ?? $cliente->nome_fantasia ?? $cliente->name;
+            $cnpj = $cliente->cnpj ?? 'Não informado';
+            $cidade = $cliente->cidade
+                ? "{$cliente->cidade}/{$cliente->estado}"
+                : 'Não informado';
+
+            foreach ($admins as $admin) {
+                // Notificação database + email
+                $admin->notify(new NovoCadastroAdmin($cliente));
+
+                // WhatsApp
+                if ($admin->phone) {
+                    $this->whatsapp->novoCadastroAdmin(
+                        $admin->phone,
+                        $admin->name,
+                        $nome,
+                        $cnpj,
+                        $cidade
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('NotificationService::novoCadastroParaAdmin', ['error' => $e->getMessage()]);
         }
     }
 

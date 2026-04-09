@@ -73,13 +73,18 @@ class EvolutionService
         return $this->enviar($phone, $msg);
     }
 
-    public function clienteAprovado(string $phone, string $nome): bool
+    public function clienteAprovado(string $phone, string $nome, string $email): bool
     {
+        $url = url('/');
         $msg = "🎉 *Cadastro Aprovado!*\n\n"
             . "Olá, *{$nome}*!\n\n"
             . "Seu cadastro no *Portal B2B Elite Repasse* foi aprovado!\n\n"
             . "Agora você tem acesso à nossa vitrine com descontos exclusivos.\n\n"
-            . "👉 Acesse: " . url('/') . "\n\n"
+            . "📋 *Seus dados de acesso:*\n"
+            . "📧 E-mail: {$email}\n"
+            . "🔑 Senha: a mesma que você definiu no cadastro\n"
+            . "🌐 Portal: {$url}\n\n"
+            . "👉 Acesse agora: {$url}\n\n"
             . "_Elite Repasse — Portal B2B_";
 
         return $this->enviar($phone, $msg);
@@ -124,6 +129,21 @@ class EvolutionService
             . "📌 *Assunto:* {$titulo}\n\n"
             . "👉 Acesse o admin para responder:\n"
             . url('/admin/tickets') . "\n\n"
+            . "_Elite Repasse — Admin_";
+
+        return $this->enviar($phone, $msg);
+    }
+
+    public function novoCadastroAdmin(string $phone, string $nomeAdmin, string $nomeCliente, string $cnpj, string $cidade): bool
+    {
+        $msg = "🆕 *Novo Cadastro de Lojista*\n\n"
+            . "Olá, *{$nomeAdmin}*!\n\n"
+            . "Um novo lojista se cadastrou no portal:\n"
+            . "🏢 *Empresa:* {$nomeCliente}\n"
+            . "📋 *CNPJ:* {$cnpj}\n"
+            . "📍 *Cidade:* {$cidade}\n\n"
+            . "👉 Acesse o admin para analisar:\n"
+            . url('/admin/clients') . "\n\n"
             . "_Elite Repasse — Admin_";
 
         return $this->enviar($phone, $msg);
