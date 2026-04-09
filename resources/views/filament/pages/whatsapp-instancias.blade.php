@@ -123,18 +123,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {{-- Nome --}}
                     <div>
-                        <label class="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Nome da Instância *</label>
+                        <label class="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Nome (identificador local) *</label>
                         <input wire:model="nome" type="text" placeholder="Ex: Principal, Suporte, Vendas"
                             class="w-full rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
+                        <p class="text-xs text-gray-400 mt-1">Apenas para identificação no painel</p>
                         @error('nome') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    {{-- ID Evolution --}}
-                    <div>
-                        <label class="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-1.5">ID da Instância (Evolution) *</label>
-                        <input wire:model="instancia" type="text" placeholder="Ex: elite-repasse"
-                            class="w-full rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-base font-mono focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
-                        @error('instancia') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- URL Base --}}
@@ -146,11 +139,12 @@
                         @error('url_base') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- API Key --}}
-                    <div>
-                        <label class="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-1.5">API Key *</label>
-                        <input wire:model="api_key" type="password" placeholder="••••••••••••••••"
-                            class="w-full rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
+                    {{-- Token da Instância --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-1.5">🔑 Token da Instância (apikey) *</label>
+                        <input wire:model="api_key" type="text" placeholder="Ex: token-vendas-123 ou UUID da instância"
+                            class="w-full rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-4 py-3 text-base font-mono focus:ring-2 focus:ring-green-500 focus:border-transparent"/>
+                        <p class="text-xs text-gray-400 mt-1">⚠️ Este é o <strong>Token da Instância</strong> (não a API Key Global). Obtido ao criar a instância no Evolution Go.</p>
                         @error('api_key') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -226,7 +220,7 @@
                                             <span class="text-xs bg-yellow-100 text-yellow-700 font-black px-2 py-0.5 rounded-full">⭐ PADRÃO</span>
                                         @endif
                                     </div>
-                                    <p class="text-sm text-gray-400 font-mono mt-0.5">{{ $inst->instancia }}</p>
+                                    <p class="text-sm text-gray-400 font-mono mt-0.5" title="Token da instância">🔑 {{ Str::mask($inst->api_key, '*', 8) }}</p>
                                 </div>
                             </div>
 
@@ -340,11 +334,11 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-700 dark:text-blue-300">
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">1.</span>
-                <p>Acesse seu painel Evolution GO em <strong>api.auto.inf.br/manager/instances</strong> e crie ou copie o nome da sua instância.</p>
+                <p>No painel do Evolution Go, crie uma instância e copie o <strong>Token da Instância</strong> (não a API Key Global).</p>
             </div>
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">2.</span>
-                <p>Cadastre aqui com a mesma URL base, o nome da instância e a API Key global do Evolution.</p>
+                <p>Cadastre aqui com a URL base (ex: <code>https://api.auto.inf.br</code>) e cole o <strong>Token da Instância</strong> no campo apikey.</p>
             </div>
             <div class="flex gap-2">
                 <span class="font-black flex-shrink-0">3.</span>

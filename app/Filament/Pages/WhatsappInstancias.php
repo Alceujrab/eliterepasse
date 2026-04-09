@@ -28,7 +28,6 @@ class WhatsappInstancias extends Page
     public bool   $showForm    = false;
     public ?int   $editingId   = null;
     public string $nome        = '';
-    public string $instancia   = '';
     public string $url_base    = '';
     public string $api_key     = '';
     public bool   $ativo       = true;
@@ -57,7 +56,7 @@ class WhatsappInstancias extends Page
 
     public function novaInstancia(): void
     {
-        $this->reset(['editingId', 'nome', 'instancia', 'url_base', 'api_key', 'padrao']);
+        $this->reset(['editingId', 'nome', 'url_base', 'api_key', 'padrao']);
         $this->ativo    = true;
         $this->showForm = true;
     }
@@ -67,7 +66,6 @@ class WhatsappInstancias extends Page
         $inst = EvolutionInstance::findOrFail($id);
         $this->editingId  = $id;
         $this->nome       = $inst->nome;
-        $this->instancia  = $inst->instancia;
         $this->url_base   = $inst->url_base;
         $this->api_key    = $inst->api_key;
         $this->ativo      = $inst->ativo;
@@ -79,7 +77,6 @@ class WhatsappInstancias extends Page
     {
         $this->validate([
             'nome'      => 'required|string|max:80',
-            'instancia' => 'required|string|max:80',
             'url_base'  => 'required|url',
             'api_key'   => 'required|string',
         ]);
@@ -91,7 +88,7 @@ class WhatsappInstancias extends Page
 
         $dados = [
             'nome'      => $this->nome,
-            'instancia' => $this->instancia,
+            'instancia' => '-',
             'url_base'  => rtrim($this->url_base, '/'),
             'api_key'   => $this->api_key,
             'ativo'     => $this->ativo,
