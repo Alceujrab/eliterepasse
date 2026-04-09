@@ -7,6 +7,46 @@
 
 @tailwind utilities;
 
+/* ── Inicialização de variáveis CSS do Tailwind v3 ─────────
+     O @supports do Filament v4 (Tailwind v4 interno) falha em
+     navegadores modernos, deixando --tw-* vars não-definidas.
+     Sem esta inicialização, gradientes, shadows e backdrop-filter
+     geram valores inválidos (var() sem fallback = guaranteed-invalid). */
+*, ::before, ::after {
+    --tw-gradient-from-position: ;
+    --tw-gradient-via-position: ;
+    --tw-gradient-to-position: ;
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-backdrop-blur: ;
+    --tw-backdrop-brightness: ;
+    --tw-backdrop-contrast: ;
+    --tw-backdrop-grayscale: ;
+    --tw-backdrop-hue-rotate: ;
+    --tw-backdrop-invert: ;
+    --tw-backdrop-opacity: ;
+    --tw-backdrop-saturate: ;
+    --tw-backdrop-sepia: ;
+    --tw-blur: ;
+    --tw-brightness: ;
+    --tw-contrast: ;
+    --tw-grayscale: ;
+    --tw-hue-rotate: ;
+    --tw-invert: ;
+    --tw-saturate: ;
+    --tw-sepia: ;
+    --tw-drop-shadow: ;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+}
+
 /* ── Hero Section ──────────────────────────────────────── */
 .page-hero {
     @apply bg-gradient-to-br from-[#1a3a5c] via-[#1e4f8a] to-[#0f2d4e] relative overflow-hidden;
