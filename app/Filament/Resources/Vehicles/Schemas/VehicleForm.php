@@ -143,7 +143,7 @@ class VehicleForm
                                 ->required()
                                 ->mask('aaa-9*99')
                                 ->placeholder('ABC-1234')
-                                ->fontFamily('mono')
+                                ->extraInputAttributes(['style' => 'font-family: monospace'])
                                 ->maxLength(8),
 
                             TextInput::make('manufacture_year')
