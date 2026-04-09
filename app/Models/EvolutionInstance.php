@@ -138,25 +138,25 @@ class EvolutionInstance extends Model
             ]);
 
             $data = $response->json('data', []);
+            // Normalizar chaves para minúsculo — Evolution Go retorna PascalCase:
+            // { "Connected": true, "LoggedIn": true, "Name": "..." }
+            $data = array_change_key_case($data, CASE_LOWER);
 
             // Evolution Go pode retornar dois formatos:
-            // Formato 1: { "data": { "connected": true, "loggedIn": true } }
+            // Formato 1: { "data": { "Connected": true, "LoggedIn": true } }  (real, PascalCase)
             // Formato 2: { "data": { "status": "open" } }
             if (isset($data['status'])) {
-                // Formato com status string direto
                 $state = in_array($data['status'], ['open', 'connecting', 'close', 'created'])
                     ? $data['status']
                     : 'close';
-                // "created" mapeia para "close" no painel (não conectado)
                 if ($state === 'created') $state = 'close';
             } else {
-                // Formato com connected/loggedIn booleans
                 $connected = $data['connected'] ?? false;
-                $loggedIn  = $data['loggedIn'] ?? false;
+                $loggedin  = $data['loggedin'] ?? false;
 
                 $state = match (true) {
-                    $connected && $loggedIn  => 'open',
-                    $connected && !$loggedIn => 'connecting',
+                    $connected && $loggedin  => 'open',
+                    $connected && !$loggedin => 'connecting',
                     default                  => 'close',
                 };
             }
