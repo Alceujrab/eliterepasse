@@ -98,6 +98,13 @@ class EvolutionInstance extends Model
 
             $json = $response->json();
 
+            \Log::info('Evolution Go sendText response', [
+                'instance' => $this->nome,
+                'phone'    => $phone,
+                'http'     => $response->status(),
+                'body'     => $json,
+            ]);
+
             if ($response->successful()) {
                 return ['success' => true, 'status' => $response->status(), 'body' => $json];
             }
@@ -123,6 +130,12 @@ class EvolutionInstance extends Model
     {
         try {
             $response = $this->http(8)->get($this->baseUrl() . '/instance/status');
+
+            \Log::info('Evolution Go status response', [
+                'instance' => $this->nome,
+                'http'     => $response->status(),
+                'body'     => $response->json(),
+            ]);
 
             $connected = $response->json('data.connected', false);
             $loggedIn  = $response->json('data.loggedIn', false);
@@ -159,14 +172,33 @@ class EvolutionInstance extends Model
     public function getQrCode(): ?string
     {
         try {
+            // 1) Primeiro, iniciar conexão para gerar QR
+            $connectResult = $this->conectar();
+
+            // Se a connect retornou QR direto, usar
+            $qr = $connectResult['body']['data']['qrcode'] ?? $connectResult['body']['qrcode'] ?? null;
+            if ($qr && str_starts_with($qr, 'data:')) {
+                return $qr;
+            }
+
+            // 2) Buscar QR pelo endpoint dedicado
             $response = $this->http(12)->get($this->baseUrl() . '/instance/qr');
 
             if (! $response->successful()) {
+                \Log::warning('Evolution Go QR falhou', [
+                    'status' => $response->status(),
+                    'body'   => $response->json(),
+                ]);
                 return null;
             }
 
-            return $response->json('data.code');
+            $json = $response->json();
+            \Log::info('Evolution Go QR response', ['json' => $json]);
+
+            // Tentar vários caminhos possíveis de resposta
+            return $json['data']['code'] ?? $json['data']['qrcode'] ?? $json['qrcode'] ?? $json['code'] ?? null;
         } catch (\Exception $e) {
+            \Log::error('Evolution Go QR exception', ['error' => $e->getMessage()]);
             return null;
         }
     }
@@ -177,18 +209,22 @@ class EvolutionInstance extends Model
      * Inicia conexão. Retorna QR Code se não estiver conectada.
      * @param string|null $webhookUrl URL para receber eventos (opcional).
      * @param array       $subscribe  Eventos para webhook (opcional).
+     * @param bool        $immediate  Conectar imediatamente (default true).
+     * @param string|null $phone      Número para pair code (opcional).
      */
-    public function conectar(?string $webhookUrl = null, array $subscribe = []): array
+    public function conectar(?string $webhookUrl = null, array $subscribe = [], bool $immediate = true, ?string $phone = null): array
     {
         try {
-            $payload = [];
+            $payload = ['immediate' => $immediate];
             if ($webhookUrl) $payload['webhookUrl'] = $webhookUrl;
             if ($subscribe)  $payload['subscribe']  = $subscribe;
+            if ($phone)      $payload['phone']      = $phone;
 
             $response = $this->http(15)->post($this->baseUrl() . '/instance/connect', $payload);
 
             return [
                 'success' => $response->successful(),
+                'status'  => $response->status(),
                 'body'    => $response->json(),
             ];
         } catch (\Exception $e) {
