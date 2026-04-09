@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Contract;
 use App\Models\ContractSignature;
+use App\Models\Document;
 use App\Models\Order;
 use App\Models\SystemSetting;
 use App\Models\User;
@@ -127,7 +128,29 @@ class ContractService
         $contract->vehicle?->update(['status' => 'sold']);
 
         // 5. Gerar e salvar PDF Final
-        $this->gerarPdfContrato($contract->fresh(), $signature);
+        $pdfPath = $this->gerarPdfContrato($contract->fresh(), $signature);
+
+        // 6. Salvar pdf_path no contrato
+        $contract->update(['pdf_path' => $pdfPath]);
+
+        // 7. Criar Document visível no portal do cliente
+        Document::create([
+            'user_id'     => $contract->user_id,
+            'vehicle_id'  => $contract->vehicle_id,
+            'title'       => "Contrato Assinado {$contract->numero}",
+            'file_path'   => $pdfPath,
+            'mime_type'   => 'application/pdf',
+            'tamanho'     => Storage::disk('local')->exists($pdfPath)
+                ? Storage::disk('local')->size($pdfPath)
+                : 0,
+            'tipo'            => 'contrato_compra',
+            'status'          => 'verificado',
+            'verificado_em'   => now(),
+            'visivel_cliente' => true,
+        ]);
+
+        // 8. Notificar cliente + admins sobre contrato assinado
+        app(NotificationService::class)->contratoAssinado($contract->fresh());
 
         return $signature;
     }

@@ -149,6 +149,49 @@ class EvolutionService
         return $this->enviar($phone, $msg);
     }
 
+    public function novoPedidoAdmin(string $phone, string $nomeAdmin, string $numeroPedido, string $cliente, string $veiculo, string $valor): bool
+    {
+        $msg = "🛒 *Novo Pedido de Compra*\n\n"
+            . "Olá, *{$nomeAdmin}*!\n\n"
+            . "Um novo pedido foi registrado:\n"
+            . "📋 *Pedido:* {$numeroPedido}\n"
+            . "👤 *Cliente:* {$cliente}\n"
+            . "🚗 *Veículo:* {$veiculo}\n"
+            . "💰 *Valor:* R$ {$valor}\n\n"
+            . "👉 Acesse o admin para confirmar:\n"
+            . url('/admin/orders') . "\n\n"
+            . "_Elite Repasse — Admin_";
+
+        return $this->enviar($phone, $msg);
+    }
+
+    public function contratoAssinado(string $phone, string $nome, string $numeroContrato, string $veiculo): bool
+    {
+        $msg = "✅ *Contrato Assinado!*\n\n"
+            . "Olá, *{$nome}*!\n\n"
+            . "Seu contrato *{$numeroContrato}* foi assinado com sucesso!\n\n"
+            . "🚗 *Veículo:* {$veiculo}\n\n"
+            . "O contrato assinado já está disponível na área *Meus Documentos* do portal.\n\n"
+            . "👉 Acesse: " . url('/meus-documentos') . "\n\n"
+            . "_Elite Repasse — Portal B2B_";
+
+        return $this->enviar($phone, $msg);
+    }
+
+    public function contratoAssinadoAdmin(string $phone, string $nomeAdmin, string $numeroContrato, string $cliente, string $veiculo): bool
+    {
+        $msg = "✍️ *Contrato Assinado pelo Cliente*\n\n"
+            . "Olá, *{$nomeAdmin}*!\n\n"
+            . "O contrato *{$numeroContrato}* foi assinado:\n"
+            . "👤 *Cliente:* {$cliente}\n"
+            . "🚗 *Veículo:* {$veiculo}\n\n"
+            . "👉 Acesse o admin para revisar:\n"
+            . url('/admin/contracts') . "\n\n"
+            . "_Elite Repasse — Admin_";
+
+        return $this->enviar($phone, $msg);
+    }
+
     // ─── Status da Instância ──────────────────────────────────────────
 
     public function testarConexao(?EvolutionInstance $instance = null): bool

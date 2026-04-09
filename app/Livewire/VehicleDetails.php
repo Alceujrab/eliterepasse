@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Favorite;
 use App\Models\Order;
 use App\Models\Vehicle;
+use App\Services\NotificationService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -80,6 +81,11 @@ class VehicleDetails extends Component
                 'observacoes'  => $this->observacoes,
             ]
         );
+
+        // Notificar admins sobre novo pedido (email + WhatsApp)
+        if ($order->wasRecentlyCreated) {
+            app(NotificationService::class)->novoPedidoParaAdmin($order->load(['user', 'vehicle']));
+        }
 
         session()->flash('message', "✅ Proposta #{$order->numero} enviada! Nossa equipe entrará em contato em breve.");
         $this->showProposta = false;

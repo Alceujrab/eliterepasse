@@ -9,9 +9,12 @@ use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
 use App\Notifications\ClienteAprovado;
+use App\Notifications\ContratoAssinado;
+use App\Notifications\ContratoAssinadoAdmin;
 use App\Notifications\ContratoParaAssinar;
 use App\Notifications\DocumentoVerificado;
 use App\Notifications\NovoCadastroAdmin;
+use App\Notifications\NovoPedidoAdmin;
 use App\Notifications\PedidoConfirmado;
 use App\Notifications\TicketAtualizado;
 use Illuminate\Support\Facades\Log;
@@ -175,6 +178,87 @@ class NotificationService
             }
         } catch (\Exception $e) {
             Log::error('NotificationService::documentoVerificado', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Novo Pedido → Admin ──────────────────────────────────────────
+
+    public function novoPedidoParaAdmin(Order $order): void
+    {
+        try {
+            $admins = User::where('is_admin', true)->get();
+            $cliente = $order->user;
+            $vehicle = $order->vehicle;
+            $nome = $cliente?->razao_social ?? $cliente?->nome_fantasia ?? $cliente?->name ?? 'Cliente';
+            $veiculo = $vehicle ? "{$vehicle->brand} {$vehicle->model} {$vehicle->model_year}" : 'Veículo';
+            $valor = number_format((float) $order->valor_compra, 2, ',', '.');
+
+            foreach ($admins as $admin) {
+                $admin->notify(new NovoPedidoAdmin($order));
+
+                if ($admin->phone) {
+                    $this->whatsapp->novoPedidoAdmin(
+                        $admin->phone,
+                        $admin->name,
+                        $order->numero,
+                        $nome,
+                        $veiculo,
+                        $valor
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('NotificationService::novoPedidoParaAdmin', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Contrato Assinado (cliente + admin) ──────────────────────────
+
+    public function contratoAssinado(Contract $contract): void
+    {
+        try {
+            $user = $contract->user;
+            $veiculo = implode(' ', array_filter([
+                $contract->dados_veiculo['brand'] ?? '',
+                $contract->dados_veiculo['model'] ?? '',
+                $contract->dados_veiculo['model_year'] ?? '',
+            ]));
+
+            // 1. Notificar cliente
+            if ($user) {
+                $user->notify(new ContratoAssinado($contract));
+
+                if ($user->phone) {
+                    $this->whatsapp->contratoAssinado(
+                        $user->phone,
+                        $user->razao_social ?? $user->name,
+                        $contract->numero,
+                        $veiculo
+                    );
+                }
+            }
+
+            // 2. Notificar admins
+            $admins = User::where('is_admin', true)->get();
+            $nomeCliente = $contract->dados_comprador['razao_social']
+                ?? $contract->dados_comprador['name']
+                ?? 'Cliente';
+
+            foreach ($admins as $admin) {
+                $admin->notify(new ContratoAssinadoAdmin($contract));
+
+                if ($admin->phone) {
+                    $this->whatsapp->contratoAssinadoAdmin(
+                        $admin->phone,
+                        $admin->name,
+                        $contract->numero,
+                        $nomeCliente,
+                        $veiculo
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('NotificationService::contratoAssinado', ['error' => $e->getMessage()]);
         }
     }
 }
