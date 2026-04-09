@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Vehicles\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -69,17 +70,23 @@ class VehicleInfolist
                     ->label('Acessórios')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('media')
+                ImageEntry::make('media')
                     ->label('Fotos')
                     ->placeholder('-')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->stacked()
+                    ->limit(5)
+                    ->circular(false)
+                    ->height(120),
                 TextEntry::make('location')
                     ->label('Localização')
                     ->formatStateUsing(fn ($record) => collect([$record->yard_name, $record->city, $record->state])->filter()->implode(', ') ?: '-')
                     ->columnSpanFull(),
                 TextEntry::make('status')
                     ->label('Disponibilidade')
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => \App\Models\Vehicle::statusLabels()[$state] ?? $state)
+                    ->color(fn ($state) => \App\Models\Vehicle::statusColors()[$state] ?? 'gray'),
                 IconEntry::make('has_report')
                     ->label('Possui Laudo')
                     ->boolean(),

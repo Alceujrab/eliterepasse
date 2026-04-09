@@ -20,6 +20,12 @@ class LandingSettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Configurações da Landing Page';
+
+    protected static ?string $modelLabel = 'Configuração da Landing Page';
+
+    protected static ?string $pluralModelLabel = 'Configurações da Landing Page';
+
     public static function canCreate(): bool
     {
         return \App\Models\LandingSetting::count() === 0;

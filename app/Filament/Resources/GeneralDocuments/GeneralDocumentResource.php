@@ -20,6 +20,12 @@ class GeneralDocumentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Documentos Gerais';
+
+    protected static ?string $modelLabel = 'Documento Geral';
+
+    protected static ?string $pluralModelLabel = 'Documentos Gerais';
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
