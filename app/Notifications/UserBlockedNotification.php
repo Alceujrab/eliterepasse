@@ -3,14 +3,11 @@
 namespace App\Notifications;
 
 use App\Channels\EvolutionWhatsAppChannel;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserBlockedNotification extends Notification implements ShouldQueue
+class UserBlockedNotification extends Notification
 {
-    use Queueable;
 
     public function via(mixed $notifiable): array
     {

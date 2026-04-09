@@ -3,14 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Contract;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ContratoAssinadoAdmin extends Notification implements ShouldQueue
+class ContratoAssinadoAdmin extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public readonly Contract $contract

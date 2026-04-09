@@ -4,14 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use App\Models\TicketMessage;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketAtualizado extends Notification implements ShouldQueue
+class TicketAtualizado extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public readonly Ticket        $ticket,

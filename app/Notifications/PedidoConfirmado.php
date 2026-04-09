@@ -3,14 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Order;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PedidoConfirmado extends Notification implements ShouldQueue
+class PedidoConfirmado extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public readonly Order $order

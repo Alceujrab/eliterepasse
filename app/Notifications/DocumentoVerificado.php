@@ -3,14 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Document;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DocumentoVerificado extends Notification implements ShouldQueue
+class DocumentoVerificado extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public readonly Document $document
