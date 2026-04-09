@@ -86,12 +86,10 @@ class AdminPanelProvider extends PanelProvider
 
                 NavigationGroup::make('Comunicação')
                     ->label('Comunicação')
-                    ->icon('heroicon-o-bell')
                     ->collapsible(),
 
                 NavigationGroup::make('Configurações')
                     ->label('Configurações')
-                    ->icon('heroicon-o-cog-6-tooth')
                     ->collapsible()
                     ->collapsed(),
             ])

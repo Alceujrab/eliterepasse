@@ -1,6 +1,7 @@
-{{-- Admin Mobile Bottom Nav --}}
+{{-- Admin Mobile Bottom Nav (oculto no login/register) --}}
+@if(! request()->routeIs('filament.admin.auth.*'))
 <nav class="admin-bottom-nav">
-    <div class="flex">
+    <div>
         @php
             $navItems = [
                 ['url' => '/admin',                  'icon' => '🏠', 'label' => 'Dashboard',  'match' => 'admin$|admin/dashboard'],
@@ -20,3 +21,4 @@
     </div>
 </nav>
 <div class="safe-bottom"></div>
+@endif

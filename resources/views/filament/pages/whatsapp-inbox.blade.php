@@ -14,7 +14,7 @@
             <div class="flex gap-3 flex-wrap">
                 @php
                     $total  = $this->tickets->count();
-                    $aberto = Ticket::where('type','whatsapp')->where('status','aberto')->count();
+                    $aberto = \App\Models\Ticket::where('type','whatsapp')->where('status','aberto')->count();
                 @endphp
                 <div class="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-2.5 rounded-xl text-white text-base font-semibold">
                     📋 {{ $total }} conversa(s)
