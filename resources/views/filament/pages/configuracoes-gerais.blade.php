@@ -82,14 +82,57 @@
             </div>
         </x-filament::section>
 
-        {{-- E-MAIL --}}
+        {{-- E-MAIL SMTP --}}
         <x-filament::section class="mt-6">
-            <x-slot name="heading">Configurações de E-mail</x-slot>
-            <x-slot name="description">Dados do remetente para notificações automáticas do sistema.</x-slot>
+            <x-slot name="heading">Configurações de E-mail (SMTP)</x-slot>
+            <x-slot name="description">Configure o servidor SMTP para envio de notificações por e-mail. Sem esta configuração, e-mails não serão enviados.</x-slot>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-center gap-3">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input wire:model="mail_smtp_ativo" type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        <span class="ml-3 text-base font-medium text-gray-700">Ativar envio de e-mail SMTP</span>
+                    </label>
+                </div>
+                <div></div>
+
                 <div>
-                    <label class="block text-base font-semibold text-gray-700 mb-1">E-mail de Envio</label>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">Servidor SMTP (Host)</label>
+                    <input wire:model="mail_smtp_host" type="text"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-mono"
+                        placeholder="mail.eliterepasse.com.br">
+                </div>
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">Porta</label>
+                    <input wire:model="mail_smtp_port" type="text"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base"
+                        placeholder="465">
+                </div>
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">Usuário SMTP</label>
+                    <input wire:model="mail_smtp_username" type="text"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-mono"
+                        placeholder="noreply@eliterepasse.com.br">
+                </div>
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">Senha SMTP</label>
+                    <input wire:model="mail_smtp_password" type="password"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-mono">
+                </div>
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">Criptografia</label>
+                    <select wire:model="mail_smtp_encryption"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base">
+                        <option value="ssl">SSL (porta 465)</option>
+                        <option value="tls">TLS (porta 587)</option>
+                        <option value="">Nenhuma</option>
+                    </select>
+                </div>
+                <div></div>
+
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">E-mail do Remetente</label>
                     <input wire:model="mail_from_address" type="email"
                         class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base"
                         placeholder="noreply@eliterepasse.com.br">
@@ -100,6 +143,17 @@
                         class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base"
                         placeholder="Elite Repasse">
                 </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <button type="button" wire:click="testarEmail"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Enviar E-mail de Teste
+                </button>
+                <span class="ml-3 text-sm text-gray-500">Envia um e-mail de teste para o endereço do remetente</span>
             </div>
         </x-filament::section>
 
