@@ -39,6 +39,9 @@ class ConfiguracoesGerais extends Page implements HasForms
     public string $google_oauth_client_id = '';
     public string $google_oauth_client_secret = '';
 
+    // Gemini AI
+    public string $gemini_api_key = '';
+
     // E-mail SMTP
     public string $mail_smtp_host = '';
     public string $mail_smtp_port = '465';
@@ -69,6 +72,7 @@ class ConfiguracoesGerais extends Page implements HasForms
             'google_recaptcha_ativo', 'google_recaptcha_score_minimo',
             'google_maps_api_key', 'google_oauth_client_id',
             'google_oauth_client_secret',
+            'gemini_api_key',
             'mail_smtp_host', 'mail_smtp_port', 'mail_smtp_username',
             'mail_smtp_password', 'mail_smtp_encryption',
             'mail_from_address', 'mail_from_name', 'mail_smtp_ativo',

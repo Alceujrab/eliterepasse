@@ -80,6 +80,21 @@
             </div>
         </x-filament::section>
 
+        {{-- INTELIGÊNCIA ARTIFICIAL (GEMINI) --}}
+        <x-filament::section class="mt-6">
+            <x-slot name="heading">Inteligência Artificial (Gemini)</x-slot>
+            <x-slot name="description">Chave da API Google Gemini para geração de conteúdo de e-mail com IA. Obtenha em aistudio.google.com/apikey.</x-slot>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-base font-semibold text-gray-700 mb-1">API Key do Gemini</label>
+                    <input wire:model="gemini_api_key" type="password"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base font-mono"
+                        placeholder="AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                </div>
+            </div>
+        </x-filament::section>
+
         {{-- E-MAIL SMTP --}}
         <x-filament::section class="mt-6">
             <x-slot name="heading">Configurações de E-mail (SMTP)</x-slot>
