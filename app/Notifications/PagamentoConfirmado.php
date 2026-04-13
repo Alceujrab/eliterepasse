@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use App\Models\Financial;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -23,13 +24,25 @@ class PagamentoConfirmado extends Notification
         $numero = $this->financial->numero;
         $valor  = 'R$ ' . number_format((float) $this->financial->valor, 2, ',', '.');
         $nome   = $notifiable->razao_social ?? $notifiable->name;
+        $dataPgto = $this->financial->data_pagamento?->format('d/m/Y') ?? now()->format('d/m/Y');
+
+        $template = EmailTemplate::findBySlug('pagamento_confirmado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'numero' => $numero,
+                'valor' => $valor,
+                'data_pagamento' => $dataPgto,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("✅ Pagamento Confirmado — Fatura {$numero} — Elite Repasse")
             ->greeting("Olá, {$nome}!")
             ->line("O pagamento da fatura **{$numero}** foi confirmado com sucesso.")
             ->line("**Valor:** {$valor}")
-            ->line("**Data do pagamento:** " . ($this->financial->data_pagamento?->format('d/m/Y') ?? now()->format('d/m/Y')))
+            ->line("**Data do pagamento:** {$dataPgto}")
             ->action('Ver Financeiro', url('/financeiro'))
             ->line('Obrigado pela confiança! Acompanhe seus pedidos pelo Portal B2B.');
     }

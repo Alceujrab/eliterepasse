@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Document;
+use App\Models\EmailTemplate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -28,6 +29,24 @@ class DocumentoVerificado extends Notification
             : 'Veículo';
 
         $nome = $notifiable->razao_social ?? $notifiable->name;
+
+        $motivoLinha = '';
+        if ($status === 'rejeitado' && $this->document->motivo_rejeicao) {
+            $motivoLinha = "**Motivo:** {$this->document->motivo_rejeicao}\nPor favor, envie o documento correto pelo portal.";
+        }
+
+        $template = EmailTemplate::findBySlug('documento_verificado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'titulo' => $titulo,
+                'tipo' => $tipo,
+                'veiculo' => $veiculo,
+                'status' => $status,
+                'motivo_linha' => $motivoLinha,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         $mail = (new MailMessage)
             ->subject("{$titulo} — Elite Repasse")

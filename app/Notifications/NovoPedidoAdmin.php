@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use App\Models\Order;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -26,6 +27,18 @@ class NovoPedidoAdmin extends Notification
         $nome = $cliente?->razao_social ?? $cliente?->nome_fantasia ?? $cliente?->name ?? 'Cliente';
         $veiculo = $vehicle ? "{$vehicle->brand} {$vehicle->model} {$vehicle->model_year}" : 'Veículo';
         $valor = 'R$ ' . number_format((float) $this->order->valor_compra, 2, ',', '.');
+
+        $template = EmailTemplate::findBySlug('novo_pedido_admin');
+        if ($template) {
+            return $template->toMailMessage([
+                'admin_nome' => $notifiable->name,
+                'nome' => $nome,
+                'numero' => $numero,
+                'veiculo' => $veiculo,
+                'valor' => $valor,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("🛒 Novo Pedido {$numero} — {$nome}")

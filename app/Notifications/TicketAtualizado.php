@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -22,9 +23,22 @@ class TicketAtualizado extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $nome = $notifiable->razao_social ?? $notifiable->name;
+
+        $template = EmailTemplate::findBySlug('ticket_atualizado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'numero' => $this->ticket->numero,
+                'titulo' => $this->ticket->titulo,
+                'resposta' => $this->message->mensagem,
+                'portal_url' => url('/'),
+            ]);
+        }
+
         return (new MailMessage)
             ->subject("💬 Resposta no Chamado {$this->ticket->numero} — Elite Repasse")
-            ->greeting("Olá, {$notifiable->razao_social ?? $notifiable->name}!")
+            ->greeting("Olá, {$nome}!")
             ->line("Seu chamado de suporte **{$this->ticket->numero}** recebeu uma nova resposta.")
             ->line("**Assunto:** {$this->ticket->titulo}")
             ->line("**Resposta:** {$this->message->mensagem}")

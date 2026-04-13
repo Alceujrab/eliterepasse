@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use App\Models\User;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -25,6 +26,19 @@ class NovoCadastroAdmin extends Notification
         $cidade = $this->cliente->cidade
             ? "{$this->cliente->cidade}/{$this->cliente->estado}"
             : 'Não informado';
+
+        $template = EmailTemplate::findBySlug('novo_cadastro_admin');
+        if ($template) {
+            return $template->toMailMessage([
+                'admin_nome' => $notifiable->name,
+                'empresa' => $nome,
+                'cnpj' => $cnpj,
+                'cidade' => $cidade,
+                'email' => $this->cliente->email,
+                'whatsapp' => $this->cliente->phone ?? 'Não informado',
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("🆕 Novo Cadastro — {$nome}")

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Contract;
+use App\Models\EmailTemplate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -28,6 +29,19 @@ class ContratoAssinado extends Notification
         ]));
         $valor = 'R$ ' . number_format((float) $this->contract->valor_contrato, 2, ',', '.');
         $numero = $this->contract->numero;
+
+        $template = EmailTemplate::findBySlug('contrato_assinado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'numero' => $numero,
+                'veiculo' => $veiculo,
+                'valor' => $valor,
+                'assinado_em' => $this->contract->assinado_em?->format('d/m/Y H:i'),
+                'local' => $this->contract->endereco_assinatura ?? 'N/A',
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("✅ Contrato {$numero} Assinado")

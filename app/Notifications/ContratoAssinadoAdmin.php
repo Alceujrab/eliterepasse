@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Contract;
+use App\Models\EmailTemplate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -28,6 +29,20 @@ class ContratoAssinadoAdmin extends Notification
             $this->contract->dados_veiculo['model'] ?? '',
             $this->contract->dados_veiculo['model_year'] ?? '',
         ]));
+
+        $template = EmailTemplate::findBySlug('contrato_assinado_admin');
+        if ($template) {
+            return $template->toMailMessage([
+                'admin_nome' => $notifiable->name,
+                'nome' => $nome,
+                'numero' => $this->contract->numero,
+                'veiculo' => $veiculo,
+                'assinado_em' => $this->contract->assinado_em?->format('d/m/Y H:i'),
+                'local' => $this->contract->endereco_assinatura ?? 'N/A',
+                'ip' => $this->contract->ip_assinatura ?? 'N/A',
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("✍️ Contrato {$this->contract->numero} Assinado pelo Cliente")

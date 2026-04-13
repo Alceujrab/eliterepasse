@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use App\Models\Order;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -26,6 +27,17 @@ class PedidoConfirmado extends Notification
             : 'Veículo';
         $valor = 'R$ ' . number_format((float) $this->order->valor_compra, 2, ',', '.');
         $nome = $notifiable->razao_social ?? $notifiable->name;
+
+        $template = EmailTemplate::findBySlug('pedido_confirmado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'numero' => $numero,
+                'veiculo' => $veiculo,
+                'valor' => $valor,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject("✅ Pedido {$numero} Confirmado — Elite Repasse")

@@ -1,0 +1,165 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\EmailTemplate;
+use Illuminate\Database\Seeder;
+
+class EmailTemplateSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $templates = [
+            [
+                'slug' => 'cliente_aprovado',
+                'nome' => 'Cadastro Aprovado (Cliente)',
+                'assunto' => '🎉 Cadastro Aprovado — Elite Repasse',
+                'saudacao' => 'Boas-vindas, {{nome}}!',
+                'corpo' => "Seu cadastro no **Portal B2B Elite Repasse** foi aprovado!\nAgora você tem acesso completo à nossa vitrine de veículos com descontos exclusivos.\n---\n**Seus dados de acesso:**\n📧 **E-mail:** {{email}}\n🔑 **Senha:** A mesma que você definiu no cadastro\n🌐 **Portal:** {{portal_url}}\n---",
+                'texto_acao' => 'Acessar o Portal Agora',
+                'url_acao' => '{{portal_url}}',
+                'texto_rodape' => '📞 Dúvidas? Abra um chamado na central de suporte a qualquer momento.',
+                'variaveis_disponiveis' => ['nome', 'email', 'portal_url'],
+            ],
+            [
+                'slug' => 'contrato_assinado',
+                'nome' => 'Contrato Assinado (Cliente)',
+                'assunto' => '✅ Contrato {{numero}} Assinado',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "O contrato **{{numero}}** foi assinado com sucesso!\n**Veículo:** {{veiculo}}\n**Valor:** {{valor}}\n**Assinado em:** {{assinado_em}}\n**Local:** {{local}}",
+                'texto_acao' => 'Ver Meus Documentos',
+                'url_acao' => '{{portal_url}}/meus-documentos',
+                'texto_rodape' => 'O contrato assinado está disponível na área de documentos do portal.',
+                'variaveis_disponiveis' => ['nome', 'numero', 'veiculo', 'valor', 'assinado_em', 'local', 'portal_url'],
+            ],
+            [
+                'slug' => 'contrato_assinado_admin',
+                'nome' => 'Contrato Assinado (Admin)',
+                'assunto' => '✍️ Contrato {{numero}} Assinado pelo Cliente',
+                'saudacao' => 'Olá, {{admin_nome}}!',
+                'corpo' => "O contrato **{{numero}}** foi assinado pelo cliente **{{nome}}**.\n**Veículo:** {{veiculo}}\n**Assinado em:** {{assinado_em}}\n**Local:** {{local}}\n**IP:** {{ip}}",
+                'texto_acao' => 'Ver Contrato no Admin',
+                'url_acao' => '{{portal_url}}/admin/contracts',
+                'texto_rodape' => 'O contrato assinado está disponível no painel.',
+                'variaveis_disponiveis' => ['admin_nome', 'nome', 'numero', 'veiculo', 'assinado_em', 'local', 'ip', 'portal_url'],
+            ],
+            [
+                'slug' => 'contrato_para_assinar',
+                'nome' => 'Contrato para Assinatura',
+                'assunto' => '✍️ Contrato {{numero}} — Assinatura Necessária',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "Seu contrato de compra e venda **{{numero}}** está pronto para assinatura.\n**Veículo:** {{veiculo}}\n**Valor:** {{valor}}",
+                'texto_acao' => 'Assinar Contrato Agora',
+                'url_acao' => '{{link_assinatura}}',
+                'texto_rodape' => "⚠️ Este link expira em **72 horas**. Assine o quanto antes.\nA assinatura registrará sua localização GPS como prova de autenticidade.",
+                'variaveis_disponiveis' => ['nome', 'numero', 'veiculo', 'valor', 'link_assinatura'],
+            ],
+            [
+                'slug' => 'documento_verificado',
+                'nome' => 'Documento Verificado/Rejeitado',
+                'assunto' => '{{titulo}} — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "O documento **{{tipo}}** do veículo **{{veiculo}}** foi {{status}}.\n{{motivo_linha}}",
+                'texto_acao' => 'Ver Documentos',
+                'url_acao' => '{{portal_url}}',
+                'texto_rodape' => null,
+                'variaveis_disponiveis' => ['nome', 'titulo', 'tipo', 'veiculo', 'status', 'motivo_linha', 'portal_url'],
+            ],
+            [
+                'slug' => 'fatura_gerada',
+                'nome' => 'Fatura Gerada',
+                'assunto' => '💰 Fatura {{numero}} Gerada — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "Uma nova fatura foi gerada para o seu pedido.\n**Fatura:** {{numero}}\n**Valor:** {{valor}}\n**Vencimento:** {{vencimento}}\n**Forma de Pagamento:** {{forma_pagamento}}",
+                'texto_acao' => 'Ver Financeiro',
+                'url_acao' => '{{portal_url}}/financeiro',
+                'texto_rodape' => 'Efetue o pagamento até a data de vencimento para evitar atrasos.',
+                'variaveis_disponiveis' => ['nome', 'numero', 'valor', 'vencimento', 'forma_pagamento', 'portal_url'],
+            ],
+            [
+                'slug' => 'novo_cadastro_admin',
+                'nome' => 'Novo Cadastro (Admin)',
+                'assunto' => '🆕 Novo Cadastro — {{empresa}}',
+                'saudacao' => 'Olá, {{admin_nome}}!',
+                'corpo' => "Um novo lojista se cadastrou no portal e aguarda aprovação.\n**Empresa:** {{empresa}}\n**CNPJ:** {{cnpj}}\n**Cidade:** {{cidade}}\n**E-mail:** {{email}}\n**WhatsApp:** {{whatsapp}}",
+                'texto_acao' => 'Analisar no Admin',
+                'url_acao' => '{{portal_url}}/admin/clients',
+                'texto_rodape' => 'Acesse o painel para aprovar ou bloquear o acesso.',
+                'variaveis_disponiveis' => ['admin_nome', 'empresa', 'cnpj', 'cidade', 'email', 'whatsapp', 'portal_url'],
+            ],
+            [
+                'slug' => 'novo_pedido_admin',
+                'nome' => 'Novo Pedido (Admin)',
+                'assunto' => '🛒 Novo Pedido {{numero}} — {{nome}}',
+                'saudacao' => 'Olá, {{admin_nome}}!',
+                'corpo' => "Um novo pedido de compra foi registrado no portal.\n**Pedido:** {{numero}}\n**Cliente:** {{nome}}\n**Veículo:** {{veiculo}}\n**Valor:** {{valor}}",
+                'texto_acao' => 'Ver Pedido no Admin',
+                'url_acao' => '{{portal_url}}/admin/orders',
+                'texto_rodape' => 'Acesse o painel para confirmar ou processar o pedido.',
+                'variaveis_disponiveis' => ['admin_nome', 'nome', 'numero', 'veiculo', 'valor', 'portal_url'],
+            ],
+            [
+                'slug' => 'pagamento_confirmado',
+                'nome' => 'Pagamento Confirmado',
+                'assunto' => '✅ Pagamento Confirmado — Fatura {{numero}} — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "O pagamento da fatura **{{numero}}** foi confirmado com sucesso.\n**Valor:** {{valor}}\n**Data do pagamento:** {{data_pagamento}}",
+                'texto_acao' => 'Ver Financeiro',
+                'url_acao' => '{{portal_url}}/financeiro',
+                'texto_rodape' => 'Obrigado pela confiança! Acompanhe seus pedidos pelo Portal B2B.',
+                'variaveis_disponiveis' => ['nome', 'numero', 'valor', 'data_pagamento', 'portal_url'],
+            ],
+            [
+                'slug' => 'pedido_confirmado',
+                'nome' => 'Pedido Confirmado',
+                'assunto' => '✅ Pedido {{numero}} Confirmado — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "Seu pedido de compra **{{numero}}** foi confirmado com sucesso.\n**Veículo:** {{veiculo}}\n**Valor:** {{valor}}",
+                'texto_acao' => 'Ver Meus Pedidos',
+                'url_acao' => '{{portal_url}}/meus-pedidos',
+                'texto_rodape' => 'Em breve você receberá o contrato de compra e venda para assinatura.',
+                'variaveis_disponiveis' => ['nome', 'numero', 'veiculo', 'valor', 'portal_url'],
+            ],
+            [
+                'slug' => 'ticket_atualizado',
+                'nome' => 'Resposta no Chamado',
+                'assunto' => '💬 Resposta no Chamado {{numero}} — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "Seu chamado de suporte **{{numero}}** recebeu uma nova resposta.\n**Assunto:** {{titulo}}\n**Resposta:** {{resposta}}",
+                'texto_acao' => 'Ver Chamado',
+                'url_acao' => '{{portal_url}}/suporte',
+                'texto_rodape' => 'Acesse o portal para responder ou verificar o status do seu chamado.',
+                'variaveis_disponiveis' => ['nome', 'numero', 'titulo', 'resposta', 'portal_url'],
+            ],
+            [
+                'slug' => 'usuario_aprovado',
+                'nome' => 'Conta Aprovada',
+                'assunto' => '✅ Sua conta foi aprovada — Portal Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "Temos o prazer em informar que sua conta no **Portal Elite Repasse** foi **aprovada** com sucesso.\nAgora você tem acesso completo ao nosso catálogo de veículos disponíveis para repasse.",
+                'texto_acao' => 'Acessar o Portal',
+                'url_acao' => '{{portal_url}}/dashboard',
+                'texto_rodape' => 'Se tiver alguma dúvida, entre em contato com nossa equipe.',
+                'variaveis_disponiveis' => ['nome', 'portal_url'],
+            ],
+            [
+                'slug' => 'usuario_bloqueado',
+                'nome' => 'Conta Suspensa',
+                'assunto' => '⚠️ Sua conta foi suspensa — Portal Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}.',
+                'corpo' => "Informamos que seu acesso ao **Portal Elite Repasse** foi **suspenso temporariamente**.\nEntre em contato com nossa equipe para mais informações.",
+                'texto_acao' => 'Falar com Suporte',
+                'url_acao' => '{{portal_url}}/suporte',
+                'texto_rodape' => null,
+                'variaveis_disponiveis' => ['nome', 'portal_url'],
+            ],
+        ];
+
+        foreach ($templates as $data) {
+            EmailTemplate::updateOrCreate(
+                ['slug' => $data['slug']],
+                $data
+            );
+        }
+    }
+}

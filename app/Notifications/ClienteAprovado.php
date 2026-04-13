@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -16,6 +17,15 @@ class ClienteAprovado extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $nome = $notifiable->razao_social ?? $notifiable->nome_fantasia ?? $notifiable->name;
+
+        $template = EmailTemplate::findBySlug('cliente_aprovado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'email' => $notifiable->email,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject('🎉 Cadastro Aprovado — Elite Repasse')

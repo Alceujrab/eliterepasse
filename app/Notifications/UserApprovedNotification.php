@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\EvolutionWhatsAppChannel;
+use App\Models\EmailTemplate;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -17,6 +18,14 @@ class UserApprovedNotification extends Notification
     public function toMail(mixed $notifiable): MailMessage
     {
         $nome = $notifiable->razao_social ?? $notifiable->nome_fantasia ?? $notifiable->name;
+
+        $template = EmailTemplate::findBySlug('usuario_aprovado');
+        if ($template) {
+            return $template->toMailMessage([
+                'nome' => $nome,
+                'portal_url' => url('/'),
+            ]);
+        }
 
         return (new MailMessage)
             ->subject('✅ Sua conta foi aprovada — Portal Elite Repasse')
