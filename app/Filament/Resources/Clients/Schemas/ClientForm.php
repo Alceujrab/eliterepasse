@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Hash;
 
 class ClientForm
 {
@@ -98,6 +99,14 @@ class ClientForm
                         ->label('Aprovado em')
                         ->displayFormat('d/m/Y H:i')
                         ->disabled(),
+
+                    TextInput::make('password')
+                        ->label('Nova Senha')
+                        ->password()
+                        ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->helperText('Deixe em branco para manter a senha atual.')
+                        ->minLength(6),
 
                     Textarea::make('observacoes')
                         ->label('Observações Internas')
