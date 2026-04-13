@@ -13,7 +13,7 @@ class DocumentInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title')
+                TextEntry::make('titulo')
                     ->label('Título'),
                 TextEntry::make('tipo')
                     ->label('Tipo')

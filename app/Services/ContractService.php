@@ -139,7 +139,7 @@ class ContractService
         Document::create([
             'user_id'     => $contract->user_id,
             'vehicle_id'  => $contract->vehicle_id,
-            'title'       => "Contrato Assinado {$contract->numero}",
+            'titulo'      => "Contrato Assinado {$contract->numero}",
             'file_path'   => $pdfPath,
             'mime_type'   => 'application/pdf',
             'tamanho'     => Storage::disk('local')->exists($pdfPath)
