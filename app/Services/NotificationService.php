@@ -336,11 +336,34 @@ class NotificationService
     {
         try {
             $user = $shipment->order?->user;
-            if (! $user) return;
+
+            if (! $user) {
+                Log::warning('NotificationService::documentoDisponivel — usuário não encontrado', [
+                    'shipment_id' => $shipment->id,
+                    'order_id'    => $shipment->order_id,
+                    'order_user'  => $shipment->order?->user_id,
+                ]);
+                return;
+            }
+
+            Log::info('NotificationService::documentoDisponivel — enviando', [
+                'shipment_id' => $shipment->id,
+                'user_id'     => $user->id,
+                'user_email'  => $user->email,
+            ]);
 
             $user->notify(new DocumentoDisponivel($shipment));
+
+            Log::info('NotificationService::documentoDisponivel — enviado com sucesso', [
+                'shipment_id' => $shipment->id,
+                'user_id'     => $user->id,
+            ]);
         } catch (\Exception $e) {
-            Log::error('NotificationService::documentoDisponivel', ['error' => $e->getMessage()]);
+            Log::error('NotificationService::documentoDisponivel', [
+                'error'       => $e->getMessage(),
+                'trace'       => $e->getTraceAsString(),
+                'shipment_id' => $shipment->id,
+            ]);
         }
     }
 

@@ -166,6 +166,37 @@ class ViewOrder extends ViewRecord
                         ->send();
                 }),
 
+            // ─── Reenviar Notificação ────────────────────────────────
+            Action::make('reenviar_notificacao')
+                ->label('Reenviar Notificação')
+                ->icon('heroicon-o-bell-alert')
+                ->color('gray')
+                ->visible(fn () => $this->record->shipments()->exists())
+                ->form([
+                    Select::make('shipment_id')
+                        ->label('Documento')
+                        ->options(fn () => $this->record->shipments()
+                            ->get()
+                            ->mapWithKeys(fn ($s) => [
+                                $s->id => (OrderShipment::tipoDocumentoLabels()[$s->tipo_documento] ?? $s->tipo_documento) . ($s->titulo ? " — {$s->titulo}" : ''),
+                            ])
+                        )
+                        ->required(),
+                ])
+                ->requiresConfirmation()
+                ->modalHeading('Reenviar Notificação ao Cliente')
+                ->modalDescription('A notificação será reenviada por e-mail, WhatsApp e no portal do cliente.')
+                ->action(function (array $data) {
+                    $shipment = OrderShipment::findOrFail($data['shipment_id']);
+                    app(NotificationService::class)->documentoDisponivel($shipment);
+
+                    Notification::make()
+                        ->title('Notificação reenviada!')
+                        ->body("O cliente foi renotificado sobre o documento.")
+                        ->success()
+                        ->send();
+                }),
+
             // ─── Marcar Entregue ─────────────────────────────────────
             Action::make('marcar_entregue')
                 ->label('Marcar como Entregue')
