@@ -128,7 +128,11 @@ class ConfiguracoesGerais extends Page implements HasForms
     private function aplicarConfigMail(): void
     {
         if ($this->mail_smtp_ativo && $this->mail_smtp_host) {
-            $encryption = $this->mail_smtp_encryption ?: null;
+            $scheme = match ($this->mail_smtp_encryption) {
+                'ssl' => 'smtps',
+                'tls' => 'smtp',
+                default => 'smtp',
+            };
 
             config([
                 'mail.default' => 'smtp',
@@ -137,8 +141,8 @@ class ConfiguracoesGerais extends Page implements HasForms
                 'mail.mailers.smtp.port' => (int) $this->mail_smtp_port,
                 'mail.mailers.smtp.username' => $this->mail_smtp_username,
                 'mail.mailers.smtp.password' => $this->mail_smtp_password,
-                'mail.mailers.smtp.encryption' => $encryption,
-                'mail.mailers.smtp.scheme' => $encryption,
+                'mail.mailers.smtp.encryption' => null,
+                'mail.mailers.smtp.scheme' => $scheme,
             ]);
         }
 

@@ -37,15 +37,20 @@ class AppServiceProvider extends ServiceProvider
             if ($smtpAtivo && $smtpAtivo !== '0') {
                 $host = SystemSetting::get('mail_smtp_host');
                 if ($host) {
-                    $encryption = SystemSetting::get('mail_smtp_encryption', 'ssl') ?: null;
+                    $encryptionRaw = SystemSetting::get('mail_smtp_encryption', 'ssl');
+                    $scheme = match ($encryptionRaw) {
+                        'ssl' => 'smtps',
+                        'tls' => 'smtp',
+                        default => 'smtp',
+                    };
                     Config::set('mail.default', 'smtp');
                     Config::set('mail.mailers.smtp.transport', 'smtp');
                     Config::set('mail.mailers.smtp.host', $host);
                     Config::set('mail.mailers.smtp.port', (int) SystemSetting::get('mail_smtp_port', 465));
                     Config::set('mail.mailers.smtp.username', SystemSetting::get('mail_smtp_username'));
                     Config::set('mail.mailers.smtp.password', SystemSetting::get('mail_smtp_password'));
-                    Config::set('mail.mailers.smtp.encryption', $encryption);
-                    Config::set('mail.mailers.smtp.scheme', $encryption);
+                    Config::set('mail.mailers.smtp.encryption', null);
+                    Config::set('mail.mailers.smtp.scheme', $scheme);
                 }
             }
 
