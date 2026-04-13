@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\EmailTemplates\Schemas;
 
 use App\Services\GeminiService;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
