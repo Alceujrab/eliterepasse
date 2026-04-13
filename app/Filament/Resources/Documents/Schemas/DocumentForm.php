@@ -78,9 +78,15 @@ class DocumentForm
                             ->helperText('Tamanho máximo 5MB. Formatos: PDF, JPG, PNG.')
                             ->afterStateUpdated(function ($state, \Filament\Schemas\Components\Utilities\Set $set) {
                                 if ($state) {
-                                    $set('nome_original', $state->getClientOriginalName());
-                                    $set('tamanho', $state->getSize());
-                                    $set('mime_type', $state->getMimeType());
+                                    if ($state instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+                                        $set('nome_original', $state->getClientOriginalName());
+                                        $set('tamanho', $state->getSize());
+                                        $set('mime_type', $state->getMimeType());
+                                    } elseif (is_string($state)) {
+                                        $set('nome_original', basename($state));
+                                        $set('tamanho', \Illuminate\Support\Facades\Storage::disk('public')->size($state));
+                                        $set('mime_type', \Illuminate\Support\Facades\Storage::disk('public')->mimeType($state));
+                                    }
                                 }
                             }),
 
