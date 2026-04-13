@@ -358,6 +358,78 @@
                                                 @endif
                                             </div>
                                         </div>
+
+                                        {{-- ─── Documentos e Envio ─────────────────────────── --}}
+                                        @if($pedido->shipments->count() > 0)
+                                            <div class="mt-5 pt-5 border-t border-gray-200">
+                                                <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">📦 Documentos e Envio</h4>
+                                                <div class="space-y-3">
+                                                    @foreach($pedido->shipments as $shipment)
+                                                        @php
+                                                            $tipoLabels = \App\Models\OrderShipment::tipoDocumentoLabels();
+                                                            $metodoLabels = \App\Models\OrderShipment::metodoEnvioLabels();
+                                                            $statusLabels = \App\Models\OrderShipment::statusLabels();
+                                                            $statusBadge = match($shipment->status) {
+                                                                'disponivel' => 'bg-blue-100 text-blue-700',
+                                                                'despachado'  => 'bg-amber-100 text-amber-700',
+                                                                'entregue'    => 'bg-green-100 text-green-700',
+                                                                default       => 'bg-gray-100 text-gray-600',
+                                                            };
+                                                            $statusIcon = match($shipment->status) {
+                                                                'disponivel' => '📥',
+                                                                'despachado'  => '📦',
+                                                                'entregue'    => '✅',
+                                                                default       => '📄',
+                                                            };
+                                                        @endphp
+                                                        <div class="bg-white border border-gray-200 rounded-xl p-4">
+                                                            <div class="flex items-start justify-between gap-3">
+                                                                <div class="flex items-center gap-3">
+                                                                    <div class="text-xl">{{ $statusIcon }}</div>
+                                                                    <div>
+                                                                        <p class="text-sm font-bold text-gray-900">{{ $tipoLabels[$shipment->tipo_documento] ?? $shipment->tipo_documento }}</p>
+                                                                        @if($shipment->titulo)
+                                                                            <p class="text-xs text-gray-400">{{ $shipment->titulo }}</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                                <span class="badge {{ $statusBadge }} text-xs">{{ $statusLabels[$shipment->status] ?? $shipment->status }}</span>
+                                                            </div>
+
+                                                            <div class="mt-3 flex flex-wrap gap-3 text-xs">
+                                                                {{-- Download --}}
+                                                                @if($shipment->file_path)
+                                                                    <a href="{{ asset('storage/' . $shipment->file_path) }}" target="_blank"
+                                                                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg font-semibold hover:bg-blue-100 transition">
+                                                                        📥 Baixar Documento
+                                                                    </a>
+                                                                @endif
+
+                                                                {{-- Rastreio --}}
+                                                                @if($shipment->codigo_rastreio)
+                                                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg font-mono font-bold">
+                                                                        🔍 {{ $shipment->codigo_rastreio }}
+                                                                    </span>
+                                                                @endif
+
+                                                                {{-- Método --}}
+                                                                @if($shipment->metodo_envio)
+                                                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg font-medium">
+                                                                        🚚 {{ $metodoLabels[$shipment->metodo_envio] ?? $shipment->metodo_envio }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+
+                                                            @if($shipment->despachado_em)
+                                                                <p class="text-[11px] text-gray-400 mt-2">
+                                                                    Despachado em {{ \Carbon\Carbon::parse($shipment->despachado_em)->format('d/m/Y H:i') }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             @endforeach

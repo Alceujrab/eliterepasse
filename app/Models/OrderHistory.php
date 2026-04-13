@@ -17,26 +17,32 @@ class OrderHistory extends Model
     public static function acaoLabels(): array
     {
         return [
-            'pedido_criado'        => '🛒 Pedido criado',
-            'pedido_confirmado'    => '✅ Pedido confirmado',
-            'contrato_gerado'     => '📄 Contrato gerado',
-            'contrato_assinado'   => '✍️ Contrato assinado',
-            'fatura_gerada'       => '💰 Fatura gerada',
-            'pagamento_confirmado'=> '💚 Pagamento confirmado',
-            'pedido_cancelado'    => '❌ Pedido cancelado',
+            'pedido_criado'          => '🛒 Pedido criado',
+            'pedido_confirmado'      => '✅ Pedido confirmado',
+            'contrato_gerado'        => '📄 Contrato gerado',
+            'contrato_assinado'      => '✍️ Contrato assinado',
+            'fatura_gerada'          => '💰 Fatura gerada',
+            'pagamento_confirmado'   => '💚 Pagamento confirmado',
+            'pedido_cancelado'       => '❌ Pedido cancelado',
+            'documento_disponivel'   => '📥 Documento disponibilizado',
+            'documento_despachado'   => '📦 Documento despachado',
+            'documento_entregue'     => '✅ Documento entregue',
         ];
     }
 
     public static function acaoIcons(): array
     {
         return [
-            'pedido_criado'        => '🛒',
-            'pedido_confirmado'    => '✅',
-            'contrato_gerado'     => '📄',
-            'contrato_assinado'   => '✍️',
-            'fatura_gerada'       => '💰',
-            'pagamento_confirmado'=> '💚',
-            'pedido_cancelado'    => '❌',
+            'pedido_criado'          => '🛒',
+            'pedido_confirmado'      => '✅',
+            'contrato_gerado'       => '📄',
+            'contrato_assinado'     => '✍️',
+            'fatura_gerada'         => '💰',
+            'pagamento_confirmado'  => '💚',
+            'pedido_cancelado'      => '❌',
+            'documento_disponivel'  => '📥',
+            'documento_despachado'  => '📦',
+            'documento_entregue'    => '✅',
         ];
     }
 

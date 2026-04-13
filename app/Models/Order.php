@@ -97,6 +97,11 @@ class Order extends Model
         return $this->hasMany(OrderHistory::class)->latest();
     }
 
+    public function shipments()
+    {
+        return $this->hasMany(OrderShipment::class)->latest();
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────────
     public function getNumeroAttribute(): string
     {

@@ -153,6 +153,28 @@ class EmailTemplateSeeder extends Seeder
                 'texto_rodape' => null,
                 'variaveis_disponiveis' => ['nome', 'portal_url'],
             ],
+            [
+                'slug' => 'documento_disponivel',
+                'nome' => 'Documento Disponível para Download',
+                'assunto' => '📥 Documento {{tipo_documento}} Disponível — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "O documento **{{tipo_documento}}** referente ao seu pedido **{{numero_pedido}}** está disponível para download no portal.\n\n**Veículo:** {{veiculo}}\n\nAcesse o portal e vá em **Meus Pedidos** para baixar o documento.",
+                'texto_acao' => 'Ver Meus Pedidos',
+                'url_acao' => '{{portal_url}}/meus-pedidos',
+                'texto_rodape' => 'Em caso de dúvidas, entre em contato com nossa equipe de suporte.',
+                'variaveis_disponiveis' => ['nome', 'tipo_documento', 'numero_pedido', 'veiculo', 'portal_url'],
+            ],
+            [
+                'slug' => 'documento_despachado',
+                'nome' => 'Documento Despachado',
+                'assunto' => '📦 Documento {{tipo_documento}} Despachado — Elite Repasse',
+                'saudacao' => 'Olá, {{nome}}!',
+                'corpo' => "O documento **{{tipo_documento}}** referente ao seu pedido **{{numero_pedido}}** foi despachado!\n\n**Método de Envio:** {{metodo_envio}}\n{{codigo_rastreio_linha}}\n**Data do Despacho:** {{data_despacho}}\n\nAcompanhe o status do envio em **Meus Pedidos** no portal.",
+                'texto_acao' => 'Ver Meus Pedidos',
+                'url_acao' => '{{portal_url}}/meus-pedidos',
+                'texto_rodape' => 'Você será notificado quando o documento for entregue.',
+                'variaveis_disponiveis' => ['nome', 'tipo_documento', 'numero_pedido', 'veiculo', 'metodo_envio', 'codigo_rastreio_linha', 'data_despacho', 'portal_url'],
+            ],
         ];
 
         foreach ($templates as $data) {

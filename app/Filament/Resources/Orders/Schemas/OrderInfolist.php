@@ -53,6 +53,13 @@ class OrderInfolist
                             ->columnSpanFull(),
                     ]),
 
+                Section::make('📦 Documentos e Envio')
+                    ->schema([
+                        ViewEntry::make('shipments')
+                            ->view('filament.infolists.entries.order-shipments'),
+                    ])
+                    ->visible(fn ($record) => $record->shipments()->exists()),
+
                 Section::make('Histórico do Pedido')
                     ->schema([
                         ViewEntry::make('histories')

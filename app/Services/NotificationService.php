@@ -6,6 +6,7 @@ use App\Models\Contract;
 use App\Models\Document;
 use App\Models\Financial;
 use App\Models\Order;
+use App\Models\OrderShipment;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
@@ -13,6 +14,8 @@ use App\Notifications\ClienteAprovado;
 use App\Notifications\ContratoAssinado;
 use App\Notifications\ContratoAssinadoAdmin;
 use App\Notifications\ContratoParaAssinar;
+use App\Notifications\DocumentoDespachado;
+use App\Notifications\DocumentoDisponivel;
 use App\Notifications\DocumentoVerificado;
 use App\Notifications\FaturaGerada;
 use App\Notifications\NovoCadastroAdmin;
@@ -324,6 +327,34 @@ class NotificationService
             }
         } catch (\Exception $e) {
             Log::error('NotificationService::pagamentoConfirmado', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Documento Disponível ─────────────────────────────────────────
+
+    public function documentoDisponivel(OrderShipment $shipment): void
+    {
+        try {
+            $user = $shipment->order?->user;
+            if (! $user) return;
+
+            $user->notify(new DocumentoDisponivel($shipment));
+        } catch (\Exception $e) {
+            Log::error('NotificationService::documentoDisponivel', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // ─── Documento Despachado ─────────────────────────────────────────
+
+    public function documentoDespachado(OrderShipment $shipment): void
+    {
+        try {
+            $user = $shipment->order?->user;
+            if (! $user) return;
+
+            $user->notify(new DocumentoDespachado($shipment));
+        } catch (\Exception $e) {
+            Log::error('NotificationService::documentoDespachado', ['error' => $e->getMessage()]);
         }
     }
 }
