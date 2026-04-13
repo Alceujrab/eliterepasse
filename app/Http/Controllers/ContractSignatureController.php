@@ -35,8 +35,8 @@ class ContractSignatureController extends Controller
     {
         $request->validate([
             'assinatura_base64' => ['required', 'string'],
-            'lat'               => ['required', 'numeric'],
-            'lng'               => ['required', 'numeric'],
+            'lat'               => ['nullable', 'numeric'],
+            'lng'               => ['nullable', 'numeric'],
         ]);
 
         $signature = ContractSignature::where('token_assinatura', $token)
@@ -52,8 +52,8 @@ class ContractSignatureController extends Controller
 
         app(ContractService::class)->assinarContrato(
             $contract,
-            (float) $request->lat,
-            (float) $request->lng,
+            $request->filled('lat') ? (float) $request->lat : null,
+            $request->filled('lng') ? (float) $request->lng : null,
             $request->assinatura_base64,
             $request->ip(),
             $request->userAgent()

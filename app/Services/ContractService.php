@@ -92,15 +92,17 @@ class ContractService
      */
     public function assinarContrato(
         Contract $contract,
-        float $lat,
-        float $lng,
+        ?float $lat,
+        ?float $lng,
         string $assinaturaBase64,
         string $ip,
         string $userAgent
     ): ContractSignature {
 
-        // 1. Geocodificação reversa (Google Maps ou ViaCEP fallback)
-        $enderecoGeo = $this->geocodificacaoReversa($lat, $lng);
+        // 1. Geocodificação reversa (apenas se GPS disponível)
+        $enderecoGeo = ($lat && $lng)
+            ? $this->geocodificacaoReversa($lat, $lng)
+            : null;
 
         // 2. Atualiza o contrato
         $contract->update([

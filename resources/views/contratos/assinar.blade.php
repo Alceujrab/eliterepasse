@@ -134,14 +134,13 @@
 
                 enviarAssinatura() {
                     if (!this.assinou) { alert('Por favor, desenhe sua assinatura.'); return; }
-                    if (!this.gpsOk) { alert('Precisamos da sua localização para registrar a assinatura. Permita o acesso ao GPS.'); return; }
 
                     const canvas = document.getElementById('signature-canvas');
                     const base64 = canvas.toDataURL('image/png');
 
                     document.getElementById('input-assinatura').value = base64;
-                    document.getElementById('input-lat').value = this.lat;
-                    document.getElementById('input-lng').value = this.lng;
+                    document.getElementById('input-lat').value = this.lat ?? '';
+                    document.getElementById('input-lng').value = this.lng ?? '';
 
                     this.processando = true;
                     document.getElementById('form-assinatura').submit();
@@ -161,9 +160,9 @@
                     Localização capturada com sucesso
                     <span class="text-gray-500 text-xs ml-1" x-text="lat ? `(Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)})` : ''"></span>
                 </div>
-                <div x-show="gpsErro" class="flex items-center gap-2 text-sm text-red-400">
+                <div x-show="gpsErro" class="flex items-center gap-2 text-sm text-amber-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    Não foi possível obter a localização. Certifique-se de permitir o GPS.
+                    Localização não disponível — a assinatura continuará sem registro de GPS.
                 </div>
             </div>
 
@@ -202,9 +201,9 @@
             @endif
 
             <button type="button" @click="enviarAssinatura()"
-                :disabled="processando || gpsCarregando || gpsErro"
+                :disabled="processando || gpsCarregando"
                 class="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl text-white font-black text-[16px] transition-all"
-                :class="processando || gpsErro ? 'bg-gray-600 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/20 hover:-translate-y-0.5'">
+                :class="processando ? 'bg-gray-600 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/20 hover:-translate-y-0.5'">
                 <span x-show="!processando">
                     <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                     Assinar Contrato
