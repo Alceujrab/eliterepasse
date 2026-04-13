@@ -13,11 +13,10 @@
                         placeholder="Elite Repasse">
                 </div>
                 <div class="flex items-center gap-3 pt-6">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input wire:model="aprovacao_automatica" type="checkbox" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all pointer-events-none"></div>
-                        <span class="ml-3 text-base font-medium text-gray-700">Aprovação Automática de Clientes</span>
-                    </label>
+                    <button type="button" wire:click="$toggle('aprovacao_automatica')" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-4 focus:ring-primary-300 {{ $aprovacao_automatica ? 'bg-primary-600' : 'bg-gray-200' }}">
+                        <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform {{ $aprovacao_automatica ? 'translate-x-5' : 'translate-x-0.5' }}"></span>
+                    </button>
+                    <span class="text-base font-medium text-gray-700">Aprovação Automática de Clientes</span>
                 </div>
             </div>
         </x-filament::section>
@@ -46,11 +45,10 @@
                         placeholder="0.5">
                 </div>
                 <div class="flex items-center gap-3 pt-6">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input wire:model="google_recaptcha_ativo" type="checkbox" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all pointer-events-none"></div>
-                        <span class="ml-3 text-base font-medium text-gray-700">Ativar reCAPTCHA no Login</span>
-                    </label>
+                    <button type="button" wire:click="$toggle('google_recaptcha_ativo')" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-4 focus:ring-primary-300 {{ $google_recaptcha_ativo ? 'bg-primary-600' : 'bg-gray-200' }}">
+                        <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform {{ $google_recaptcha_ativo ? 'translate-x-5' : 'translate-x-0.5' }}"></span>
+                    </button>
+                    <span class="text-base font-medium text-gray-700">Ativar reCAPTCHA no Login</span>
                 </div>
             </div>
         </x-filament::section>
@@ -89,11 +87,10 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="flex items-center gap-3">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input wire:model="mail_smtp_ativo" type="checkbox" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all pointer-events-none"></div>
-                        <span class="ml-3 text-base font-medium text-gray-700">Ativar envio de e-mail SMTP</span>
-                    </label>
+                    <button type="button" wire:click="$toggle('mail_smtp_ativo')" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-4 focus:ring-primary-300 {{ $mail_smtp_ativo ? 'bg-primary-600' : 'bg-gray-200' }}">
+                        <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform {{ $mail_smtp_ativo ? 'translate-x-5' : 'translate-x-0.5' }}"></span>
+                    </button>
+                    <span class="text-base font-medium text-gray-700">Ativar envio de e-mail SMTP</span>
                 </div>
                 <div></div>
 
