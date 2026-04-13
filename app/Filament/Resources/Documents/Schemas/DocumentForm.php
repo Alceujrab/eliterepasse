@@ -84,8 +84,11 @@ class DocumentForm
                                         $set('mime_type', $state->getMimeType());
                                     } elseif (is_string($state)) {
                                         $set('nome_original', basename($state));
-                                        $set('tamanho', \Illuminate\Support\Facades\Storage::disk('public')->size($state));
-                                        $set('mime_type', \Illuminate\Support\Facades\Storage::disk('public')->mimeType($state));
+                                        $disk = \Illuminate\Support\Facades\Storage::disk('public');
+                                        if ($disk->exists($state)) {
+                                            $set('tamanho', $disk->size($state));
+                                            $set('mime_type', $disk->mimeType($state));
+                                        }
                                     }
                                 }
                             }),
