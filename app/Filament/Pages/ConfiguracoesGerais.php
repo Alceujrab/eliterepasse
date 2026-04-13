@@ -92,6 +92,15 @@ class ConfiguracoesGerais extends Page implements HasForms
     {
         $this->aplicarConfigMail();
 
+        if (! $this->mail_smtp_ativo || ! $this->mail_smtp_host) {
+            Notification::make()
+                ->title('SMTP não ativado')
+                ->body('Ative o SMTP e preencha o host antes de testar.')
+                ->warning()
+                ->send();
+            return;
+        }
+
         try {
             \Illuminate\Support\Facades\Mail::raw(
                 'Este é um e-mail de teste do Portal Elite Repasse. Se você recebeu, a configuração SMTP está funcionando!',
@@ -109,8 +118,9 @@ class ConfiguracoesGerais extends Page implements HasForms
         } catch (\Exception $e) {
             Notification::make()
                 ->title('Erro ao enviar e-mail')
-                ->body($e->getMessage())
+                ->body(\Illuminate\Support\Str::limit($e->getMessage(), 300))
                 ->danger()
+                ->persistent()
                 ->send();
         }
     }
@@ -118,13 +128,17 @@ class ConfiguracoesGerais extends Page implements HasForms
     private function aplicarConfigMail(): void
     {
         if ($this->mail_smtp_ativo && $this->mail_smtp_host) {
+            $encryption = $this->mail_smtp_encryption ?: null;
+
             config([
                 'mail.default' => 'smtp',
+                'mail.mailers.smtp.transport' => 'smtp',
                 'mail.mailers.smtp.host' => $this->mail_smtp_host,
                 'mail.mailers.smtp.port' => (int) $this->mail_smtp_port,
                 'mail.mailers.smtp.username' => $this->mail_smtp_username,
                 'mail.mailers.smtp.password' => $this->mail_smtp_password,
-                'mail.mailers.smtp.encryption' => $this->mail_smtp_encryption,
+                'mail.mailers.smtp.encryption' => $encryption,
+                'mail.mailers.smtp.scheme' => $encryption,
             ]);
         }
 
@@ -134,6 +148,9 @@ class ConfiguracoesGerais extends Page implements HasForms
                 'mail.from.name' => $this->mail_from_name ?: config('app.name'),
             ]);
         }
+
+        // Forçar recriação do mailer com as novas configurações
+        \Illuminate\Support\Facades\Mail::purge('smtp');
     }
 
     protected function getFormActions(): array
