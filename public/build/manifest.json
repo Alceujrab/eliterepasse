@@ -1,6 +1,15 @@
 {
+  "resources/css/admin-panel.css": {
+    "file": "assets/admin-panel-I25mvpPt.css",
+    "name": "admin-panel",
+    "names": [
+      "admin-panel.css"
+    ],
+    "src": "resources/css/admin-panel.css",
+    "isEntry": true
+  },
   "resources/css/app.css": {
-    "file": "assets/app-DSj-YDIR.css",
+    "file": "assets/app-CNllZxtV.css",
     "name": "app",
     "names": [
       "app.css"
@@ -9,7 +18,7 @@
     "isEntry": true
   },
   "resources/css/filament-elite.css": {
-    "file": "assets/filament-elite-CZXag_Yt.css",
+    "file": "assets/filament-elite-Dve-bU49.css",
     "name": "filament-elite",
     "names": [
       "filament-elite.css"
@@ -18,7 +27,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BU6mFzGd.js",
+    "file": "assets/app-DU0szZG0.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
