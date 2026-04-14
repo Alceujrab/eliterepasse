@@ -11,7 +11,19 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=sora:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/admin-panel.css', 'resources/js/app.js'])
+    @php
+        $manifestPath = public_path('build/manifest.json');
+        $manifest = file_exists($manifestPath)
+            ? json_decode(file_get_contents($manifestPath), true)
+            : [];
+        $hasAdminPanelCss = is_array($manifest) && array_key_exists('resources/css/admin-panel.css', $manifest);
+    @endphp
+
+    @if($hasAdminPanelCss)
+        @vite(['resources/css/admin-panel.css', 'resources/js/app.js'])
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
 </head>
 <body>
 <div class="admin-shell">
