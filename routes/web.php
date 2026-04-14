@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\EvolutionInstanceActionController;
 use App\Http\Controllers\Admin\EvolutionInstanceCreateController;
 use App\Http\Controllers\Admin\EvolutionInstanceShowController;
 use App\Http\Controllers\Admin\EvolutionInstancesIndexController;
+use App\Http\Controllers\Admin\WhatsappInboxActionController;
+use App\Http\Controllers\Admin\WhatsappInboxIndexController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
 use App\Http\Controllers\Admin\ReportsController;
@@ -144,6 +146,10 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::post('/whatsapp-instancias/{evolutionInstance}/testar', [EvolutionInstanceActionController::class, 'testConnection'])->name('whatsapp-instancias.test-connection');
     Route::post('/whatsapp-instancias/{evolutionInstance}/logout', [EvolutionInstanceActionController::class, 'logout'])->name('whatsapp-instancias.logout');
     Route::post('/whatsapp-instancias/{evolutionInstance}/teste-envio', [EvolutionInstanceActionController::class, 'sendTest'])->name('whatsapp-instancias.send-test');
+
+    Route::get('/whatsapp-inbox', WhatsappInboxIndexController::class)->name('whatsapp-inbox.index');
+    Route::post('/whatsapp-inbox/{ticket}/responder', [WhatsappInboxActionController::class, 'reply'])->name('whatsapp-inbox.reply');
+    Route::post('/whatsapp-inbox/{ticket}/status', [WhatsappInboxActionController::class, 'updateStatus'])->name('whatsapp-inbox.update-status');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')

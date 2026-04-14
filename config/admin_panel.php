@@ -109,8 +109,9 @@ return [
             'description' => 'Gestão central de mensagens',
             'icon' => 'inbox',
             'legacy_path' => '/admin/whatsapp-inbox',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/whatsapp-inbox',
             'actions' => ['visualizar', 'responder'],
         ],
         'email-templates' => [
