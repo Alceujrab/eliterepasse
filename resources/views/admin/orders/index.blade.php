@@ -83,7 +83,6 @@
 
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.orders.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
-                <a href="/admin/orders" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 

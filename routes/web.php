@@ -26,7 +26,6 @@ use App\Http\Controllers\Admin\LandingSettingsIndexController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
-use App\Http\Controllers\Admin\ModulePageController;
 use App\Http\Controllers\Admin\OrdersIndexController;
 use App\Http\Controllers\Admin\OrderShowController;
 use App\Http\Controllers\Admin\TicketActionController;
@@ -155,8 +154,4 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
 
     Route::get('/landing-settings', LandingSettingsIndexController::class)->name('landing-settings.index');
     Route::post('/landing-settings', [LandingSettingsActionController::class, 'upsert'])->name('landing-settings.upsert');
-
-    Route::get('/modulo/{module}', ModulePageController::class)
-        ->where('module', '[a-z\-]+')
-        ->name('module');
 });

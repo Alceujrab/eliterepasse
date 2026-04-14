@@ -72,7 +72,6 @@
             </div>
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.tickets.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
-                <a href="/admin/tickets" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 
@@ -233,7 +232,6 @@
                                 <p class="admin-section-note">{{ $selectedTicket->titulo ?: 'Sem assunto' }}</p>
                             </div>
                             <div class="admin-toolbar-actions">
-                                <a href="/admin/tickets/{{ $selectedTicket->id }}" class="admin-btn-soft">Ver legado</a>
                             </div>
                         </div>
 

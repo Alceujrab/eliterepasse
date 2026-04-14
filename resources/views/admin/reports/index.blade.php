@@ -41,7 +41,6 @@
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.reports.export-csv', ['periodo' => $periodDays]) }}" class="admin-btn-primary">Exportar CSV</a>
                 <a href="{{ route('admin.v2.reports.export-pdf', ['periodo' => $periodDays]) }}" class="admin-btn-soft">Exportar PDF</a>
-                <a href="/admin/relatorios" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 

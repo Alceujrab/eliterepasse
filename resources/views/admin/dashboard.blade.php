@@ -49,7 +49,6 @@
                 <h2 class="text-lg font-black">Acesso Rápido por Módulo</h2>
                 <p class="text-sm text-slate-500">Navegação prioritária para as áreas mais usadas no dia a dia.</p>
             </div>
-            <a href="/admin" class="admin-btn-soft">Abrir admin legado</a>
         </div>
 
         <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -67,8 +66,7 @@
                     </div>
 
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <a href="{{ $module['v2_path'] ?? route('admin.v2.module', $moduleEntry['key']) }}" class="admin-btn-primary">Entrar</a>
-                        <a href="{{ $module['legacy_path'] }}" class="admin-btn-soft">Legado</a>
+                        <a href="{{ $module['v2_path'] }}" class="admin-btn-primary">Entrar</a>
                     </div>
                 </article>
             @endforeach

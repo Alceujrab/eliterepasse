@@ -46,7 +46,6 @@
             </div>
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.email-templates.create') }}" class="admin-btn-primary">Novo template</a>
-                <a href="/admin/email-templates" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 
@@ -106,7 +105,6 @@
                         <td>
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('admin.v2.email-templates.show', $template) }}" class="admin-btn-soft">Abrir v2</a>
-                                <a href="/admin/email-templates/{{ $template->id }}/edit" class="admin-btn-soft">Legado</a>
                             </div>
                         </td>
                     </tr>
@@ -141,7 +139,6 @@
                 </div>
                 <div class="mt-4 flex flex-wrap gap-2">
                     <a href="{{ route('admin.v2.email-templates.show', $template) }}" class="admin-btn-soft">Abrir v2</a>
-                    <a href="/admin/email-templates/{{ $template->id }}/edit" class="admin-btn-soft">Legado</a>
                 </div>
             </article>
         @empty

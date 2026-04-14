@@ -56,7 +56,6 @@
                     </div>
                     <div class="admin-toolbar-actions">
                         <a href="/" target="_blank" class="admin-btn-primary">Ver landing publica</a>
-                        <a href="/admin/landing-settings" class="admin-btn-soft">Abrir legado</a>
                     </div>
                 </div>
 

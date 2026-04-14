@@ -63,7 +63,6 @@
             </div>
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.whatsapp-inbox.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
-                <a href="/admin/whatsapp-inbox" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 
@@ -135,7 +134,6 @@
                         @if($selectedPhone)
                             <a href="https://wa.me/{{ preg_replace('/\D/', '', '55' . $selectedPhone) }}" target="_blank" class="admin-btn-primary">Abrir WA</a>
                         @endif
-                        <a href="/admin/whatsapp-inbox" class="admin-btn-soft">Legado</a>
                     </div>
                 </div>
 

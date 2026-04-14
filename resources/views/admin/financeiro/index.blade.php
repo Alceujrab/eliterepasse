@@ -46,7 +46,6 @@
             </div>
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.financeiro.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
-                <a href="/admin/gestao-financeira" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 

@@ -72,11 +72,10 @@
                     <div class="admin-toolbar-main">
                         <span class="admin-tag admin-tag-new">detalhe v2</span>
                         <h2 class="mt-3 admin-section-title">Resumo do pedido</h2>
-                        <p class="admin-section-note">Consolida cliente, veiculo, financeiro, contrato e a trilha operacional que antes exigia navegar entre varias telas do admin legado.</p>
+                        <p class="admin-section-note">Consolida cliente, veiculo, financeiro, contrato e a trilha operacional em um unico workspace.</p>
                     </div>
                     <div class="admin-toolbar-actions">
                         <a href="{{ route('admin.v2.orders.index') }}" class="admin-btn-soft">Voltar para fila</a>
-                        <a href="/admin/orders/{{ $order->id }}" class="admin-btn-soft">Abrir legado</a>
                     </div>
                 </div>
 

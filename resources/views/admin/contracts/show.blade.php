@@ -48,7 +48,6 @@
                     </div>
                     <div class="admin-toolbar-actions">
                         <a href="{{ route('admin.v2.contracts.index') }}" class="admin-btn-soft">Voltar para fila</a>
-                        <a href="/admin/contracts/{{ $contract->id }}" class="admin-btn-soft">Abrir legado</a>
                     </div>
                 </div>
 

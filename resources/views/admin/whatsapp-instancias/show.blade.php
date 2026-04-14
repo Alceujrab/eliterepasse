@@ -52,7 +52,6 @@
                     </div>
                     <div class="admin-toolbar-actions">
                         <a href="{{ route('admin.v2.whatsapp-instancias.index') }}" class="admin-btn-soft">Voltar para lista</a>
-                        <a href="/admin/whatsapp-instancias" class="admin-btn-soft">Abrir legado</a>
                     </div>
                 </div>
 

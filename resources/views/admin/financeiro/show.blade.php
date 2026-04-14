@@ -48,7 +48,6 @@
                     </div>
                     <div class="admin-toolbar-actions">
                         <a href="{{ route('admin.v2.financeiro.index') }}" class="admin-btn-soft">Voltar para fila</a>
-                        <a href="/admin/gestao-financeira" class="admin-btn-soft">Abrir legado</a>
                     </div>
                 </div>
 

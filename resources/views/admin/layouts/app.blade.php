@@ -96,14 +96,13 @@
                                     $module = $adminModules[$moduleKey];
                                     $moduleUrl = $moduleKey === 'dashboard'
                                         ? route('admin.v2.dashboard')
-                                        : ($module['v2_path'] ?? route('admin.v2.module', $moduleKey));
-                                    $fallbackPath = $module['v2_path'] ?? "painel-admin/modulo/{$moduleKey}";
+                                        : $module['v2_path'];
+                                    $fallbackPath = $module['v2_path'];
                                     $normalizedFallbackPath = ltrim($fallbackPath, '/');
                                     $isModuleActive = $moduleKey === 'dashboard'
                                         ? request()->routeIs('admin.v2.dashboard')
                                         : request()->is($normalizedFallbackPath)
-                                            || request()->is($normalizedFallbackPath . '/*')
-                                            || (request()->routeIs('admin.v2.module') && request()->route('module') === $moduleKey);
+                                            || request()->is($normalizedFallbackPath . '/*');
                                 @endphp
 
                                 <a href="{{ $moduleUrl }}" class="admin-nav-link {{ $isModuleActive ? 'is-active' : '' }}">
@@ -115,10 +114,6 @@
                 @endforeach
             </nav>
 
-            <div class="mt-8 rounded-2xl border border-white/15 bg-white/10 p-4 text-xs leading-relaxed text-blue-100">
-                Migração em execução: o admin legado continua ativo em
-                <strong>/admin</strong> até concluir todos os módulos do novo painel.
-            </div>
         </aside>
 
         <main class="admin-main">
@@ -131,7 +126,6 @@
 
                     <div class="admin-topbar-actions">
                         <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Resumo</a>
-                        <a href="/admin" class="admin-btn-soft">Admin legado</a>
                         @if($adminUser)
                             <div class="admin-user-pill">
                                 {{ $adminUser->name ?? $adminUser->email }}
@@ -146,7 +140,7 @@
                         <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Dashboard</a>
                         @foreach($adminModules as $key => $module)
                             @continue($key === 'dashboard')
-                            <a href="{{ $module['v2_path'] ?? route('admin.v2.module', $key) }}" class="admin-btn-soft">{{ $module['label'] }}</a>
+                            <a href="{{ $module['v2_path'] }}" class="admin-btn-soft">{{ $module['label'] }}</a>
                         @endforeach
                     </div>
                 </details>

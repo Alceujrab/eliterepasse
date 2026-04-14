@@ -20,5 +20,4 @@
         <a href="{{ $financial->invoice_url }}" target="_blank" rel="noreferrer" class="admin-btn-soft">Invoice</a>
     @endif
 
-    <a href="/admin/gestao-financeira" class="admin-btn-soft">Legado</a>
 </div>

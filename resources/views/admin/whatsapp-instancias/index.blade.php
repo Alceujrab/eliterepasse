@@ -46,7 +46,6 @@
             </div>
             <div class="admin-toolbar-actions">
                 <a href="{{ route('admin.v2.whatsapp-instancias.create') }}" class="admin-btn-primary">Nova instancia</a>
-                <a href="/admin/whatsapp-instancias" class="admin-btn-soft">Abrir legado</a>
             </div>
         </div>
 
@@ -117,7 +116,6 @@
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('admin.v2.whatsapp-instancias.show', $instance) }}" class="admin-btn-soft">Abrir v2</a>
                                 <form method="POST" action="{{ route('admin.v2.whatsapp-instancias.test-connection', $instance) }}">@csrf<button type="submit" class="admin-btn-soft">Testar</button></form>
-                                <a href="/admin/whatsapp-instancias/{{ $instance->id }}/edit" class="admin-btn-soft">Legado</a>
                             </div>
                         </td>
                     </tr>

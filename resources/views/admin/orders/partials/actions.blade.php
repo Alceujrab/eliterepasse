@@ -42,5 +42,4 @@
         </form>
     @endif
 
-    <a href="/admin/orders/{{ $order->id }}" class="admin-btn-soft">Ver legado</a>
 </div>

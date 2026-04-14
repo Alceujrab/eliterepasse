@@ -14,5 +14,4 @@
     @endif
 
     <a href="{{ route('admin.v2.contracts.show', $contract) }}" class="admin-btn-soft">Abrir v2</a>
-    <a href="/admin/contracts/{{ $contract->id }}" class="admin-btn-soft">Legado</a>
 </div>

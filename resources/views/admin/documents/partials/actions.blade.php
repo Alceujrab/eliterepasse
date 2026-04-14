@@ -8,7 +8,6 @@
         </form>
     @endif
 
-    <a href="/admin/documents/{{ $document->id }}" class="admin-btn-soft">Ver legado</a>
 </div>
 
 @if(in_array($document->status, ['pendente', 'verificado'], true))
