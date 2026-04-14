@@ -12,8 +12,10 @@ class LandingPage extends Component
 {
     public function render()
     {
+        $settings = LandingSetting::first() ?? new LandingSetting(LandingSetting::defaults());
+
         return view('livewire.landing-page', [
-            'settings' => LandingSetting::first() ?? new LandingSetting()
+            'settings' => $settings,
         ]);
     }
 }
