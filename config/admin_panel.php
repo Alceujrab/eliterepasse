@@ -99,8 +99,9 @@ return [
             'description' => 'Conectividade e diagnóstico Evolution',
             'icon' => 'plug',
             'legacy_path' => '/admin/whatsapp-instancias',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/whatsapp-instancias',
             'actions' => ['listar', 'criar', 'editar', 'conectar', 'qrcode', 'teste-envio'],
         ],
         'whatsapp-inbox' => [

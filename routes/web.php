@@ -13,6 +13,10 @@ use App\Http\Controllers\Admin\EmailTemplateActionController;
 use App\Http\Controllers\Admin\EmailTemplateCreateController;
 use App\Http\Controllers\Admin\EmailTemplateShowController;
 use App\Http\Controllers\Admin\EmailTemplatesIndexController;
+use App\Http\Controllers\Admin\EvolutionInstanceActionController;
+use App\Http\Controllers\Admin\EvolutionInstanceCreateController;
+use App\Http\Controllers\Admin\EvolutionInstanceShowController;
+use App\Http\Controllers\Admin\EvolutionInstancesIndexController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
 use App\Http\Controllers\Admin\ReportsController;
@@ -131,6 +135,15 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/email-templates/{emailTemplate}', EmailTemplateShowController::class)->name('email-templates.show');
     Route::post('/email-templates/{emailTemplate}', [EmailTemplateActionController::class, 'update'])->name('email-templates.update');
     Route::post('/email-templates/{emailTemplate}/gerar-ia', [EmailTemplateActionController::class, 'generateAi'])->name('email-templates.generate-ai');
+
+    Route::get('/whatsapp-instancias', EvolutionInstancesIndexController::class)->name('whatsapp-instancias.index');
+    Route::get('/whatsapp-instancias/criar', EvolutionInstanceCreateController::class)->name('whatsapp-instancias.create');
+    Route::post('/whatsapp-instancias', [EvolutionInstanceActionController::class, 'store'])->name('whatsapp-instancias.store');
+    Route::get('/whatsapp-instancias/{evolutionInstance}', EvolutionInstanceShowController::class)->name('whatsapp-instancias.show');
+    Route::post('/whatsapp-instancias/{evolutionInstance}', [EvolutionInstanceActionController::class, 'update'])->name('whatsapp-instancias.update');
+    Route::post('/whatsapp-instancias/{evolutionInstance}/testar', [EvolutionInstanceActionController::class, 'testConnection'])->name('whatsapp-instancias.test-connection');
+    Route::post('/whatsapp-instancias/{evolutionInstance}/logout', [EvolutionInstanceActionController::class, 'logout'])->name('whatsapp-instancias.logout');
+    Route::post('/whatsapp-instancias/{evolutionInstance}/teste-envio', [EvolutionInstanceActionController::class, 'sendTest'])->name('whatsapp-instancias.send-test');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')
