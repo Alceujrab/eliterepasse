@@ -4,6 +4,7 @@ use App\Http\Controllers\ContractSignatureController;
 use App\Http\Controllers\Admin\OrderActionController;
 use App\Http\Controllers\Admin\ContractActionController;
 use App\Http\Controllers\Admin\ContractsIndexController;
+use App\Http\Controllers\Admin\ContractShowController;
 use App\Http\Controllers\Admin\ClientActionController;
 use App\Http\Controllers\Admin\ClientsIndexController;
 use App\Http\Controllers\Admin\ClientShowController;
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::post('/pedidos/{order}/documentos/marcar-entregue', [OrderActionController::class, 'markShipmentDelivered'])->name('orders.mark-shipment-delivered');
 
     Route::get('/contratos', ContractsIndexController::class)->name('contracts.index');
+    Route::get('/contratos/{contract}', ContractShowController::class)->name('contracts.show');
     Route::post('/contratos/{contract}/enviar-assinatura', [ContractActionController::class, 'sendToSign'])->name('contracts.send-to-sign');
     Route::post('/contratos/{contract}/copiar-link', [ContractActionController::class, 'copyLink'])->name('contracts.copy-link');
 

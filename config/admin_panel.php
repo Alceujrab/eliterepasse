@@ -52,7 +52,7 @@ return [
             'status' => 'novo',
             'show_in_quick_access' => true,
             'v2_path' => '/painel-admin/contratos',
-            'actions' => ['listar', 'visualizar', 'enviar-whatsapp', 'copiar-link'],
+            'actions' => ['listar', 'visualizar', 'enviar-whatsapp', 'copiar-link', 'acompanhar-assinatura'],
         ],
         'documents' => [
             'label' => 'Documentos',
