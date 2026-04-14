@@ -421,6 +421,64 @@
         @apply mt-4 grid grid-cols-2 gap-3;
     }
 
+    .admin-ticket-layout {
+        @apply grid gap-4 xl:grid-cols-[420px_minmax(0,1fr)];
+    }
+
+    .admin-ticket-list {
+        @apply rounded-2xl border bg-white;
+        border-color: var(--admin-border);
+        overflow: hidden;
+    }
+
+    .admin-ticket-list-item {
+        @apply block border-b px-4 py-4 transition last:border-b-0;
+        border-color: rgba(217, 227, 241, 0.7);
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .admin-ticket-list-item:hover,
+    .admin-ticket-list-item.is-active {
+        background: rgba(15, 98, 254, 0.05);
+    }
+
+    .admin-ticket-header {
+        @apply flex items-start justify-between gap-3;
+    }
+
+    .admin-ticket-thread {
+        @apply mt-4 grid gap-3;
+    }
+
+    .admin-thread-bubble {
+        @apply max-w-[92%] rounded-2xl border px-4 py-3;
+        border-color: var(--admin-border);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .admin-thread-bubble.is-admin {
+        @apply ml-auto;
+        background: linear-gradient(180deg, rgba(15,98,254,0.1), rgba(15,98,254,0.06));
+        border-color: rgba(15, 98, 254, 0.18);
+    }
+
+    .admin-thread-bubble.is-internal {
+        background: rgba(187, 30, 60, 0.05);
+        border-color: rgba(187, 30, 60, 0.14);
+    }
+
+    .admin-thread-meta {
+        @apply text-xs font-black uppercase tracking-[0.12em];
+        color: var(--admin-muted);
+    }
+
+    .admin-thread-text {
+        @apply mt-2 text-sm font-medium leading-relaxed;
+        color: var(--admin-text);
+        white-space: pre-line;
+    }
+
     .admin-mobile-nav {
         @apply lg:hidden mt-4;
     }

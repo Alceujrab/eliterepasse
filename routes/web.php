@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\ModulePageController;
 use App\Http\Controllers\Admin\OrdersIndexController;
+use App\Http\Controllers\Admin\TicketActionController;
+use App\Http\Controllers\Admin\TicketsIndexController;
 use App\Http\Controllers\EvolutionWebhookController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureUserIsApproved;
@@ -79,6 +81,12 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::post('/documentos', [DocumentActionController::class, 'store'])->name('documents.store');
     Route::post('/documentos/{document}/verificar', [DocumentActionController::class, 'verify'])->name('documents.verify');
     Route::post('/documentos/{document}/rejeitar', [DocumentActionController::class, 'reject'])->name('documents.reject');
+
+    Route::get('/tickets', TicketsIndexController::class)->name('tickets.index');
+    Route::post('/tickets', [TicketActionController::class, 'store'])->name('tickets.store');
+    Route::post('/tickets/{ticket}/reply', [TicketActionController::class, 'reply'])->name('tickets.reply');
+    Route::post('/tickets/{ticket}/assign', [TicketActionController::class, 'assign'])->name('tickets.assign');
+    Route::post('/tickets/{ticket}/status', [TicketActionController::class, 'updateStatus'])->name('tickets.status');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')
