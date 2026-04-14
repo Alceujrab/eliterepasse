@@ -98,9 +98,11 @@
                                         ? route('admin.v2.dashboard')
                                         : ($module['v2_path'] ?? route('admin.v2.module', $moduleKey));
                                     $fallbackPath = $module['v2_path'] ?? "painel-admin/modulo/{$moduleKey}";
+                                    $normalizedFallbackPath = ltrim($fallbackPath, '/');
                                     $isModuleActive = $moduleKey === 'dashboard'
                                         ? request()->routeIs('admin.v2.dashboard')
-                                        : request()->is(ltrim($fallbackPath, '/'))
+                                        : request()->is($normalizedFallbackPath)
+                                            || request()->is($normalizedFallbackPath . '/*')
                                             || (request()->routeIs('admin.v2.module') && request()->route('module') === $moduleKey);
                                 @endphp
 

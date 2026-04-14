@@ -19,8 +19,9 @@ return [
             'description' => 'Gestão de cadastro, aprovação e bloqueio',
             'icon' => 'users',
             'legacy_path' => '/admin/clients',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/clientes',
             'actions' => ['listar', 'criar', 'editar', 'aprovar', 'bloquear'],
         ],
         'vehicles' => [
@@ -67,8 +68,9 @@ return [
             'description' => 'Atendimento e resposta ao cliente',
             'icon' => 'message-circle',
             'legacy_path' => '/admin/tickets',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/tickets',
             'actions' => ['listar', 'criar', 'editar', 'responder', 'atribuir'],
         ],
         'financeiro' => [

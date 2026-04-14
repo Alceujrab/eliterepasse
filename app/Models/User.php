@@ -62,6 +62,26 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsToMany(Company::class);
     }
 
+    public function approvedBy()
+    {
+        return $this->belongsTo(self::class, 'aprovado_por');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
     protected function casts(): array
     {
         return [

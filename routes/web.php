@@ -4,6 +4,9 @@ use App\Http\Controllers\ContractSignatureController;
 use App\Http\Controllers\Admin\OrderActionController;
 use App\Http\Controllers\Admin\ContractActionController;
 use App\Http\Controllers\Admin\ContractsIndexController;
+use App\Http\Controllers\Admin\ClientActionController;
+use App\Http\Controllers\Admin\ClientsIndexController;
+use App\Http\Controllers\Admin\ClientShowController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
@@ -66,6 +69,11 @@ require __DIR__.'/auth.php';
 // Novo Admin v2 (sem Filament) - executa em paralelo ao admin legado.
 Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admin')->name('admin.v2.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    Route::get('/clientes', ClientsIndexController::class)->name('clients.index');
+    Route::get('/clientes/{client}', ClientShowController::class)->name('clients.show');
+    Route::post('/clientes/{client}/aprovar', [ClientActionController::class, 'approve'])->name('clients.approve');
+    Route::post('/clientes/{client}/bloquear', [ClientActionController::class, 'block'])->name('clients.block');
 
     Route::get('/pedidos', OrdersIndexController::class)->name('orders.index');
     Route::get('/pedidos/{order}', OrderShowController::class)->name('orders.show');
