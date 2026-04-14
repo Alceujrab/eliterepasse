@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --admin-bg: #eef3fb;
+        --admin-surface: #ffffff;
+        --admin-surface-soft: #f5f9ff;
+        --admin-text: #122137;
+        --admin-muted: #5f6f86;
+        --admin-primary: #0f62fe;
+        --admin-accent: #ff7a18;
+        --admin-ok: #00a36c;
+        --admin-warn: #d37a00;
+        --admin-danger: #bb1e3c;
+        --admin-border: #d9e3f1;
+    }
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: radial-gradient(circle at 10% -20%, #d7e8ff 0, transparent 45%),
+            radial-gradient(circle at 90% -10%, #ffe8d4 0, transparent 35%), var(--admin-bg);
+        color: var(--admin-text);
+        font-family: 'Sora', 'Segoe UI', sans-serif;
+    }
+}
+
+@layer components {
+    .admin-shell {
+        @apply min-h-screen;
+    }
+
+    .admin-grid {
+        @apply grid min-h-screen;
+        grid-template-columns: 290px 1fr;
+    }
+
+    .admin-sidebar {
+        background: linear-gradient(160deg, #0b1a32, #122c56 58%, #173e79);
+        @apply text-white p-6 lg:p-7 border-r;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-brand-title {
+        @apply text-xl font-black tracking-tight;
+    }
+
+    .admin-brand-subtitle {
+        @apply text-xs uppercase tracking-[0.18em] text-blue-200/80 mt-1;
+    }
+
+    .admin-nav-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition;
+        color: rgba(227, 239, 255, 0.9);
+    }
+
+    .admin-nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .admin-nav-link.is-active {
+        background: linear-gradient(90deg, rgba(15, 98, 254, 0.38), rgba(255, 122, 24, 0.35));
+        color: #fff;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-main {
+        @apply p-4 md:p-8;
+    }
+
+    .admin-topbar {
+        @apply mb-6 md:mb-8 rounded-2xl border px-4 py-4 md:px-6 md:py-5;
+        border-color: var(--admin-border);
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(8px);
+    }
+
+    .admin-headline {
+        @apply text-lg md:text-2xl font-black tracking-tight;
+        color: var(--admin-text);
+    }
+
+    .admin-subline {
+        @apply text-sm;
+        color: var(--admin-muted);
+    }
+
+    .admin-kpi {
+        @apply rounded-2xl border p-4 md:p-5;
+        border-color: var(--admin-border);
+        background: linear-gradient(160deg, var(--admin-surface), var(--admin-surface-soft));
+    }
+
+    .admin-kpi-label {
+        @apply text-xs uppercase tracking-[0.16em] font-bold;
+        color: var(--admin-muted);
+    }
+
+    .admin-kpi-value {
+        @apply mt-2 text-2xl md:text-3xl font-black;
+        color: var(--admin-text);
+    }
+
+    .admin-card {
+        @apply rounded-2xl border p-4 md:p-5;
+        border-color: var(--admin-border);
+        background: var(--admin-surface);
+    }
+
+    .admin-tag {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em];
+    }
+
+    .admin-tag-new {
+        background: rgba(0, 163, 108, 0.12);
+        color: #0a6d4c;
+    }
+
+    .admin-tag-migration {
+        background: rgba(211, 122, 0, 0.12);
+        color: #975703;
+    }
+
+    .admin-btn {
+        @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-bold transition;
+    }
+
+    .admin-btn-primary {
+        @apply admin-btn text-white;
+        background: linear-gradient(92deg, var(--admin-primary), #2f78ff 45%, var(--admin-accent));
+    }
+
+    .admin-btn-primary:hover {
+        filter: saturate(1.05) brightness(0.98);
+    }
+
+    .admin-btn-soft {
+        @apply admin-btn border;
+        border-color: var(--admin-border);
+        color: #264161;
+        background: #fff;
+    }
+
+    .admin-mobile-nav {
+        @apply lg:hidden mt-4;
+    }
+
+    .admin-mobile-nav summary {
+        @apply list-none cursor-pointer rounded-xl border px-4 py-3 font-bold;
+        border-color: var(--admin-border);
+        background: #fff;
+    }
+
+    .admin-mobile-links {
+        @apply mt-3 grid gap-2;
+    }
+
+    @media (max-width: 1024px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+            @apply hidden;
+        }
+    }
+}

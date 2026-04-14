@@ -1,7 +1,14 @@
 <?php
 
 use App\Http\Controllers\ContractSignatureController;
+use App\Http\Controllers\Admin\OrderActionController;
+use App\Http\Controllers\Admin\ContractActionController;
+use App\Http\Controllers\Admin\ContractsIndexController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ModulePageController;
+use App\Http\Controllers\Admin\OrdersIndexController;
 use App\Http\Controllers\EvolutionWebhookController;
+use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureUserIsApproved;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +57,23 @@ Route::middleware(['auth', 'verified', EnsureUserIsApproved::class])->group(func
 });
 
 require __DIR__.'/auth.php';
+
+// Novo Admin v2 (sem Filament) - executa em paralelo ao admin legado.
+Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admin')->name('admin.v2.')->group(function () {
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+    Route::get('/pedidos', OrdersIndexController::class)->name('orders.index');
+    Route::post('/pedidos/{order}/confirmar', [OrderActionController::class, 'confirm'])->name('orders.confirm');
+    Route::post('/pedidos/{order}/gerar-contrato', [OrderActionController::class, 'generateContract'])->name('orders.generate-contract');
+    Route::post('/pedidos/{order}/gerar-fatura', [OrderActionController::class, 'generateInvoice'])->name('orders.generate-invoice');
+    Route::post('/pedidos/{order}/confirmar-pagamento', [OrderActionController::class, 'confirmPayment'])->name('orders.confirm-payment');
+    Route::post('/pedidos/{order}/cancelar', [OrderActionController::class, 'cancel'])->name('orders.cancel');
+
+    Route::get('/contratos', ContractsIndexController::class)->name('contracts.index');
+    Route::post('/contratos/{contract}/enviar-assinatura', [ContractActionController::class, 'sendToSign'])->name('contracts.send-to-sign');
+    Route::post('/contratos/{contract}/copiar-link', [ContractActionController::class, 'copyLink'])->name('contracts.copy-link');
+
+    Route::get('/modulo/{module}', ModulePageController::class)
+        ->where('module', '[a-z\-]+')
+        ->name('module');
+});
