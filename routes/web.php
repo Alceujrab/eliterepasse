@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\OrdersIndexController;
 use App\Http\Controllers\Admin\OrderShowController;
 use App\Http\Controllers\Admin\TicketActionController;
 use App\Http\Controllers\Admin\TicketsIndexController;
+use App\Http\Controllers\Admin\VehicleActionController;
+use App\Http\Controllers\Admin\VehiclesIndexController;
+use App\Http\Controllers\Admin\VehicleShowController;
 use App\Http\Controllers\EvolutionWebhookController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureUserIsApproved;
@@ -74,6 +77,10 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/clientes/{client}', ClientShowController::class)->name('clients.show');
     Route::post('/clientes/{client}/aprovar', [ClientActionController::class, 'approve'])->name('clients.approve');
     Route::post('/clientes/{client}/bloquear', [ClientActionController::class, 'block'])->name('clients.block');
+
+    Route::get('/veiculos', VehiclesIndexController::class)->name('vehicles.index');
+    Route::get('/veiculos/{vehicle}', VehicleShowController::class)->name('vehicles.show');
+    Route::post('/veiculos/{vehicle}/status', [VehicleActionController::class, 'updateStatus'])->name('vehicles.status');
 
     Route::get('/pedidos', OrdersIndexController::class)->name('orders.index');
     Route::get('/pedidos/{order}', OrderShowController::class)->name('orders.show');

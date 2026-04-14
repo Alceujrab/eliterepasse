@@ -29,8 +29,9 @@ return [
             'description' => 'Estoque, disponibilidade e mídia',
             'icon' => 'car',
             'legacy_path' => '/admin/vehicles',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/veiculos',
             'actions' => ['listar', 'criar', 'editar', 'anexar-imagens', 'alterar-status'],
         ],
         'orders' => [
