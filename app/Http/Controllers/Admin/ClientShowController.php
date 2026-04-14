@@ -16,7 +16,7 @@ class ClientShowController extends Controller
     {
         abort_if($client->is_admin, 404);
 
-        $client->load(['approvedBy:id,name', 'companies:id,name']);
+        $client->load(['approvedBy:id,name']);
 
         $recentOrders = Order::query()
             ->with(['vehicle', 'financial'])
