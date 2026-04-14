@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\WhatsappInboxActionController;
 use App\Http\Controllers\Admin\WhatsappInboxIndexController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
+use App\Http\Controllers\Admin\LandingSettingsActionController;
+use App\Http\Controllers\Admin\LandingSettingsIndexController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
@@ -150,6 +152,9 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/whatsapp-inbox', WhatsappInboxIndexController::class)->name('whatsapp-inbox.index');
     Route::post('/whatsapp-inbox/{ticket}/responder', [WhatsappInboxActionController::class, 'reply'])->name('whatsapp-inbox.reply');
     Route::post('/whatsapp-inbox/{ticket}/status', [WhatsappInboxActionController::class, 'updateStatus'])->name('whatsapp-inbox.update-status');
+
+    Route::get('/landing-settings', LandingSettingsIndexController::class)->name('landing-settings.index');
+    Route::post('/landing-settings', [LandingSettingsActionController::class, 'upsert'])->name('landing-settings.upsert');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')
