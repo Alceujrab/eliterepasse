@@ -479,6 +479,44 @@
         white-space: pre-line;
     }
 
+    .admin-detail-grid {
+        @apply grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_380px];
+    }
+
+    .admin-summary-grid {
+        @apply grid gap-4 md:grid-cols-2 2xl:grid-cols-4;
+    }
+
+    .admin-info-grid {
+        @apply grid gap-4 md:grid-cols-2;
+    }
+
+    .admin-info-card {
+        @apply rounded-2xl border p-4;
+        border-color: var(--admin-border);
+        background: rgba(255,255,255,0.96);
+    }
+
+    .admin-timeline {
+        @apply mt-4 grid gap-4;
+    }
+
+    .admin-timeline-item {
+        @apply rounded-2xl border p-4;
+        border-color: var(--admin-border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,249,255,0.96));
+    }
+
+    .admin-shipment-list {
+        @apply mt-4 grid gap-3;
+    }
+
+    .admin-shipment-card {
+        @apply rounded-2xl border p-4;
+        border-color: var(--admin-border);
+        background: rgba(255,255,255,0.96);
+    }
+
     .admin-mobile-nav {
         @apply lg:hidden mt-4;
     }

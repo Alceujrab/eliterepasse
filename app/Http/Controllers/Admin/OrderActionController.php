@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Financial;
 use App\Models\Order;
 use App\Models\OrderHistory;
+use App\Models\OrderShipment;
 use App\Services\ContractService;
 use App\Services\NotificationService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -145,5 +147,145 @@ class OrderActionController extends Controller
         });
 
         return back()->with('admin_success', "Pedido {$order->numero} cancelado.");
+    }
+
+    public function publishDocument(Request $request, Order $order, NotificationService $notificationService): RedirectResponse
+    {
+        if (! in_array($order->status, [Order::STATUS_CONFIRMADO, Order::STATUS_FATURADO, Order::STATUS_PAGO], true)) {
+            return back()->with('admin_warning', 'Pedido fora do estado permitido para disponibilizar documentos.');
+        }
+
+        $validated = $request->validate([
+            'tipo_documento' => ['required', 'in:' . implode(',', array_keys(OrderShipment::tipoDocumentoLabels()))],
+            'titulo' => ['nullable', 'string', 'max:255'],
+            'arquivo' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'observacoes' => ['nullable', 'string'],
+        ]);
+
+        $arquivo = $validated['arquivo'];
+        $path = $arquivo->store('shipments/documentos', 'public');
+
+        $shipment = OrderShipment::create([
+            'order_id' => $order->id,
+            'user_id' => Auth::id(),
+            'tipo_documento' => $validated['tipo_documento'],
+            'titulo' => $validated['titulo'] ?? null,
+            'file_path' => $path,
+            'nome_original' => $arquivo->getClientOriginalName(),
+            'status' => 'disponivel',
+            'observacoes' => $validated['observacoes'] ?? null,
+        ]);
+
+        $tipo = OrderShipment::tipoDocumentoLabels()[$validated['tipo_documento']] ?? $validated['tipo_documento'];
+
+        OrderHistory::registrar(
+            $order->id,
+            'documento_disponivel',
+            $order->status,
+            $order->status,
+            "Documento {$tipo} disponibilizado para o cliente",
+            Auth::id(),
+            ['shipment_id' => $shipment->id, 'tipo' => $validated['tipo_documento']]
+        );
+
+        $notificationService->documentoDisponivel($shipment->fresh(['order.user', 'user']));
+
+        return back()->with('admin_success', 'Documento disponibilizado e cliente notificado.');
+    }
+
+    public function registerDispatch(Request $request, Order $order, NotificationService $notificationService): RedirectResponse
+    {
+        $validated = $request->validate([
+            'shipment_id' => ['required', 'integer'],
+            'metodo_envio' => ['required', 'in:' . implode(',', array_keys(OrderShipment::metodoEnvioLabels()))],
+            'metodo_envio_detalhe' => ['nullable', 'string', 'max:255'],
+            'codigo_rastreio' => ['nullable', 'string', 'max:255'],
+            'comprovante_despacho' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'despachado_em' => ['required', 'date'],
+            'observacoes' => ['nullable', 'string'],
+        ]);
+
+        $shipment = $order->shipments()->findOrFail($validated['shipment_id']);
+
+        if ($shipment->status !== 'disponivel') {
+            return back()->with('admin_warning', 'Somente documentos disponíveis podem ser despachados.');
+        }
+
+        $comprovantePath = $request->hasFile('comprovante_despacho')
+            ? $request->file('comprovante_despacho')->store('shipments/comprovantes', 'public')
+            : null;
+
+        $shipment->update([
+            'metodo_envio' => $validated['metodo_envio'],
+            'metodo_envio_detalhe' => $validated['metodo_envio_detalhe'] ?? null,
+            'codigo_rastreio' => $validated['codigo_rastreio'] ?? null,
+            'comprovante_despacho_path' => $comprovantePath,
+            'despachado_em' => $validated['despachado_em'],
+            'status' => 'despachado',
+            'observacoes' => $validated['observacoes'] ?? $shipment->observacoes,
+        ]);
+
+        $tipo = OrderShipment::tipoDocumentoLabels()[$shipment->tipo_documento] ?? $shipment->tipo_documento;
+        $metodo = OrderShipment::metodoEnvioLabels()[$validated['metodo_envio']] ?? $validated['metodo_envio'];
+
+        OrderHistory::registrar(
+            $order->id,
+            'documento_despachado',
+            $order->status,
+            $order->status,
+            "Documento {$tipo} despachado via {$metodo}" . (($validated['codigo_rastreio'] ?? null) ? " — Rastreio: {$validated['codigo_rastreio']}" : ''),
+            Auth::id(),
+            [
+                'shipment_id' => $shipment->id,
+                'metodo_envio' => $validated['metodo_envio'],
+                'codigo_rastreio' => $validated['codigo_rastreio'] ?? null,
+            ]
+        );
+
+        $notificationService->documentoDespachado($shipment->fresh(['order.user', 'user']));
+
+        return back()->with('admin_success', 'Despacho registrado e cliente notificado.');
+    }
+
+    public function resendShipmentNotification(Request $request, Order $order, NotificationService $notificationService): RedirectResponse
+    {
+        $validated = $request->validate([
+            'shipment_id' => ['required', 'integer'],
+        ]);
+
+        $shipment = $order->shipments()->findOrFail($validated['shipment_id']);
+
+        $notificationService->documentoDisponivel($shipment->fresh(['order.user', 'user']));
+
+        return back()->with('admin_success', 'Notificação reenviada ao cliente.');
+    }
+
+    public function markShipmentDelivered(Request $request, Order $order): RedirectResponse
+    {
+        $validated = $request->validate([
+            'shipment_id' => ['required', 'integer'],
+        ]);
+
+        $shipment = $order->shipments()->findOrFail($validated['shipment_id']);
+
+        if ($shipment->status !== 'despachado') {
+            return back()->with('admin_warning', 'Somente documentos despachados podem ser marcados como entregues.');
+        }
+
+        $shipment->update(['status' => 'entregue']);
+
+        $tipo = OrderShipment::tipoDocumentoLabels()[$shipment->tipo_documento] ?? $shipment->tipo_documento;
+
+        OrderHistory::registrar(
+            $order->id,
+            'documento_entregue',
+            $order->status,
+            $order->status,
+            "Documento {$tipo} entregue ao cliente",
+            Auth::id(),
+            ['shipment_id' => $shipment->id]
+        );
+
+        return back()->with('admin_success', 'Documento marcado como entregue.');
     }
 }

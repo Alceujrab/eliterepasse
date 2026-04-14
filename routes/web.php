@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\ModulePageController;
 use App\Http\Controllers\Admin\OrdersIndexController;
+use App\Http\Controllers\Admin\OrderShowController;
 use App\Http\Controllers\Admin\TicketActionController;
 use App\Http\Controllers\Admin\TicketsIndexController;
 use App\Http\Controllers\EvolutionWebhookController;
@@ -67,11 +68,16 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::get('/pedidos', OrdersIndexController::class)->name('orders.index');
+    Route::get('/pedidos/{order}', OrderShowController::class)->name('orders.show');
     Route::post('/pedidos/{order}/confirmar', [OrderActionController::class, 'confirm'])->name('orders.confirm');
     Route::post('/pedidos/{order}/gerar-contrato', [OrderActionController::class, 'generateContract'])->name('orders.generate-contract');
     Route::post('/pedidos/{order}/gerar-fatura', [OrderActionController::class, 'generateInvoice'])->name('orders.generate-invoice');
     Route::post('/pedidos/{order}/confirmar-pagamento', [OrderActionController::class, 'confirmPayment'])->name('orders.confirm-payment');
     Route::post('/pedidos/{order}/cancelar', [OrderActionController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/pedidos/{order}/documentos/disponibilizar', [OrderActionController::class, 'publishDocument'])->name('orders.publish-document');
+    Route::post('/pedidos/{order}/documentos/despachar', [OrderActionController::class, 'registerDispatch'])->name('orders.register-dispatch');
+    Route::post('/pedidos/{order}/documentos/reenviar-notificacao', [OrderActionController::class, 'resendShipmentNotification'])->name('orders.resend-shipment-notification');
+    Route::post('/pedidos/{order}/documentos/marcar-entregue', [OrderActionController::class, 'markShipmentDelivered'])->name('orders.mark-shipment-delivered');
 
     Route::get('/contratos', ContractsIndexController::class)->name('contracts.index');
     Route::post('/contratos/{contract}/enviar-assinatura', [ContractActionController::class, 'sendToSign'])->name('contracts.send-to-sign');

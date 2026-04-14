@@ -1,4 +1,6 @@
 <div class="admin-action-cluster">
+    <a href="{{ route('admin.v2.orders.show', $order) }}" class="admin-btn-soft">Abrir v2</a>
+
     @if($order->status === \App\Models\Order::STATUS_PENDENTE)
         <form method="POST" action="{{ route('admin.v2.orders.confirm', $order) }}">
             @csrf
