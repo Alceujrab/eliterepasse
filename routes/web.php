@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ClientShowController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
+use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\ModulePageController;
@@ -115,6 +116,10 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
 
     Route::get('/financeiro', FinanceiroIndexController::class)->name('financeiro.index');
     Route::get('/financeiro/{financial}', FinancialShowController::class)->name('financeiro.show');
+
+    Route::get('/relatorios', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/relatorios/exportar.csv', [ReportsController::class, 'exportCsv'])->name('reports.export-csv');
+    Route::get('/relatorios/exportar.pdf', [ReportsController::class, 'exportPdf'])->name('reports.export-pdf');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')

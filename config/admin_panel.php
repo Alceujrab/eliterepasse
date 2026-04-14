@@ -89,9 +89,10 @@ return [
             'description' => 'Indicadores e exportações',
             'icon' => 'chart',
             'legacy_path' => '/admin/relatorios',
-            'status' => 'migracao',
-            'show_in_quick_access' => false,
-            'actions' => ['visualizar', 'exportar-csv', 'exportar-pdf'],
+            'status' => 'novo',
+            'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/relatorios',
+            'actions' => ['visualizar', 'exportar-csv', 'exportar-pdf', 'acompanhar-metricas'],
         ],
         'whatsapp-instancias' => [
             'label' => 'WhatsApp Instâncias',
