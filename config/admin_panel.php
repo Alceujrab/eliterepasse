@@ -79,9 +79,10 @@ return [
             'description' => 'Cobranças e conciliação operacional',
             'icon' => 'wallet',
             'legacy_path' => '/admin/gestao-financeira',
-            'status' => 'migracao',
-            'show_in_quick_access' => false,
-            'actions' => ['visualizar', 'filtrar', 'baixar'],
+            'status' => 'novo',
+            'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/financeiro',
+            'actions' => ['visualizar', 'filtrar', 'baixar', 'acompanhar-cobranca', 'confirmar-pagamento'],
         ],
         'relatorios' => [
             'label' => 'Relatórios',

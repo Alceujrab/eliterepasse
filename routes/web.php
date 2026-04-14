@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\ClientActionController;
 use App\Http\Controllers\Admin\ClientsIndexController;
 use App\Http\Controllers\Admin\ClientShowController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FinancialShowController;
+use App\Http\Controllers\Admin\FinanceiroIndexController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\ModulePageController;
@@ -110,6 +112,9 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::post('/tickets/{ticket}/reply', [TicketActionController::class, 'reply'])->name('tickets.reply');
     Route::post('/tickets/{ticket}/assign', [TicketActionController::class, 'assign'])->name('tickets.assign');
     Route::post('/tickets/{ticket}/status', [TicketActionController::class, 'updateStatus'])->name('tickets.status');
+
+    Route::get('/financeiro', FinanceiroIndexController::class)->name('financeiro.index');
+    Route::get('/financeiro/{financial}', FinancialShowController::class)->name('financeiro.show');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')
