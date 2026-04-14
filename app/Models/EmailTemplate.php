@@ -6,6 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailTemplate extends Model
 {
+    public const SYSTEM_SLUGS = [
+        'cliente_aprovado',
+        'contrato_assinado',
+        'contrato_assinado_admin',
+        'contrato_para_assinar',
+        'documento_verificado',
+        'fatura_gerada',
+        'novo_cadastro_admin',
+        'novo_pedido_admin',
+        'pagamento_confirmado',
+        'pedido_confirmado',
+        'ticket_atualizado',
+        'usuario_aprovado',
+        'usuario_bloqueado',
+        'documento_disponivel',
+        'documento_despachado',
+    ];
+
     protected $fillable = [
         'slug',
         'nome',
@@ -80,5 +98,10 @@ class EmailTemplate extends Model
         }
 
         return $mail;
+    }
+
+    public function isSystemTemplate(): bool
+    {
+        return in_array($this->slug, self::SYSTEM_SLUGS, true);
     }
 }

@@ -9,6 +9,10 @@ use App\Http\Controllers\Admin\ClientActionController;
 use App\Http\Controllers\Admin\ClientsIndexController;
 use App\Http\Controllers\Admin\ClientShowController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EmailTemplateActionController;
+use App\Http\Controllers\Admin\EmailTemplateCreateController;
+use App\Http\Controllers\Admin\EmailTemplateShowController;
+use App\Http\Controllers\Admin\EmailTemplatesIndexController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
 use App\Http\Controllers\Admin\ReportsController;
@@ -120,6 +124,13 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/relatorios', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/relatorios/exportar.csv', [ReportsController::class, 'exportCsv'])->name('reports.export-csv');
     Route::get('/relatorios/exportar.pdf', [ReportsController::class, 'exportPdf'])->name('reports.export-pdf');
+
+    Route::get('/email-templates', EmailTemplatesIndexController::class)->name('email-templates.index');
+    Route::get('/email-templates/criar', EmailTemplateCreateController::class)->name('email-templates.create');
+    Route::post('/email-templates', [EmailTemplateActionController::class, 'store'])->name('email-templates.store');
+    Route::get('/email-templates/{emailTemplate}', EmailTemplateShowController::class)->name('email-templates.show');
+    Route::post('/email-templates/{emailTemplate}', [EmailTemplateActionController::class, 'update'])->name('email-templates.update');
+    Route::post('/email-templates/{emailTemplate}/gerar-ia', [EmailTemplateActionController::class, 'generateAi'])->name('email-templates.generate-ai');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')

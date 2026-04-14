@@ -117,9 +117,10 @@ return [
             'description' => 'Modelos e automações transacionais',
             'icon' => 'mail',
             'legacy_path' => '/admin/email-templates',
-            'status' => 'migracao',
-            'show_in_quick_access' => false,
-            'actions' => ['listar', 'criar', 'editar', 'gerar-com-ia'],
+            'status' => 'novo',
+            'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/email-templates',
+            'actions' => ['listar', 'criar', 'editar', 'gerar-com-ia', 'previsualizar'],
         ],
         'landing-settings' => [
             'label' => 'Configurações da Landing',
