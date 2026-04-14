@@ -12,6 +12,7 @@ return [
             'legacy_path' => '/admin/dashboard',
             'status' => 'novo',
             'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin',
             'actions' => ['visualizar'],
         ],
         'clients' => [

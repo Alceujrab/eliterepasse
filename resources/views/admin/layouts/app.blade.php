@@ -96,18 +96,20 @@
                                     $module = $adminModules[$moduleKey];
                                     $moduleUrl = $moduleKey === 'dashboard'
                                         ? route('admin.v2.dashboard')
-                                        : $module['v2_path'];
-                                    $fallbackPath = $module['v2_path'];
+                                        : ($module['v2_path'] ?? null);
+                                    $fallbackPath = $module['v2_path'] ?? null;
                                     $normalizedFallbackPath = ltrim($fallbackPath, '/');
                                     $isModuleActive = $moduleKey === 'dashboard'
                                         ? request()->routeIs('admin.v2.dashboard')
-                                        : request()->is($normalizedFallbackPath)
+                                        : ($normalizedFallbackPath && request()->is($normalizedFallbackPath))
                                             || request()->is($normalizedFallbackPath . '/*');
                                 @endphp
 
-                                <a href="{{ $moduleUrl }}" class="admin-nav-link {{ $isModuleActive ? 'is-active' : '' }}">
-                                    <span>{{ $module['label'] }}</span>
-                                </a>
+                                @if($moduleUrl)
+                                    <a href="{{ $moduleUrl }}" class="admin-nav-link {{ $isModuleActive ? 'is-active' : '' }}">
+                                        <span>{{ $module['label'] }}</span>
+                                    </a>
+                                @endif
                             @endforeach
                         </div>
                     </section>
@@ -140,6 +142,7 @@
                         <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Dashboard</a>
                         @foreach($adminModules as $key => $module)
                             @continue($key === 'dashboard')
+                            @continue(empty($module['v2_path']))
                             <a href="{{ $module['v2_path'] }}" class="admin-btn-soft">{{ $module['label'] }}</a>
                         @endforeach
                     </div>

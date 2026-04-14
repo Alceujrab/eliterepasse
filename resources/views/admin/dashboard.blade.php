@@ -54,6 +54,7 @@
         <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             @foreach($quickModules as $moduleEntry)
                 @php($module = $moduleEntry['data'])
+                @php($moduleUrl = $module['v2_path'] ?? null)
                 <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <div class="flex items-start justify-between gap-2">
                         <div>
@@ -65,9 +66,11 @@
                         </span>
                     </div>
 
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <a href="{{ $module['v2_path'] }}" class="admin-btn-primary">Entrar</a>
-                    </div>
+                    @if($moduleUrl)
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <a href="{{ $moduleUrl }}" class="admin-btn-primary">Entrar</a>
+                        </div>
+                    @endif
                 </article>
             @endforeach
         </div>
