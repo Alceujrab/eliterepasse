@@ -54,6 +54,14 @@
         @apply text-xs uppercase tracking-[0.18em] text-blue-200/80 mt-1;
     }
 
+    .admin-side-group {
+        @apply mt-6 first:mt-0;
+    }
+
+    .admin-side-group-label {
+        @apply mb-2 px-3 text-[11px] font-black uppercase tracking-[0.18em] text-blue-200/55;
+    }
+
     .admin-nav-link {
         @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition;
         color: rgba(227, 239, 255, 0.9);
@@ -91,6 +99,25 @@
         color: var(--admin-muted);
     }
 
+    .admin-topbar-row {
+        @apply flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between;
+    }
+
+    .admin-topbar-copy {
+        @apply min-w-0;
+    }
+
+    .admin-topbar-actions {
+        @apply flex flex-wrap items-center gap-2;
+    }
+
+    .admin-user-pill {
+        @apply inline-flex items-center rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.12em];
+        border-color: rgba(15, 98, 254, 0.14);
+        background: rgba(15, 98, 254, 0.08);
+        color: #224269;
+    }
+
     .admin-kpi {
         @apply rounded-2xl border p-4 md:p-5;
         border-color: var(--admin-border);
@@ -111,6 +138,156 @@
         @apply rounded-2xl border p-4 md:p-5;
         border-color: var(--admin-border);
         background: var(--admin-surface);
+    }
+
+    .admin-section-title {
+        @apply text-lg md:text-xl font-black tracking-tight;
+        color: var(--admin-text);
+    }
+
+    .admin-section-note {
+        @apply mt-1 text-sm;
+        color: var(--admin-muted);
+    }
+
+    .admin-metrics-grid {
+        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-5;
+    }
+
+    .admin-metric-card {
+        @apply rounded-2xl border p-4 md:p-5;
+        border-color: var(--admin-border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,249,255,0.96));
+        box-shadow: 0 18px 40px -28px rgba(12, 31, 66, 0.45);
+    }
+
+    .admin-metric-label {
+        @apply text-xs font-black uppercase tracking-[0.16em];
+        color: var(--admin-muted);
+    }
+
+    .admin-metric-value {
+        @apply mt-3 text-2xl md:text-3xl font-black tracking-tight;
+        color: var(--admin-text);
+    }
+
+    .admin-metric-footnote {
+        @apply mt-2 text-xs font-semibold;
+        color: var(--admin-muted);
+    }
+
+    .admin-toolbar {
+        @apply flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between;
+    }
+
+    .admin-toolbar-main {
+        @apply min-w-0;
+    }
+
+    .admin-toolbar-actions {
+        @apply flex flex-wrap items-center gap-2;
+    }
+
+    .admin-filter-grid {
+        @apply mt-5 grid gap-3 md:grid-cols-[1fr_240px_auto];
+    }
+
+    .admin-quick-filters {
+        @apply mt-4 flex flex-wrap gap-2;
+    }
+
+    .admin-filter-chip {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.08em] transition;
+        border-color: var(--admin-border);
+        background: #fff;
+        color: #39506f;
+    }
+
+    .admin-filter-chip:hover,
+    .admin-filter-chip.is-active {
+        border-color: rgba(15, 98, 254, 0.24);
+        background: rgba(15, 98, 254, 0.08);
+        color: #123968;
+    }
+
+    .admin-data-table-wrapper {
+        @apply mt-4 overflow-hidden rounded-2xl border;
+        border-color: var(--admin-border);
+        background: rgba(255, 255, 255, 0.92);
+    }
+
+    .admin-data-table {
+        @apply min-w-full border-separate border-spacing-0;
+    }
+
+    .admin-data-table thead th {
+        @apply px-4 py-3 text-left text-[11px] font-black uppercase tracking-[0.14em];
+        color: var(--admin-muted);
+        background: #f7faff;
+        border-bottom: 1px solid var(--admin-border);
+    }
+
+    .admin-data-table tbody td {
+        @apply px-4 py-4 align-top text-sm;
+        border-bottom: 1px solid rgba(217, 227, 241, 0.7);
+    }
+
+    .admin-data-table tbody tr:hover {
+        background: rgba(15, 98, 254, 0.02);
+    }
+
+    .admin-row-title {
+        @apply text-sm font-black tracking-tight;
+        color: var(--admin-text);
+    }
+
+    .admin-row-meta {
+        @apply mt-1 text-xs font-semibold leading-relaxed;
+        color: var(--admin-muted);
+    }
+
+    .admin-detail-label {
+        @apply block text-[11px] font-black uppercase tracking-[0.14em];
+        color: var(--admin-muted);
+    }
+
+    .admin-detail-value {
+        @apply mt-1 text-sm font-bold;
+        color: var(--admin-text);
+    }
+
+    .admin-status-badge {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em];
+    }
+
+    .admin-status-badge.is-pending {
+        background: rgba(118, 134, 160, 0.12);
+        color: #516175;
+    }
+
+    .admin-status-badge.is-awaiting {
+        background: rgba(211, 122, 0, 0.12);
+        color: #935604;
+    }
+
+    .admin-status-badge.is-confirmed {
+        background: rgba(15, 98, 254, 0.1);
+        color: #0f4fbe;
+    }
+
+    .admin-status-badge.is-billed {
+        background: rgba(92, 76, 255, 0.12);
+        color: #4d3db9;
+    }
+
+    .admin-status-badge.is-paid {
+        background: rgba(0, 163, 108, 0.12);
+        color: #0a6d4c;
+    }
+
+    .admin-status-badge.is-cancelled {
+        background: rgba(187, 30, 60, 0.1);
+        color: #9d1d37;
     }
 
     .admin-tag {
@@ -145,6 +322,36 @@
         border-color: var(--admin-border);
         color: #264161;
         background: #fff;
+    }
+
+    .admin-btn-danger {
+        @apply admin-btn border;
+        border-color: rgba(187, 30, 60, 0.18);
+        color: #9d1d37;
+        background: rgba(187, 30, 60, 0.06);
+    }
+
+    .admin-action-cluster {
+        @apply flex flex-wrap gap-2;
+    }
+
+    .admin-mobile-list {
+        @apply mt-4 grid gap-3 lg:hidden;
+    }
+
+    .admin-order-card {
+        @apply rounded-2xl border p-4;
+        border-color: var(--admin-border);
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 18px 40px -30px rgba(12, 31, 66, 0.45);
+    }
+
+    .admin-order-card-header {
+        @apply flex items-start justify-between gap-3;
+    }
+
+    .admin-order-card-grid {
+        @apply mt-4 grid grid-cols-2 gap-3;
     }
 
     .admin-mobile-nav {

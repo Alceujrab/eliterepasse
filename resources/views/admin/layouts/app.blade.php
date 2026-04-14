@@ -17,6 +17,13 @@
             ? json_decode(file_get_contents($manifestPath), true)
             : [];
         $hasAdminPanelCss = is_array($manifest) && array_key_exists('resources/css/admin-panel.css', $manifest);
+        $adminModules = config('admin_panel.modules', []);
+        $navigationGroups = [
+            'Operacao' => ['dashboard', 'clients', 'vehicles', 'orders', 'contracts', 'documents'],
+            'Atendimento e financeiro' => ['tickets', 'financeiro', 'relatorios'],
+            'Canais e configuracoes' => ['whatsapp-instancias', 'whatsapp-inbox', 'email-templates', 'landing-settings'],
+        ];
+        $adminUser = auth()->user();
     @endphp
 
     @if($hasAdminPanelCss)
@@ -76,21 +83,33 @@
                 <p class="admin-brand-subtitle">Admin v2</p>
             </div>
 
-            <nav class="mt-7 grid gap-1.5">
-                <a href="{{ route('admin.v2.dashboard') }}" class="admin-nav-link {{ request()->routeIs('admin.v2.dashboard') ? 'is-active' : '' }}">
-                    <span>Dashboard</span>
-                </a>
+            <nav class="mt-7">
+                @foreach($navigationGroups as $groupLabel => $groupModules)
+                    <section class="admin-side-group">
+                        <p class="admin-side-group-label">{{ $groupLabel }}</p>
 
-                @foreach(config('admin_panel.modules', []) as $key => $module)
-                    @continue($key === 'dashboard')
-                    @php
-                        $moduleUrl = $module['v2_path'] ?? route('admin.v2.module', $key);
-                        $isModuleActive = request()->is(ltrim($module['v2_path'] ?? "painel-admin/modulo/{$key}", '/'))
-                            || (request()->routeIs('admin.v2.module') && request()->route('module') === $key);
-                    @endphp
-                    <a href="{{ $moduleUrl }}" class="admin-nav-link {{ $isModuleActive ? 'is-active' : '' }}">
-                        <span>{{ $module['label'] }}</span>
-                    </a>
+                        <div class="grid gap-1.5">
+                            @foreach($groupModules as $moduleKey)
+                                @continue(! isset($adminModules[$moduleKey]))
+
+                                @php
+                                    $module = $adminModules[$moduleKey];
+                                    $moduleUrl = $moduleKey === 'dashboard'
+                                        ? route('admin.v2.dashboard')
+                                        : ($module['v2_path'] ?? route('admin.v2.module', $moduleKey));
+                                    $fallbackPath = $module['v2_path'] ?? "painel-admin/modulo/{$moduleKey}";
+                                    $isModuleActive = $moduleKey === 'dashboard'
+                                        ? request()->routeIs('admin.v2.dashboard')
+                                        : request()->is(ltrim($fallbackPath, '/'))
+                                            || (request()->routeIs('admin.v2.module') && request()->route('module') === $moduleKey);
+                                @endphp
+
+                                <a href="{{ $moduleUrl }}" class="admin-nav-link {{ $isModuleActive ? 'is-active' : '' }}">
+                                    <span>{{ $module['label'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </section>
                 @endforeach
             </nav>
 
@@ -102,14 +121,28 @@
 
         <main class="admin-main">
             <header class="admin-topbar">
-                <h1 class="admin-headline">{{ $pageTitle ?? 'Painel Administrativo' }}</h1>
-                <p class="admin-subline">{{ $pageSubtitle ?? config('admin_panel.subtitle') }}</p>
+                <div class="admin-topbar-row">
+                    <div class="admin-topbar-copy">
+                        <h1 class="admin-headline">{{ $pageTitle ?? 'Painel Administrativo' }}</h1>
+                        <p class="admin-subline">{{ $pageSubtitle ?? config('admin_panel.subtitle') }}</p>
+                    </div>
+
+                    <div class="admin-topbar-actions">
+                        <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Resumo</a>
+                        <a href="/admin" class="admin-btn-soft">Admin legado</a>
+                        @if($adminUser)
+                            <div class="admin-user-pill">
+                                {{ $adminUser->name ?? $adminUser->email }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
                 <details class="admin-mobile-nav">
                     <summary>Menu rápido</summary>
                     <div class="admin-mobile-links">
                         <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Dashboard</a>
-                        @foreach(config('admin_panel.modules', []) as $key => $module)
+                        @foreach($adminModules as $key => $module)
                             @continue($key === 'dashboard')
                             <a href="{{ $module['v2_path'] ?? route('admin.v2.module', $key) }}" class="admin-btn-soft">{{ $module['label'] }}</a>
                         @endforeach
