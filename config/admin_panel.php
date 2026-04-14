@@ -57,8 +57,9 @@ return [
             'description' => 'Anexos, validação e download',
             'icon' => 'paperclip',
             'legacy_path' => '/admin/documents',
-            'status' => 'migracao',
+            'status' => 'novo',
             'show_in_quick_access' => true,
+            'v2_path' => '/painel-admin/documentos',
             'actions' => ['listar', 'criar', 'editar', 'anexar', 'verificar', 'rejeitar', 'download'],
         ],
         'tickets' => [

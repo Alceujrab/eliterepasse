@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\OrderActionController;
 use App\Http\Controllers\Admin\ContractActionController;
 use App\Http\Controllers\Admin\ContractsIndexController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DocumentActionController;
+use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\ModulePageController;
 use App\Http\Controllers\Admin\OrdersIndexController;
 use App\Http\Controllers\EvolutionWebhookController;
@@ -72,6 +74,11 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/contratos', ContractsIndexController::class)->name('contracts.index');
     Route::post('/contratos/{contract}/enviar-assinatura', [ContractActionController::class, 'sendToSign'])->name('contracts.send-to-sign');
     Route::post('/contratos/{contract}/copiar-link', [ContractActionController::class, 'copyLink'])->name('contracts.copy-link');
+
+    Route::get('/documentos', DocumentsIndexController::class)->name('documents.index');
+    Route::post('/documentos', [DocumentActionController::class, 'store'])->name('documents.store');
+    Route::post('/documentos/{document}/verificar', [DocumentActionController::class, 'verify'])->name('documents.verify');
+    Route::post('/documentos/{document}/rejeitar', [DocumentActionController::class, 'reject'])->name('documents.reject');
 
     Route::get('/modulo/{module}', ModulePageController::class)
         ->where('module', '[a-z\-]+')

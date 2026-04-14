@@ -188,8 +188,53 @@
         @apply flex flex-wrap items-center gap-2;
     }
 
+    .admin-split-grid {
+        @apply grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_380px];
+    }
+
+    .admin-stack {
+        @apply grid gap-4;
+    }
+
     .admin-filter-grid {
         @apply mt-5 grid gap-3 md:grid-cols-[1fr_240px_auto];
+    }
+
+    .admin-filter-grid-wide {
+        @apply mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-[1.3fr_220px_220px_auto];
+    }
+
+    .admin-form-grid {
+        @apply grid gap-3 md:grid-cols-2;
+    }
+
+    .admin-field-label {
+        @apply mb-1 block text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500;
+    }
+
+    .admin-input,
+    .admin-select,
+    .admin-textarea,
+    .admin-file {
+        @apply w-full rounded-xl border bg-white px-3 py-2 text-sm font-medium outline-none transition;
+        border-color: #dbe5f3;
+    }
+
+    .admin-textarea {
+        @apply min-h-[110px] resize-y;
+    }
+
+    .admin-input:focus,
+    .admin-select:focus,
+    .admin-textarea:focus,
+    .admin-file:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+    }
+
+    .admin-helper {
+        @apply mt-1 text-xs font-medium leading-relaxed;
+        color: var(--admin-muted);
     }
 
     .admin-quick-filters {
@@ -333,6 +378,28 @@
 
     .admin-action-cluster {
         @apply flex flex-wrap gap-2;
+    }
+
+    .admin-inline-review {
+        @apply mt-3 rounded-2xl border p-3;
+        border-color: rgba(187, 30, 60, 0.12);
+        background: rgba(187, 30, 60, 0.03);
+    }
+
+    .admin-inline-review summary {
+        @apply cursor-pointer list-none text-xs font-black uppercase tracking-[0.12em];
+        color: #9d1d37;
+    }
+
+    .admin-inline-review[open] summary {
+        @apply mb-3;
+    }
+
+    .admin-empty-state {
+        @apply rounded-2xl border px-6 py-10 text-center text-sm font-semibold;
+        border-color: var(--admin-border);
+        color: var(--admin-muted);
+        background: rgba(255, 255, 255, 0.92);
     }
 
     .admin-mobile-list {
