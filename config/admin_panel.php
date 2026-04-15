@@ -135,5 +135,15 @@ return [
             'v2_path' => '/painel-admin/landing-settings',
             'actions' => ['listar', 'criar', 'editar'],
         ],
+        'configuracoes-gerais' => [
+            'label' => 'Configurações Gerais',
+            'description' => 'SMTP, reCAPTCHA, Google e Gemini',
+            'icon' => 'sliders',
+            'legacy_path' => '/admin/configuracoes-gerais',
+            'status' => 'novo',
+            'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/configuracoes-gerais',
+            'actions' => ['visualizar', 'editar', 'testar-email'],
+        ],
     ],
 ];

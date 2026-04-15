@@ -21,7 +21,7 @@
         $navigationGroups = [
             'Operacao' => ['dashboard', 'clients', 'vehicles', 'orders', 'contracts', 'documents'],
             'Atendimento e financeiro' => ['tickets', 'financeiro', 'relatorios'],
-            'Canais e configuracoes' => ['whatsapp-instancias', 'whatsapp-inbox', 'email-templates', 'landing-settings'],
+            'Canais e configuracoes' => ['whatsapp-instancias', 'whatsapp-inbox', 'email-templates', 'landing-settings', 'configuracoes-gerais'],
         ];
         $adminUser = auth()->user();
     @endphp

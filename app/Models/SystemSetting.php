@@ -26,11 +26,17 @@ class SystemSetting extends Model
     /**
      * Define um valor de configuração
      */
-    public static function set(string $key, mixed $value): void
+    public static function set(string $key, mixed $value, ?string $tipo = null): void
     {
+        $payload = ['value' => $value];
+
+        if ($tipo !== null) {
+            $payload['tipo'] = $tipo;
+        }
+
         static::updateOrCreate(
             ['key' => $key],
-            ['value' => $value]
+            $payload
         );
     }
 }

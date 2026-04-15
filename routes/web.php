@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\FinanceiroIndexController;
 use App\Http\Controllers\Admin\LandingSettingsActionController;
 use App\Http\Controllers\Admin\LandingSettingsIndexController;
 use App\Http\Controllers\Admin\ReportsController;
+use App\Http\Controllers\Admin\SystemSettingsActionController;
+use App\Http\Controllers\Admin\SystemSettingsIndexController;
 use App\Http\Controllers\Admin\DocumentActionController;
 use App\Http\Controllers\Admin\DocumentsIndexController;
 use App\Http\Controllers\Admin\OrdersIndexController;
@@ -154,4 +156,8 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
 
     Route::get('/landing-settings', LandingSettingsIndexController::class)->name('landing-settings.index');
     Route::post('/landing-settings', [LandingSettingsActionController::class, 'upsert'])->name('landing-settings.upsert');
+
+    Route::get('/configuracoes-gerais', SystemSettingsIndexController::class)->name('settings.index');
+    Route::post('/configuracoes-gerais', [SystemSettingsActionController::class, 'update'])->name('settings.update');
+    Route::post('/configuracoes-gerais/testar-email', [SystemSettingsActionController::class, 'testEmail'])->name('settings.test-email');
 });
