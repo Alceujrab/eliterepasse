@@ -15,12 +15,19 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        @php
+            $landingSetting = \App\Models\LandingSetting::first();
+            $systemLogo = ($landingSetting && $landingSetting->logo_path) ? asset($landingSetting->logo_path) : asset('build/assets/logo.png');
+        @endphp
+
         <style>
             .auth-gradient { background: linear-gradient(135deg, #0f2d4e 0%, #1a3a5c 30%, #1e4f8a 70%, #1a3a5c 100%); }
             .float-car { animation: floatCar 6s ease-in-out infinite; }
             @keyframes floatCar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
             .slide-up { animation: slideUp 0.6s ease-out; }
             @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+            /* Esconde badge flutuante do reCAPTCHA v3 (exibimos aviso textual customizado) */
+            .grecaptcha-badge { visibility: hidden !important; }
         </style>
     </head>
     <body class="font-sans antialiased min-h-screen flex selection:bg-orange-500 selection:text-white">
@@ -35,7 +42,7 @@
             {{-- Logo --}}
             <div class="relative z-10">
                 <a href="/" class="flex items-center gap-4 group">
-                    <img src="{{ asset('build/assets/logo.png') }}" class="h-10 transition group-hover:scale-105" alt="Elite Repasse"
+                    <img src="{{ $systemLogo }}" class="h-10 transition group-hover:scale-105" alt="Elite Repasse"
                         onerror="this.src='https://placehold.co/200x50/ffffff/1a3a5c?text=Elite+Repasse'">
                     <span class="text-white text-opacity-30 text-2xl font-light">|</span>
                     <span class="text-white font-black text-lg tracking-tight">Portal do Lojista</span>
@@ -81,7 +88,7 @@
             {{-- Header mobile --}}
             <header class="lg:hidden bg-white border-b border-gray-200 py-4 px-6 shadow-sm">
                 <a href="/" class="flex items-center gap-3 group">
-                    <img src="{{ asset('build/assets/logo.png') }}" class="h-8 transition group-hover:scale-105" alt="Elite Repasse"
+                    <img src="{{ $systemLogo }}" class="h-8 transition group-hover:scale-105" alt="Elite Repasse"
                         onerror="this.src='https://placehold.co/160x40/1f5a7c/white?text=Elite+Repasse'">
                     <span class="text-gray-300 font-light text-xl">|</span>
                     <span class="text-gray-700 font-black text-sm tracking-tight">Portal do Lojista</span>
