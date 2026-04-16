@@ -15,11 +15,12 @@
     if ($menuItems->isEmpty()) {
         $menuItems = collect($defaults['menu_items']);
     }
-    // Substituir #contato por /contato para apontar à página dedicada
-    $menuItems = $menuItems->map(fn ($item) => ($item['url'] ?? '') === '#contato'
-        ? array_merge($item, ['url' => '/contato'])
-        : $item
-    );
+    // Substituir âncoras por páginas dedicadas
+    $menuItems = $menuItems->map(function ($item) {
+        if (($item['url'] ?? '') === '#contato') return array_merge($item, ['url' => '/contato']);
+        if (($item['url'] ?? '') === '#sobre') return array_merge($item, ['url' => '/sobre-nos']);
+        return $item;
+    });
 
     $footerLinks = collect($settings->footer_links ?? [])->filter(fn ($item) => filled($item['label'] ?? null))->values();
     if ($footerLinks->isEmpty()) {

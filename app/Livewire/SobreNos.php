@@ -19,6 +19,11 @@ class SobreNos extends Component
         if ($menuItems->isEmpty()) {
             $menuItems = collect($defaults['menu_items']);
         }
+        $menuItems = $menuItems->map(function ($item) {
+            if (($item['url'] ?? '') === '#contato') return array_merge($item, ['url' => '/contato']);
+            if (($item['url'] ?? '') === '#sobre') return array_merge($item, ['url' => '/sobre-nos']);
+            return $item;
+        });
 
         $footerLinks = collect($settings->footer_links ?? [])->filter(fn ($i) => filled($i['label'] ?? null))->values();
         if ($footerLinks->isEmpty()) {

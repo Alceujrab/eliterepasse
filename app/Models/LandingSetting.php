@@ -35,7 +35,7 @@ class LandingSetting extends Model
                 ['label' => 'Modelos', 'url' => '#modelos'],
                 ['label' => 'Vantagens', 'url' => '#vantagens'],
                 ['label' => 'Como Funciona', 'url' => '#como-funciona'],
-                ['label' => 'Sobre Nós', 'url' => '#sobre'],
+                ['label' => 'Sobre Nós', 'url' => '/sobre-nos'],
                 ['label' => 'Contato', 'url' => '/contato'],
                 ['label' => 'FAQ', 'url' => '#faq'],
             ],
