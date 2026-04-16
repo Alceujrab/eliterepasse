@@ -48,6 +48,7 @@ Route::post('/webhook/evolution', EvolutionWebhookController::class)
     ->name('webhook.evolution');
 
 Route::get('/', \App\Livewire\LandingPage::class)->name('home');
+Route::get('/contato', \App\Livewire\Contato::class)->name('contato');
 
 // ─── Rotas Públicas de Contrato (acesso via token único) ─────────────
 Route::get('/contrato/assinar/{token}',  [ContractSignatureController::class, 'show'])->name('contrato.assinar.show');
