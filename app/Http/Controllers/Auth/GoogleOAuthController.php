@@ -30,8 +30,7 @@ class GoogleOAuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
             Log::error('GoogleOAuth falhou ao tentar capturar usuário: ' . $e->getMessage());
-            // DEBUG temporário — remover após resolver
-            return redirect()->route('login')->with('status', 'Erro Google: ' . $e->getMessage());
+            return redirect()->route('login')->with('status', 'Falha ao autenticar com Google. Tente novamente.');
         }
 
         // Tenta encontrar um usuário pelo campo google_id
