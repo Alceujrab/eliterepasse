@@ -90,8 +90,7 @@ class AdminPanelProvider extends PanelProvider
 
                 NavigationGroup::make('Configurações')
                     ->label('Configurações')
-                    ->collapsible()
-                    ->collapsed(),
+                    ->collapsible(),
             ])
 
             // ─── Resources e Pages ────────────────────────────────
