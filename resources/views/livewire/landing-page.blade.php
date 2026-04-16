@@ -15,6 +15,11 @@
     if ($menuItems->isEmpty()) {
         $menuItems = collect($defaults['menu_items']);
     }
+    // Substituir #contato por /contato para apontar à página dedicada
+    $menuItems = $menuItems->map(fn ($item) => ($item['url'] ?? '') === '#contato'
+        ? array_merge($item, ['url' => '/contato'])
+        : $item
+    );
 
     $footerLinks = collect($settings->footer_links ?? [])->filter(fn ($item) => filled($item['label'] ?? null))->values();
     if ($footerLinks->isEmpty()) {
@@ -22,7 +27,7 @@
     }
 
     $logoUrl = $settings->logo_path
-        ? asset('storage/' . $settings->logo_path)
+        ? asset($settings->logo_path)
         : asset('build/assets/logo.png');
 
     $modelos = [
@@ -310,7 +315,7 @@
             <div class="mt-10 grid items-center gap-10 lg:grid-cols-2">
                 @if($settings->about_image)
                     <div class="overflow-hidden rounded-3xl border border-slate-200 shadow-lg">
-                        <img src="{{ asset('storage/' . $settings->about_image) }}" alt="{{ $settings->about_title ?? 'Sobre nós' }}" class="h-80 w-full object-cover lg:h-96">
+                        <img src="{{ asset($settings->about_image) }}" alt="{{ $settings->about_title ?? 'Sobre nós' }}" class="h-80 w-full object-cover lg:h-96">
                     </div>
                 @endif
                 <div class="{{ $settings->about_image ? '' : 'lg:col-span-2 mx-auto max-w-3xl' }}">

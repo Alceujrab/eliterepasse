@@ -79,7 +79,7 @@ class Contato extends Component
         }
 
         $logoUrl = $settings->logo_path
-            ? asset('storage/' . $settings->logo_path)
+            ? asset($settings->logo_path)
             : asset('build/assets/logo.png');
 
         $hasMap = filled($settings->contact_lat) && filled($settings->contact_lng) && filled($mapsApiKey);

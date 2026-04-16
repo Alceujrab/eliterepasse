@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LandingSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class LandingSettingsActionController extends Controller
@@ -108,20 +109,40 @@ class LandingSettingsActionController extends Controller
             'social_youtube' => $validated['social_youtube'] ?? null,
         ];
 
-        // Upload de logo
+        // Upload de logo (salva direto em public/uploads/landing para evitar symlink)
         if ($request->hasFile('logo')) {
             if ($setting && $setting->logo_path) {
-                Storage::disk('public')->delete($setting->logo_path);
+                $oldPath = public_path($setting->logo_path);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
-            $payload['logo_path'] = $request->file('logo')->store('landing', 'public');
+            $dir = public_path('uploads/landing');
+            if (! is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $file = $request->file('logo');
+            $name = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $name);
+            $payload['logo_path'] = 'uploads/landing/' . $name;
         }
 
         // Upload de imagem "Sobre Nós"
         if ($request->hasFile('about_image')) {
             if ($setting && $setting->about_image) {
-                Storage::disk('public')->delete($setting->about_image);
+                $oldPath = public_path($setting->about_image);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
-            $payload['about_image'] = $request->file('about_image')->store('landing', 'public');
+            $dir = public_path('uploads/landing');
+            if (! is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $file = $request->file('about_image');
+            $name = 'about_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $name);
+            $payload['about_image'] = 'uploads/landing/' . $name;
         }
 
         if ($setting) {

@@ -32,7 +32,7 @@ class LandingSetting extends Model
                 ['label' => 'Vantagens', 'url' => '#vantagens'],
                 ['label' => 'Como Funciona', 'url' => '#como-funciona'],
                 ['label' => 'Sobre Nós', 'url' => '#sobre'],
-                ['label' => 'Contato', 'url' => '#contato'],
+                ['label' => 'Contato', 'url' => '/contato'],
                 ['label' => 'FAQ', 'url' => '#faq'],
             ],
             'about_title' => 'Sobre a Elite Repasse',

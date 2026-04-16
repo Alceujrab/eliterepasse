@@ -51,7 +51,7 @@
                             <label class="admin-detail-label">Logo atual</label>
                             @if($setting->logo_path)
                                 <div class="mt-2 mb-2">
-                                    <img src="{{ asset('storage/' . $setting->logo_path) }}" alt="Logo" class="h-12 rounded-lg bg-slate-100 p-2">
+                                    <img src="{{ asset($setting->logo_path) }}" alt="Logo" class="h-12 rounded-lg bg-slate-100 p-2">
                                 </div>
                             @else
                                 <p class="mt-2 text-xs text-slate-400 italic">Nenhuma logo enviada. O site usa um placeholder.</p>
@@ -204,7 +204,7 @@
                             <label class="admin-detail-label">Imagem da Seção</label>
                             @if($setting->about_image)
                                 <div class="mt-2 mb-2">
-                                    <img src="{{ asset('storage/' . $setting->about_image) }}" alt="Sobre Nós" class="h-24 rounded-lg object-cover">
+                                    <img src="{{ asset($setting->about_image) }}" alt="Sobre Nós" class="h-24 rounded-lg object-cover">
                                 </div>
                             @else
                                 <p class="mt-2 text-xs text-slate-400 italic">Nenhuma imagem enviada.</p>
@@ -430,7 +430,7 @@
                     <label class="admin-detail-label">Logo do Site</label>
                     @if($setting->logo_path)
                         <div class="mt-2 mb-2">
-                            <img src="{{ asset('storage/' . $setting->logo_path) }}" alt="Logo atual" class="h-12 rounded-lg bg-slate-100 p-2">
+                            <img src="{{ asset($setting->logo_path) }}" alt="Logo atual" class="h-12 rounded-lg bg-slate-100 p-2">
                         </div>
                     @endif
                     <input type="file" name="logo" accept="image/*" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">
@@ -522,7 +522,7 @@
                     <label class="admin-detail-label">Imagem (Sobre Nos)</label>
                     @if($setting->about_image)
                         <div class="mt-2 mb-2">
-                            <img src="{{ asset('storage/' . $setting->about_image) }}" alt="Sobre Nos" class="h-20 rounded-lg">
+                            <img src="{{ asset($setting->about_image) }}" alt="Sobre Nos" class="h-20 rounded-lg">
                         </div>
                     @endif
                     <input type="file" name="about_image" accept="image/*" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">
