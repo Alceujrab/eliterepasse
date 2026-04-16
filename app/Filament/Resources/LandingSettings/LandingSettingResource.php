@@ -26,6 +26,10 @@ class LandingSettingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Configurações da Landing Page';
 
+    protected static ?string $navigationGroup = 'Configurações';
+
+    protected static ?int $navigationSort = 1;
+
     public static function canCreate(): bool
     {
         return \App\Models\LandingSetting::count() === 0;
