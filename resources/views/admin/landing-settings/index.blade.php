@@ -1,6 +1,364 @@
 @extends('admin.layouts.app')
 
 @php
+    $pageTitle = 'Configurações da Landing';
+    $pageSubtitle = 'Edite todas as seções do site público organizado por abas.';
+@endphp
+
+@section('content')
+    @if(session('admin_success'))
+        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{{ session('admin_success') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{{ $errors->first() }}</div>
+    @endif
+
+    {{-- ═══════════ ABAS DE NAVEGAÇÃO ═══════════ --}}
+    <div x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : 'topo' }" x-init="$watch('tab', t => window.location.hash = t)">
+
+        <nav class="mb-6 flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-white p-1.5">
+            <template x-for="item in [
+                {id:'topo',   label:'Topo / Menu'},
+                {id:'hero',   label:'Hero'},
+                {id:'banners',label:'Banners'},
+                {id:'beneficios', label:'Benefícios'},
+                {id:'sobre',  label:'Sobre Nós'},
+                {id:'contato',label:'Contato'},
+                {id:'faq',    label:'FAQ'},
+                {id:'rodape', label:'Rodapé'},
+            ]">
+                <button type="button"
+                    @click="tab = item.id"
+                    :class="tab === item.id
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'
+                        : 'text-slate-600 hover:bg-slate-100'"
+                    class="rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200"
+                    x-text="item.label">
+                </button>
+            </template>
+        </nav>
+
+        <form method="POST" action="{{ route('admin.v2.landing-settings.upsert') }}" enctype="multipart/form-data">
+            @csrf
+
+            {{-- ═══════════ ABA: TOPO / MENU ═══════════ --}}
+            <div x-show="tab === 'topo'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Logomarca</h2>
+                    <p class="admin-section-note">Logo exibida no topo e no rodapé do site.</p>
+                    <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Logo atual</label>
+                            @if($setting->logo_path)
+                                <div class="mt-2 mb-2">
+                                    <img src="{{ asset('storage/' . $setting->logo_path) }}" alt="Logo" class="h-12 rounded-lg bg-slate-100 p-2">
+                                </div>
+                            @else
+                                <p class="mt-2 text-xs text-slate-400 italic">Nenhuma logo enviada. O site usa um placeholder.</p>
+                            @endif
+                            <input type="file" name="logo" accept="image/*" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">
+                            <p class="mt-1 text-xs text-slate-500">PNG ou SVG, fundo transparente. Máx 2 MB.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Itens do Menu Superior</h2>
+                    <p class="admin-section-note">Links de navegação que aparecem no cabeçalho do site. Os botões "Entrar" e "Cadastre-se" são fixos.</p>
+                    <div class="mt-4 grid gap-3">
+                        @foreach($menuItemsRows as $index => $item)
+                            <div class="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 xl:grid-cols-[40px_1fr_1fr] items-center">
+                                <span class="text-center text-xs font-bold text-slate-400">{{ $index + 1 }}</span>
+                                <input type="text" name="menu_items[{{ $index }}][label]" value="{{ $item['label'] ?? '' }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Texto (ex: Modelos)">
+                                <input type="text" name="menu_items[{{ $index }}][url]" value="{{ $item['url'] ?? '' }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Link (ex: #modelos)">
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: HERO ═══════════ --}}
+            <div x-show="tab === 'hero'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Seção Hero (Topo da Landing)</h2>
+                    <p class="admin-section-note">Título principal, subtítulo e número do WhatsApp exibidos na área de destaque.</p>
+                    <div class="mt-4 grid gap-4">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Título Principal</label>
+                            <input type="text" name="hero_title" value="{{ old('hero_title', $setting->hero_title) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">
+                            <p class="mt-1 text-xs text-slate-500">Aparece em destaque no topo da página. Ex: "Acelere sua venda de carros com a Elite Repasse"</p>
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Subtítulo</label>
+                            <textarea name="hero_subtitle" rows="2" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">{{ old('hero_subtitle', $setting->hero_subtitle) }}</textarea>
+                            <p class="mt-1 text-xs text-slate-500">Texto descritivo logo abaixo do título.</p>
+                        </div>
+                        <div class="admin-info-card xl:w-1/2">
+                            <label class="admin-detail-label">WhatsApp (botão flutuante)</label>
+                            <input type="text" name="whatsapp_number" value="{{ old('whatsapp_number', $setting->whatsapp_number) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="5566992184925">
+                            <p class="mt-1 text-xs text-slate-500">Número com código do país + DDD, sem espaços ou traços.</p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Preview do hero --}}
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Pré-visualização do Hero</h2>
+                    <div class="mt-4 rounded-[28px] bg-gradient-to-br from-slate-950 via-blue-900 to-slate-900 p-6 text-white shadow-xl">
+                        <p class="text-xs font-extrabold uppercase tracking-[0.24em] text-blue-200">Plataforma B2B para lojistas</p>
+                        <h3 class="mt-3 text-2xl font-black leading-tight">{{ old('hero_title', $setting->hero_title) }}</h3>
+                        <p class="mt-3 text-sm font-medium leading-6 text-blue-100">{{ old('hero_subtitle', $setting->hero_subtitle) }}</p>
+                        <div class="mt-4 flex gap-3">
+                            <span class="rounded-full bg-blue-500 px-4 py-2 text-sm font-bold text-white">Cadastre-se agora</span>
+                            <span class="rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-blue-100">Já tenho conta</span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: BANNERS ═══════════ --}}
+            <div x-show="tab === 'banners'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Imagens do Carrossel</h2>
+                    <p class="admin-section-note">Fotos de veículos e destaques exibidas no slider da seção hero.</p>
+
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        @forelse($banners as $banner)
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+                                <img src="{{ asset('storage/' . $banner->image_path) }}" alt="{{ $banner->title ?? 'Banner' }}" class="h-36 w-full object-cover">
+                                <div class="p-3">
+                                    <p class="text-sm font-semibold text-slate-700">{{ $banner->title ?: 'Sem título' }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">{{ $banner->subtitle ?: '' }}</p>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-xs font-semibold {{ $banner->is_active ? 'text-emerald-600' : 'text-slate-400' }}">{{ $banner->is_active ? 'Ativo' : 'Inativo' }}</span>
+                                        <span class="text-xs text-slate-400">Ordem: {{ $banner->order }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="sm:col-span-2 xl:col-span-3 admin-empty-state">Nenhum banner cadastrado ainda.</div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ route('admin.v2.landing-banners.index') }}" class="admin-btn-primary">Gerenciar Banners (adicionar, editar, excluir)</a>
+                    </div>
+                </section>
+            </div>
+
+            {{-- ═══════════ ABA: BENEFÍCIOS ═══════════ --}}
+            <div x-show="tab === 'beneficios'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Cards de Benefícios</h2>
+                    <p class="admin-section-note">Até 6 cards exibidos na seção "Por que escolher o Portal da Elite?".</p>
+                    <div class="mt-4 grid gap-3">
+                        @foreach($featuresRows as $index => $feature)
+                            <div class="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 xl:grid-cols-[40px_1fr_2fr_180px] items-start">
+                                <span class="text-center text-xs font-bold text-slate-400 pt-3">{{ $index + 1 }}</span>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500">Título</label>
+                                    <input type="text" name="features[{{ $index }}][title]" value="{{ $feature['title'] ?? '' }}" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Ex: Diversidade de estoque">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500">Descrição</label>
+                                    <textarea name="features[{{ $index }}][description]" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" rows="2" placeholder="Ex: Acesso a veículos de repasse e frota em todo o Brasil.">{{ $feature['description'] ?? '' }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500">Ícone</label>
+                                    <input type="text" name="features[{{ $index }}][icon]" value="{{ $feature['icon'] ?? '' }}" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Ex: truck">
+                                    <p class="mt-0.5 text-[10px] text-slate-400">Lucide icons</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: SOBRE NÓS ═══════════ --}}
+            <div x-show="tab === 'sobre'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Seção "Sobre Nós"</h2>
+                    <p class="admin-section-note">Conteúdo institucional da empresa exibido na landing.</p>
+                    <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                        <div class="admin-info-card xl:col-span-2">
+                            <label class="admin-detail-label">Título da Seção</label>
+                            <input type="text" name="about_title" value="{{ old('about_title', $setting->about_title) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Sobre a Elite Repasse">
+                        </div>
+                        <div class="admin-info-card xl:col-span-2">
+                            <label class="admin-detail-label">Texto Descritivo</label>
+                            <textarea name="about_text" rows="5" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Descreva a empresa...">{{ old('about_text', $setting->about_text) }}</textarea>
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Imagem da Seção</label>
+                            @if($setting->about_image)
+                                <div class="mt-2 mb-2">
+                                    <img src="{{ asset('storage/' . $setting->about_image) }}" alt="Sobre Nós" class="h-24 rounded-lg object-cover">
+                                </div>
+                            @else
+                                <p class="mt-2 text-xs text-slate-400 italic">Nenhuma imagem enviada.</p>
+                            @endif
+                            <input type="file" name="about_image" accept="image/*" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400">
+                        </div>
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: CONTATO ═══════════ --}}
+            <div x-show="tab === 'contato'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Informações de Contato</h2>
+                    <p class="admin-section-note">Dados exibidos na seção "Fale com a equipe Elite Repasse".</p>
+                    <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Telefone</label>
+                            <input type="text" name="contact_phone" value="{{ old('contact_phone', $setting->contact_phone) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="(66) 99218-4925">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">E-mail</label>
+                            <input type="text" name="contact_email" value="{{ old('contact_email', $setting->contact_email) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="contato@eliterepasse.com.br">
+                        </div>
+                        <div class="admin-info-card xl:col-span-2">
+                            <label class="admin-detail-label">Endereço</label>
+                            <input type="text" name="contact_address" value="{{ old('contact_address', $setting->contact_address) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Rua Exemplo, 123 - Bairro">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Cidade</label>
+                            <input type="text" name="contact_city" value="{{ old('contact_city', $setting->contact_city) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Belo Horizonte">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Estado (UF)</label>
+                            <input type="text" name="contact_state" value="{{ old('contact_state', $setting->contact_state) }}" maxlength="2" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="MG">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Localização no Mapa</h2>
+                    <p class="admin-section-note">Coordenadas para o Google Maps na landing. A chave da API fica em "Configurações Gerais".</p>
+                    <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Latitude</label>
+                            <input type="text" name="contact_lat" value="{{ old('contact_lat', $setting->contact_lat) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="-19.9167">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Longitude</label>
+                            <input type="text" name="contact_lng" value="{{ old('contact_lng', $setting->contact_lng) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="-43.9345">
+                        </div>
+                    </div>
+
+                    @if($mapsApiKey && old('contact_lat', $setting->contact_lat) && old('contact_lng', $setting->contact_lng))
+                        <div class="mt-4 rounded-2xl overflow-hidden border border-slate-200">
+                            <iframe width="100%" height="250" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                                src="https://www.google.com/maps/embed/v1/place?key={{ $mapsApiKey }}&q={{ old('contact_lat', $setting->contact_lat) }},{{ old('contact_lng', $setting->contact_lng) }}&zoom=15">
+                            </iframe>
+                        </div>
+                    @endif
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: FAQ ═══════════ --}}
+            <div x-show="tab === 'faq'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Perguntas Frequentes (FAQ)</h2>
+                    <p class="admin-section-note">Até 6 perguntas e respostas na seção "Dúvidas frequentes" da landing.</p>
+                    <div class="mt-4 grid gap-3">
+                        @foreach($faqRows as $index => $faq)
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">{{ $index + 1 }}</span>
+                                    <span class="text-xs font-semibold text-slate-500">Pergunta e Resposta #{{ $index + 1 }}</span>
+                                </div>
+                                <div class="grid gap-3">
+                                    <input type="text" name="faq[{{ $index }}][question]" value="{{ $faq['question'] ?? '' }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Ex: Como funciona o portal?">
+                                    <textarea name="faq[{{ $index }}][answer]" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" rows="3" placeholder="Ex: O lojista se cadastra, aprova o acesso e compra veículos pelo ambiente B2B.">{{ $faq['answer'] ?? '' }}</textarea>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+            {{-- ═══════════ ABA: RODAPÉ ═══════════ --}}
+            <div x-show="tab === 'rodape'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Texto do Rodapé</h2>
+                    <p class="admin-section-note">Descrição institucional exibida no footer do site.</p>
+                    <div class="mt-4">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Texto</label>
+                            <textarea name="footer_text" rows="3" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Plataforma digital B2B para compra de seminovos...">{{ old('footer_text', $setting->footer_text) }}</textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Redes Sociais</h2>
+                    <p class="admin-section-note">URLs dos perfis exibidos com ícones no rodapé.</p>
+                    <div class="mt-4 grid gap-4 xl:grid-cols-3">
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Instagram</label>
+                            <input type="url" name="social_instagram" value="{{ old('social_instagram', $setting->social_instagram) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="https://instagram.com/eliterepasse">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">Facebook</label>
+                            <input type="url" name="social_facebook" value="{{ old('social_facebook', $setting->social_facebook) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="https://facebook.com/eliterepasse">
+                        </div>
+                        <div class="admin-info-card">
+                            <label class="admin-detail-label">YouTube</label>
+                            <input type="url" name="social_youtube" value="{{ old('social_youtube', $setting->social_youtube) }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="https://youtube.com/@eliterepasse">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-card mb-4">
+                    <h2 class="admin-section-title">Links do Rodapé</h2>
+                    <p class="admin-section-note">Links rápidos exibidos na coluna "Links" do footer.</p>
+                    <div class="mt-4 grid gap-3">
+                        @foreach($footerLinksRows as $index => $link)
+                            <div class="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 xl:grid-cols-[40px_1fr_1fr] items-center">
+                                <span class="text-center text-xs font-bold text-slate-400">{{ $index + 1 }}</span>
+                                <input type="text" name="footer_links[{{ $index }}][label]" value="{{ $link['label'] ?? '' }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="Texto (ex: Cadastre-se)">
+                                <input type="text" name="footer_links[{{ $index }}][url]" value="{{ $link['url'] ?? '' }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-blue-400" placeholder="URL (ex: /register)">
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button type="submit" class="admin-btn-primary">Salvar alterações</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+@endsection
+@extends('admin.layouts.app')
+
+@php
     $pageTitle = 'Configuracoes da Landing';
     $pageSubtitle = 'Edite todas as secoes do site: topo, menu, banners, sobre nos, contato, FAQ e rodape.';
 
