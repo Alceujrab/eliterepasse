@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class LandingSettingResource extends Resource
 {
@@ -26,7 +27,7 @@ class LandingSettingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Configurações da Landing Page';
 
-    protected static ?string $navigationGroup = 'Configurações';
+    protected static string|UnitEnum|null $navigationGroup = 'Configurações';
 
     protected static ?int $navigationSort = 1;
 

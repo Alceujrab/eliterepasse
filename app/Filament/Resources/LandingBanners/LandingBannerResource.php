@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class LandingBannerResource extends Resource
 {
@@ -26,7 +27,7 @@ class LandingBannerResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Banners';
 
-    protected static ?string $navigationGroup = 'Configurações';
+    protected static string|UnitEnum|null $navigationGroup = 'Configurações';
 
     protected static ?int $navigationSort = 2;
 
