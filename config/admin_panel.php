@@ -135,6 +135,16 @@ return [
             'v2_path' => '/painel-admin/landing-settings',
             'actions' => ['listar', 'criar', 'editar'],
         ],
+        'landing-banners' => [
+            'label' => 'Banners da Landing',
+            'description' => 'Imagens do carrossel principal',
+            'icon' => 'image',
+            'legacy_path' => '/admin/landing-banners',
+            'status' => 'novo',
+            'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/landing-banners',
+            'actions' => ['listar', 'criar', 'editar', 'excluir', 'reordenar'],
+        ],
         'configuracoes-gerais' => [
             'label' => 'Configurações Gerais',
             'description' => 'SMTP, reCAPTCHA, Google e Gemini',

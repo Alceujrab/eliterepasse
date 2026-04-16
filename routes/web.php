@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\WhatsappInboxActionController;
 use App\Http\Controllers\Admin\WhatsappInboxIndexController;
 use App\Http\Controllers\Admin\FinancialShowController;
 use App\Http\Controllers\Admin\FinanceiroIndexController;
+use App\Http\Controllers\Admin\LandingBannerActionController;
+use App\Http\Controllers\Admin\LandingBannersIndexController;
 use App\Http\Controllers\Admin\LandingSettingsActionController;
 use App\Http\Controllers\Admin\LandingSettingsIndexController;
 use App\Http\Controllers\Admin\ReportsController;
@@ -156,6 +158,12 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
 
     Route::get('/landing-settings', LandingSettingsIndexController::class)->name('landing-settings.index');
     Route::post('/landing-settings', [LandingSettingsActionController::class, 'upsert'])->name('landing-settings.upsert');
+
+    Route::get('/landing-banners', LandingBannersIndexController::class)->name('landing-banners.index');
+    Route::post('/landing-banners', [LandingBannerActionController::class, 'store'])->name('landing-banners.store');
+    Route::post('/landing-banners/{banner}', [LandingBannerActionController::class, 'update'])->name('landing-banners.update');
+    Route::delete('/landing-banners/{banner}', [LandingBannerActionController::class, 'destroy'])->name('landing-banners.destroy');
+    Route::post('/landing-banners/reorder', [LandingBannerActionController::class, 'reorder'])->name('landing-banners.reorder');
 
     Route::get('/configuracoes-gerais', SystemSettingsIndexController::class)->name('settings.index');
     Route::post('/configuracoes-gerais', [SystemSettingsActionController::class, 'update'])->name('settings.update');
