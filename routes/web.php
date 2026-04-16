@@ -25,6 +25,8 @@ use App\Http\Controllers\Admin\LandingBannerActionController;
 use App\Http\Controllers\Admin\LandingBannersIndexController;
 use App\Http\Controllers\Admin\LandingSettingsActionController;
 use App\Http\Controllers\Admin\LandingSettingsIndexController;
+use App\Http\Controllers\Admin\AboutPageSettingsActionController;
+use App\Http\Controllers\Admin\AboutPageSettingsIndexController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\SystemSettingsActionController;
 use App\Http\Controllers\Admin\SystemSettingsIndexController;
@@ -49,6 +51,7 @@ Route::post('/webhook/evolution', EvolutionWebhookController::class)
 
 Route::get('/', \App\Livewire\LandingPage::class)->name('home');
 Route::get('/contato', \App\Livewire\Contato::class)->name('contato');
+Route::get('/sobre-nos', \App\Livewire\SobreNos::class)->name('sobre-nos');
 
 // ─── Rotas Públicas de Contrato (acesso via token único) ─────────────
 Route::get('/contrato/assinar/{token}',  [ContractSignatureController::class, 'show'])->name('contrato.assinar.show');
@@ -159,6 +162,13 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
 
     Route::get('/landing-settings', LandingSettingsIndexController::class)->name('landing-settings.index');
     Route::post('/landing-settings', [LandingSettingsActionController::class, 'upsert'])->name('landing-settings.upsert');
+
+    Route::get('/about-page-settings', AboutPageSettingsIndexController::class)->name('about-page.index');
+    Route::post('/about-page-settings', [AboutPageSettingsActionController::class, 'upsert'])->name('about-page.upsert');
+    Route::post('/about-page-settings/upload-team-photo', [AboutPageSettingsActionController::class, 'uploadTeamPhoto'])->name('about-page.upload-team-photo');
+    Route::post('/about-page-settings/upload-testimonial-photo', [AboutPageSettingsActionController::class, 'uploadTestimonialPhoto'])->name('about-page.upload-testimonial-photo');
+    Route::post('/about-page-settings/upload-gallery', [AboutPageSettingsActionController::class, 'uploadGallery'])->name('about-page.upload-gallery');
+    Route::post('/about-page-settings/delete-gallery', [AboutPageSettingsActionController::class, 'deleteGallery'])->name('about-page.delete-gallery');
 
     Route::get('/landing-banners', LandingBannersIndexController::class)->name('landing-banners.index');
     Route::post('/landing-banners', [LandingBannerActionController::class, 'store'])->name('landing-banners.store');

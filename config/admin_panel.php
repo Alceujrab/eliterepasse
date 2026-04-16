@@ -135,6 +135,16 @@ return [
             'v2_path' => '/painel-admin/landing-settings',
             'actions' => ['listar', 'criar', 'editar'],
         ],
+        'about-page-settings' => [
+            'label' => 'Página Sobre Nós',
+            'description' => 'Fotos, equipe, depoimentos e vídeos',
+            'icon' => 'info',
+            'legacy_path' => '/admin/about-page-settings',
+            'status' => 'novo',
+            'show_in_quick_access' => false,
+            'v2_path' => '/painel-admin/about-page-settings',
+            'actions' => ['editar'],
+        ],
         'landing-banners' => [
             'label' => 'Banners da Landing',
             'description' => 'Imagens do carrossel principal',
