@@ -161,7 +161,7 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Destinatário *</label>
                         <select name="user_id" required class="w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500">
                             <option value="">Selecione...</option>
-                            @foreach(\App\Models\User::where('role', 'client')->orderBy('name')->get(['id', 'name', 'email']) as $user)
+                            @foreach(\App\Models\User::where('is_admin', false)->orderBy('name')->get(['id', 'name', 'email']) as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                             @endforeach
                         </select>

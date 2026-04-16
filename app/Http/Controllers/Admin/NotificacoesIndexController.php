@@ -33,7 +33,7 @@ class NotificacoesIndexController extends Controller
             'hoje' => DatabaseNotification::whereDate('created_at', today())->count(),
             'semana' => DatabaseNotification::where('created_at', '>=', now()->subWeek())->count(),
             'nao_lidas' => DatabaseNotification::whereNull('read_at')->count(),
-            'clientes_pendentes' => User::where('role', 'client')->where('status', 'pendente')->count(),
+            'clientes_pendentes' => User::where('is_admin', false)->where('status', 'pendente')->count(),
         ];
 
         $tipoFiltros = [

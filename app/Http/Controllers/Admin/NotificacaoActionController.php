@@ -36,7 +36,7 @@ class NotificacaoActionController extends Controller
             'mensagem' => ['required', 'string', 'max:2000'],
         ]);
 
-        $users = User::where('role', 'client')->where('status', 'ativo')->get();
+        $users = User::where('is_admin', false)->where('status', 'ativo')->get();
 
         if ($users->isEmpty()) {
             return back()->with('admin_warning', 'Nenhum cliente ativo para receber broadcast.');
