@@ -19,8 +19,8 @@
         $hasAdminPanelCss = is_array($manifest) && array_key_exists('resources/css/admin-panel.css', $manifest);
         $adminModules = config('admin_panel.modules', []);
         $navigationGroups = [
-            'Operacao' => ['dashboard', 'clients', 'vehicles', 'orders', 'contracts', 'documents'],
-            'Atendimento e financeiro' => ['tickets', 'financeiro', 'relatorios'],
+            'Operacao' => ['dashboard', 'clients', 'vehicles', 'orders', 'contracts', 'documents', 'general-documents', 'vehicle-reports'],
+            'Atendimento e financeiro' => ['tickets', 'financeiro', 'relatorios', 'notificacoes'],
             'Canais e configuracoes' => ['whatsapp-instancias', 'whatsapp-inbox', 'email-templates', 'landing-settings', 'about-page-settings', 'landing-banners', 'configuracoes-gerais'],
         ];
         $adminUser = auth()->user();

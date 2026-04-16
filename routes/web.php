@@ -39,6 +39,13 @@ use App\Http\Controllers\Admin\TicketsIndexController;
 use App\Http\Controllers\Admin\VehicleActionController;
 use App\Http\Controllers\Admin\VehiclesIndexController;
 use App\Http\Controllers\Admin\VehicleShowController;
+use App\Http\Controllers\Admin\GeneralDocumentsIndexController;
+use App\Http\Controllers\Admin\GeneralDocumentActionController;
+use App\Http\Controllers\Admin\VehicleReportsIndexController;
+use App\Http\Controllers\Admin\VehicleReportShowController;
+use App\Http\Controllers\Admin\VehicleReportActionController;
+use App\Http\Controllers\Admin\NotificacoesIndexController;
+use App\Http\Controllers\Admin\NotificacaoActionController;
 use App\Http\Controllers\EvolutionWebhookController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureUserIsApproved;
@@ -179,4 +186,25 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/configuracoes-gerais', SystemSettingsIndexController::class)->name('settings.index');
     Route::post('/configuracoes-gerais', [SystemSettingsActionController::class, 'update'])->name('settings.update');
     Route::post('/configuracoes-gerais/testar-email', [SystemSettingsActionController::class, 'testEmail'])->name('settings.test-email');
+
+    // Documentos Gerais
+    Route::get('/documentos-gerais', GeneralDocumentsIndexController::class)->name('general-documents.index');
+    Route::post('/documentos-gerais', [GeneralDocumentActionController::class, 'store'])->name('general-documents.store');
+    Route::post('/documentos-gerais/{generalDocument}', [GeneralDocumentActionController::class, 'update'])->name('general-documents.update');
+    Route::delete('/documentos-gerais/{generalDocument}', [GeneralDocumentActionController::class, 'destroy'])->name('general-documents.destroy');
+
+    // Laudos e Vistorias
+    Route::get('/laudos', VehicleReportsIndexController::class)->name('vehicle-reports.index');
+    Route::post('/laudos', [VehicleReportActionController::class, 'store'])->name('vehicle-reports.store');
+    Route::get('/laudos/{vehicleReport}', VehicleReportShowController::class)->name('vehicle-reports.show');
+    Route::post('/laudos/{vehicleReport}/items', [VehicleReportActionController::class, 'updateItems'])->name('vehicle-reports.update-items');
+    Route::post('/laudos/{vehicleReport}/enviar-revisao', [VehicleReportActionController::class, 'enviarRevisao'])->name('vehicle-reports.enviar-revisao');
+    Route::post('/laudos/{vehicleReport}/aprovar', [VehicleReportActionController::class, 'aprovar'])->name('vehicle-reports.aprovar');
+    Route::post('/laudos/{vehicleReport}/reprovar', [VehicleReportActionController::class, 'reprovar'])->name('vehicle-reports.reprovar');
+
+    // Central de Notificações
+    Route::get('/notificacoes-admin', NotificacoesIndexController::class)->name('notificacoes.index');
+    Route::post('/notificacoes-admin/enviar-manual', [NotificacaoActionController::class, 'enviarManual'])->name('notificacoes.enviar-manual');
+    Route::post('/notificacoes-admin/enviar-broadcast', [NotificacaoActionController::class, 'enviarBroadcast'])->name('notificacoes.enviar-broadcast');
+    Route::post('/notificacoes-admin/marcar-lidas', [NotificacaoActionController::class, 'marcarTodasLidas'])->name('notificacoes.marcar-lidas');
 });
