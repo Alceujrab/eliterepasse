@@ -13,11 +13,19 @@ class LandingSettingsIndexController extends Controller
     public function __invoke(): View
     {
         $setting = LandingSetting::query()->latest('id')->first() ?? new LandingSetting(LandingSetting::defaults());
+        $defaults = LandingSetting::defaults();
 
-        $features = collect(old('features', $setting->features ?? []))->take(6)->values()->all();
-        $faq = collect(old('faq', $setting->faq ?? []))->take(6)->values()->all();
-        $menuItems = collect(old('menu_items', $setting->menu_items ?? []))->take(8)->values()->all();
-        $footerLinks = collect(old('footer_links', $setting->footer_links ?? []))->take(6)->values()->all();
+        $features = collect(old('features', $setting->features ?? []))->filter(fn ($i) => filled($i['title'] ?? null))->values()->all();
+        if (empty($features)) { $features = $defaults['features']; }
+
+        $faq = collect(old('faq', $setting->faq ?? []))->filter(fn ($i) => filled($i['question'] ?? null))->values()->all();
+        if (empty($faq)) { $faq = $defaults['faq']; }
+
+        $menuItems = collect(old('menu_items', $setting->menu_items ?? []))->filter(fn ($i) => filled($i['label'] ?? null))->values()->all();
+        if (empty($menuItems)) { $menuItems = $defaults['menu_items']; }
+
+        $footerLinks = collect(old('footer_links', $setting->footer_links ?? []))->filter(fn ($i) => filled($i['label'] ?? null))->values()->all();
+        if (empty($footerLinks)) { $footerLinks = $defaults['footer_links']; }
 
         while (count($features) < 6) {
             $features[] = ['title' => '', 'description' => '', 'icon' => ''];
