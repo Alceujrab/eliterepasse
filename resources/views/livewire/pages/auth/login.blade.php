@@ -25,7 +25,7 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    @if(config('services.recaptcha.site_key'))
+    @if(config('services.recaptcha.site_key') && \App\Models\SystemSetting::get('google_recaptcha_ativo'))
         <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     @endif
 
@@ -45,7 +45,7 @@ new #[Layout('layouts.guest')] class extends Component
             submitting: false,
             submitForm() {
                 this.submitting = true;
-                const siteKey = '{{ config('services.recaptcha.site_key') }}';
+                const siteKey = '{{ (config('services.recaptcha.site_key') && \App\Models\SystemSetting::get('google_recaptcha_ativo')) ? config('services.recaptcha.site_key') : '' }}';
                 
                 if (siteKey) {
                     grecaptcha.ready(() => {
@@ -168,7 +168,7 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         {{-- reCAPTCHA badge --}}
-        @if(config('services.recaptcha.site_key'))
+        @if(config('services.recaptcha.site_key') && \App\Models\SystemSetting::get('google_recaptcha_ativo'))
             <div class="mt-4 flex items-center justify-center gap-2 text-[10px] text-gray-400 leading-tight text-center">
                 <svg class="w-4 h-4 flex-shrink-0 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>

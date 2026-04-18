@@ -76,21 +76,32 @@
                 assinou: false, processando: false,
 
                 init() {
+                    // Fallback: libera o botão após 5s mesmo sem resposta do GPS
+                    const gpsFallback = setTimeout(() => {
+                        if (this.gpsCarregando) {
+                            this.gpsErro = true;
+                            this.gpsCarregando = false;
+                        }
+                    }, 5000);
+
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
+                                clearTimeout(gpsFallback);
                                 this.lat = pos.coords.latitude;
                                 this.lng = pos.coords.longitude;
                                 this.gpsOk = true;
                                 this.gpsCarregando = false;
                             },
                             (err) => {
+                                clearTimeout(gpsFallback);
                                 this.gpsErro = true;
                                 this.gpsCarregando = false;
                             },
                             { enableHighAccuracy: true, timeout: 10000 }
                         );
                     } else {
+                        clearTimeout(gpsFallback);
                         this.gpsErro = true;
                         this.gpsCarregando = false;
                     }

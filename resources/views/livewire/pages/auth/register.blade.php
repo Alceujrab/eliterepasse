@@ -220,8 +220,13 @@ new #[Layout('layouts.guest')] class extends Component
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">CEP</label>
-                        <input wire:model.blur="cep" wire:change="buscarCep" type="text" x-mask="99999-999" placeholder="00000-000"
-                            class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                        <div class="relative">
+                            <input wire:model.blur="cep" wire:change="buscarCep" type="text" x-mask="99999-999" placeholder="00000-000"
+                                class="block w-full rounded-xl border border-gray-200 bg-[#f8fafc] px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-gray-300 transition">
+                            <div wire:loading wire:target="buscarCep" class="absolute right-3 top-1/2 -translate-y-1/2">
+                                <svg class="animate-spin h-4 w-4 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-span-2">
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Logradouro</label>
