@@ -54,7 +54,7 @@
     }
 @endphp
 
-<div>
+<div @if($alpineAttr) x-data="{}" @endif>
     <label for="{{ $name }}" class="admin-field-label">
         {{ $label }} @if($required)<span class="text-rose-500" aria-hidden="true">*</span>@endif
     </label>
