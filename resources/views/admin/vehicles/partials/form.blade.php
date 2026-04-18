@@ -28,17 +28,10 @@
                     <label for="version" class="admin-field-label">Versão *</label>
                     <input id="version" name="version" type="text" value="{{ old('version', $v?->version) }}" required maxlength="120" class="admin-input" placeholder="Ex: 2.0 XRE Hybrid CVT">
                 </div>
-                <div>
-                    <label for="plate" class="admin-field-label">Placa *</label>
-                    <input id="plate" name="plate" type="text" value="{{ old('plate', $v?->plate) }}" required maxlength="8" class="admin-input font-mono uppercase" placeholder="ABC-1D23">
-                </div>
-                <div>
-                    <label for="renavam" class="admin-field-label">Renavam</label>
-                    <input id="renavam" name="renavam" type="text" value="{{ old('renavam', $v?->renavam) }}" maxlength="11" class="admin-input font-mono" placeholder="00000000000">
-                </div>
+                <x-admin.field name="plate" label="Placa" :required="true" :value="old('plate', $v?->plate)" mask="placa" placeholder="ABC-1D23" hint="Aceita formato Mercosul (AAA-0A00) ou antigo (AAA-0000)." />
+                <x-admin.field name="renavam" label="Renavam" :value="old('renavam', $v?->renavam)" mask="renavam" placeholder="00000000000" hint="11 digitos numericos." />
                 <div class="sm:col-span-2">
-                    <label for="chassi" class="admin-field-label">Chassi</label>
-                    <input id="chassi" name="chassi" type="text" value="{{ old('chassi', $v?->chassi) }}" maxlength="17" class="admin-input font-mono uppercase" placeholder="9BWZZZ377VT004251">
+                    <x-admin.field name="chassi" label="Chassi" :value="old('chassi', $v?->chassi)" mask="chassi" placeholder="9BWZZZ377VT004251" hint="17 caracteres alfanumericos. Sem letras I, O ou Q." />
                 </div>
                 <div>
                     <label for="category" class="admin-field-label">Carroceria</label>
@@ -57,10 +50,7 @@
                     <label for="model_year" class="admin-field-label">Ano modelo *</label>
                     <input id="model_year" name="model_year" type="number" value="{{ old('model_year', $v?->model_year) }}" required min="1990" max="{{ now()->year + 2 }}" class="admin-input">
                 </div>
-                <div>
-                    <label for="fipe_code" class="admin-field-label">Código FIPE</label>
-                    <input id="fipe_code" name="fipe_code" type="text" value="{{ old('fipe_code', $v?->fipe_code) }}" maxlength="10" class="admin-input font-mono" placeholder="001234-5">
-                </div>
+                <x-admin.field name="fipe_code" label="Codigo FIPE" :value="old('fipe_code', $v?->fipe_code)" mask="fipe" placeholder="001234-5" hint="6 digitos seguidos de 1 verificador." />
                 <div>
                     <label for="color" class="admin-field-label">Cor</label>
                     <input id="color" name="color" type="text" value="{{ old('color', $v?->color) }}" maxlength="40" class="admin-input" placeholder="Ex: Prata Metálico">

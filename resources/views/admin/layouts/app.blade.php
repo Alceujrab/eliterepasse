@@ -73,6 +73,8 @@
             }
         </style>
     @endif
+    <style>[x-cloak]{display:none!important}</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
@@ -123,6 +125,9 @@
             <header class="admin-topbar">
                 <div class="admin-topbar-row">
                     <div class="admin-topbar-copy">
+                        @isset($breadcrumbs)
+                            <x-admin.breadcrumbs :items="$breadcrumbs" />
+                        @endisset
                         <h1 class="admin-headline">{{ $pageTitle ?? 'Painel Administrativo' }}</h1>
                         <p class="admin-subline">{{ $pageSubtitle ?? config('admin_panel.subtitle') }}</p>
                     </div>
@@ -130,8 +135,52 @@
                     <div class="admin-topbar-actions">
                         <a href="{{ route('admin.v2.dashboard') }}" class="admin-btn-soft">Resumo</a>
                         @if($adminUser)
-                            <div class="admin-user-pill">
-                                {{ $adminUser->name ?? $adminUser->email }}
+                            <div x-data="{ open: false }" class="relative">
+                                <button
+                                    type="button"
+                                    @click="open = !open"
+                                    @click.outside="open = false"
+                                    @keydown.escape.window="open = false"
+                                    class="admin-user-pill inline-flex items-center gap-2"
+                                    aria-haspopup="menu"
+                                    :aria-expanded="open"
+                                >
+                                    <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[11px] font-black text-white">
+                                        {{ \Illuminate\Support\Str::of($adminUser->name ?? $adminUser->email)->substr(0,1)->upper() }}
+                                    </span>
+                                    <span class="max-w-[160px] truncate">{{ $adminUser->name ?? $adminUser->email }}</span>
+                                    <svg class="h-3 w-3 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div
+                                    x-show="open"
+                                    x-cloak
+                                    x-transition.opacity
+                                    role="menu"
+                                    class="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
+                                >
+                                    <div class="border-b border-slate-100 px-4 py-3">
+                                        <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Logado como</p>
+                                        <p class="mt-0.5 truncate text-sm font-bold text-slate-800">{{ $adminUser->name ?? '—' }}</p>
+                                        <p class="truncate text-xs text-slate-500">{{ $adminUser->email }}</p>
+                                    </div>
+                                    @if(\Illuminate\Support\Facades\Route::has('profile.edit'))
+                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" role="menuitem">
+                                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            Meu perfil
+                                        </a>
+                                    @endif
+                                    <a href="{{ url('/') }}" target="_blank" rel="noopener" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" role="menuitem">
+                                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                        Abrir portal
+                                    </a>
+                                    <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
+                                        @csrf
+                                        <button type="submit" class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-semibold text-rose-600 hover:bg-rose-50" role="menuitem">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                            Sair da conta
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -149,6 +198,8 @@
                     </div>
                 </details>
             </header>
+
+            <x-admin.flash />
 
             @yield('content')
         </main>

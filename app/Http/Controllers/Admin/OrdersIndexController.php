@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Support\Filters\RememberedFilters;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -11,8 +12,13 @@ class OrdersIndexController extends Controller
 {
     public function __invoke(Request $request): View
     {
-        $status = $request->string('status')->toString();
-        $search = trim($request->string('q')->toString());
+        $filters = (new RememberedFilters($request, 'admin.orders.index'))
+            ->remember(['status', 'q', 'per_page']);
+
+        $status = (string) ($filters->get('status', ''));
+        $search = trim((string) $filters->get('q', ''));
+        $perPage = (int) ($filters->get('per_page', 15));
+        $perPage = in_array($perPage, [15, 25, 50, 100], true) ? $perPage : 15;
 
         $queryFactory = function () use ($status, $search) {
             return Order::query()
@@ -45,7 +51,7 @@ class OrdersIndexController extends Controller
 
         $orders = $queryFactory()
             ->latest()
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         $summary = [
@@ -61,6 +67,7 @@ class OrdersIndexController extends Controller
             'orders' => $orders,
             'status' => $status,
             'search' => $search,
+            'perPage' => $perPage,
             'summary' => $summary,
             'globalTotalOrders' => Order::count(),
             'hasActiveFilters' => $status !== '' || $search !== '',

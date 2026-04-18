@@ -112,9 +112,22 @@
                 </select>
             </div>
 
+            <div>
+                <label for="orders-per-page" class="mb-1 block text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Por pagina</label>
+                <select
+                    id="orders-per-page"
+                    name="per_page"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium outline-none transition focus:border-blue-400"
+                >
+                    @foreach([15, 25, 50, 100] as $option)
+                        <option value="{{ $option }}" @selected(($perPage ?? 15) === $option)>{{ $option }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex gap-2">
                 <button type="submit" class="admin-btn-primary">Filtrar</button>
-                <a href="{{ route('admin.v2.orders.index') }}" class="admin-btn-soft">Limpar</a>
+                <a href="{{ route('admin.v2.orders.index', ['reset' => 1]) }}" class="admin-btn-soft" title="Limpa filtros memorizados desta tela">Limpar</a>
             </div>
         </form>
 

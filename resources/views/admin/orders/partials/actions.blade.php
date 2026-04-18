@@ -2,44 +2,73 @@
     $orderShowUrl = \Illuminate\Support\Facades\Route::has('admin.v2.orders.show')
         ? route('admin.v2.orders.show', $order)
         : url('/painel-admin/pedidos/' . $order->id);
+
+    $isPendente = $order->status === \App\Models\Order::STATUS_PENDENTE;
+    $isConfirmado = $order->status === \App\Models\Order::STATUS_CONFIRMADO;
+    $isFaturado = $order->status === \App\Models\Order::STATUS_FATURADO;
+    $cliente = $order->user?->razao_social ?? $order->user?->name ?? 'Cliente';
+    $valor = 'R$ ' . number_format((float) $order->valor_compra, 2, ',', '.');
 @endphp
 
 <div class="admin-action-cluster">
     <a href="{{ $orderShowUrl }}" class="admin-btn-soft">Abrir v2</a>
 
-    @if($order->status === \App\Models\Order::STATUS_PENDENTE)
-        <form method="POST" action="{{ route('admin.v2.orders.confirm', $order) }}">
-            @csrf
-            <button type="submit" class="admin-btn-primary">Confirmar</button>
-        </form>
+    @if($isPendente)
+        <x-admin.action-button
+            :action="route('admin.v2.orders.confirm', $order)"
+            label="Confirmar"
+            variant="primary"
+            confirm="Confirmar o pedido {{ $order->numero }}?"
+            :confirmDetail="$cliente . ' · ' . $valor . '. O veiculo sera reservado.'"
+            confirmLabel="Sim, confirmar pedido"
+        />
     @endif
 
-    @if($order->status === \App\Models\Order::STATUS_CONFIRMADO && ! $order->contract)
-        <form method="POST" action="{{ route('admin.v2.orders.generate-contract', $order) }}">
-            @csrf
-            <button type="submit" class="admin-btn-primary">Gerar contrato</button>
-        </form>
+    @if($isConfirmado && ! $order->contract)
+        <x-admin.action-button
+            :action="route('admin.v2.orders.generate-contract', $order)"
+            label="Gerar contrato"
+            variant="primary"
+            confirm="Gerar contrato para {{ $order->numero }}?"
+            :confirmDetail="$cliente . ' · ' . $valor . '. O contrato sera enviado para assinatura.'"
+            confirmLabel="Gerar contrato"
+        />
     @endif
 
     @if(in_array($order->status, [\App\Models\Order::STATUS_CONFIRMADO, \App\Models\Order::STATUS_FATURADO], true) && ! $order->financial)
-        <form method="POST" action="{{ route('admin.v2.orders.generate-invoice', $order) }}">
-            @csrf
-            <button type="submit" class="admin-btn-soft">Gerar fatura</button>
-        </form>
+        <x-admin.action-button
+            :action="route('admin.v2.orders.generate-invoice', $order)"
+            label="Gerar fatura"
+            variant="soft"
+            confirm="Gerar fatura para {{ $order->numero }}?"
+            :confirmDetail="$cliente . ' · ' . $valor . '. Uma cobranca sera emitida.'"
+            confirmLabel="Gerar fatura"
+        />
     @endif
 
-    @if($order->status === \App\Models\Order::STATUS_FATURADO && $order->financial && $order->financial->status === 'em_aberto')
-        <form method="POST" action="{{ route('admin.v2.orders.confirm-payment', $order) }}">
-            @csrf
-            <button type="submit" class="admin-btn-primary">Confirmar pagamento</button>
-        </form>
+    @if($isFaturado && $order->financial && $order->financial->status === 'em_aberto')
+        <x-admin.action-button
+            :action="route('admin.v2.orders.confirm-payment', $order)"
+            label="Confirmar pagamento"
+            variant="primary"
+            confirm="Confirmar o recebimento de {{ $valor }}?"
+            :confirmDetail="'Pedido ' . $order->numero . ' · ' . $cliente . '. Esta acao marca a fatura como paga e nao pode ser desfeita facilmente.'"
+            confirmLabel="Sim, confirmar pagamento"
+        />
     @endif
 
     @if(in_array($order->status, [\App\Models\Order::STATUS_PENDENTE, \App\Models\Order::STATUS_CONFIRMADO], true))
-        <form method="POST" action="{{ route('admin.v2.orders.cancel', $order) }}">
-            @csrf
-            <button type="submit" class="admin-btn-danger">Cancelar</button>
-        </form>
+        <x-admin.action-button
+            :action="route('admin.v2.orders.cancel', $order)"
+            label="Cancelar"
+            variant="danger"
+            confirm="Cancelar o pedido {{ $order->numero }}?"
+            :confirmDetail="'O cancelamento e irreversivel.' . ($isConfirmado ? ' O veiculo voltara para o estoque disponivel.' : '')"
+            confirmLabel="Sim, cancelar pedido"
+            cancelLabel="Manter pedido"
+            reasonField="motivo"
+            reasonLabel="Motivo do cancelamento"
+            :reasonRequired="true"
+        />
     @endif
-
 </div>

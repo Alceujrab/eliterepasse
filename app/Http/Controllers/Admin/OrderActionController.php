@@ -129,13 +129,18 @@ class OrderActionController extends Controller
         return back()->with('admin_success', "Pagamento confirmado para o pedido {$order->numero}.");
     }
 
-    public function cancel(Order $order): RedirectResponse
+    public function cancel(Request $request, Order $order): RedirectResponse
     {
         if (! in_array($order->status, [Order::STATUS_PENDENTE, Order::STATUS_CONFIRMADO], true)) {
             return back()->with('admin_warning', 'Pedido fora do estado permitido para cancelamento.');
         }
 
-        DB::transaction(function () use ($order) {
+        $validated = $request->validate([
+            'motivo' => ['nullable', 'string', 'min:3', 'max:500'],
+        ]);
+        $motivo = $validated['motivo'] ?? null;
+
+        DB::transaction(function () use ($order, $motivo) {
             $previousStatus = $order->status;
             $order->update(['status' => Order::STATUS_CANCELADO]);
 
@@ -143,7 +148,15 @@ class OrderActionController extends Controller
                 $order->vehicle?->update(['status' => 'available']);
             }
 
-            OrderHistory::registrar($order->id, 'pedido_cancelado', $previousStatus, Order::STATUS_CANCELADO);
+            OrderHistory::registrar(
+                $order->id,
+                'pedido_cancelado',
+                $previousStatus,
+                Order::STATUS_CANCELADO,
+                $motivo ? "Pedido cancelado · Motivo: {$motivo}" : null,
+                null,
+                $motivo ? ['motivo' => $motivo] : null,
+            );
         });
 
         return back()->with('admin_success', "Pedido {$order->numero} cancelado.");

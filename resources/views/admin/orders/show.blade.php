@@ -8,6 +8,12 @@
     $pageTitle = $order->numero . ' · Pedido';
     $pageSubtitle = 'Workspace completo do pedido com contexto comercial, financeiro, documental e historico operacional.';
 
+    $breadcrumbs = [
+        ['label' => 'Admin', 'url' => route('admin.v2.dashboard')],
+        ['label' => 'Pedidos', 'url' => route('admin.v2.orders.index')],
+        ['label' => $order->numero],
+    ];
+
     $orderStatusClassMap = [
         Order::STATUS_PENDENTE => 'is-pending',
         Order::STATUS_AGUARD => 'is-awaiting',
@@ -25,18 +31,6 @@
 @endphp
 
 @section('content')
-    @if(session('admin_success'))
-        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{{ session('admin_success') }}</div>
-    @endif
-
-    @if(session('admin_warning'))
-        <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">{{ session('admin_warning') }}</div>
-    @endif
-
-    @if($errors->any())
-        <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{{ $errors->first() }}</div>
-    @endif
-
     <section class="admin-summary-grid">
         <article class="admin-metric-card">
             <p class="admin-metric-label">Status atual</p>
