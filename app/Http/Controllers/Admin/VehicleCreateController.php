@@ -8,17 +8,22 @@ use Illuminate\View\View;
 
 class VehicleCreateController extends Controller
 {
-    public function __invoke(): View
+    public static function formOptions(): array
     {
-        return view('admin.vehicles.create', [
+        return [
             'categoryOptions' => [
-                'SUV'         => 'SUV',
-                'Sedan'       => 'Sedan',
-                'Hatch'       => 'Hatch',
-                'Pickup'      => 'Pickup',
-                'Minivan'     => 'Minivan',
-                'Conversível' => 'Conversível',
-                'Outro'       => 'Outro',
+                'SUV'              => 'SUV',
+                'Crossover'        => 'Crossover',
+                'Sedan'            => 'Sedan',
+                'Hatch'            => 'Hatch',
+                'Pickup'           => 'Pickup',
+                'Minivan'          => 'Minivan',
+                'Perua/SW'         => 'Perua / SW',
+                'Coupé'            => 'Coupé',
+                'Conversível'      => 'Conversível',
+                'Van'              => 'Van',
+                'Utilitário'       => 'Utilitário',
+                'Outro'            => 'Outro',
             ],
             'fuelOptions' => [
                 'Flex'      => 'Flex',
@@ -38,7 +43,23 @@ class VehicleCreateController extends Controller
                 'Automático (9AT)' => 'Automático (9AT)',
                 'Automático (7DCT)'=> 'Automático (7DCT)',
             ],
+            'steeringOptions' => [
+                'Elétrica'          => 'Elétrica',
+                'Hidráulica'        => 'Hidráulica',
+                'Eletro-hidráulica' => 'Eletro-hidráulica',
+                'Mecânica'          => 'Mecânica',
+            ],
             'statusOptions' => Vehicle::statusLabels(),
-        ]);
+            'ufOptions' => [
+                'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS',
+                'MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC',
+                'SP','SE','TO',
+            ],
+        ];
+    }
+
+    public function __invoke(): View
+    {
+        return view('admin.vehicles.create', self::formOptions());
     }
 }

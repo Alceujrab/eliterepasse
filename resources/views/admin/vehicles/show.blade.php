@@ -60,23 +60,33 @@
 
                 <div class="admin-info-grid mt-5">
                     <article class="admin-info-card">
-                        <span class="admin-detail-label">Identificacao</span>
-                        <div class="admin-detail-value">{{ $vehicle->nome_completo ?: 'Veiculo sem nome' }}</div>
-                        <div class="admin-row-meta">{{ $vehicle->plate }} · {{ $vehicle->category ?: 'Categoria nao informada' }}</div>
+                        <span class="admin-detail-label">Identificação</span>
+                        <div class="admin-detail-value">{{ $vehicle->nome_completo ?: 'Veículo sem nome' }}</div>
+                        <div class="admin-row-meta">{{ $vehicle->plate }} · {{ $vehicle->category ?: 'Categoria não informada' }}</div>
+                        @if($vehicle->renavam || $vehicle->chassi)
+                            <div class="admin-row-meta mt-1 font-mono text-xs">
+                                @if($vehicle->renavam) Renavam: {{ $vehicle->renavam }} @endif
+                                @if($vehicle->renavam && $vehicle->chassi) · @endif
+                                @if($vehicle->chassi) Chassi: {{ $vehicle->chassi }} @endif
+                            </div>
+                        @endif
                     </article>
                     <article class="admin-info-card">
-                        <span class="admin-detail-label">Especificacoes</span>
-                        <div class="admin-detail-value">{{ $vehicle->fuel_type ?: 'Combustivel nao informado' }} · {{ $vehicle->transmission ?: 'Cambio nao informado' }}</div>
-                        <div class="admin-row-meta">{{ $vehicle->engine ?: 'Motor nao informado' }} · {{ $vehicle->doors ?: 'Portas n/d' }} portas</div>
+                        <span class="admin-detail-label">Especificações</span>
+                        <div class="admin-detail-value">{{ $vehicle->fuel_type ?: 'Combustível n/d' }} · {{ $vehicle->transmission ?: 'Câmbio n/d' }}</div>
+                        <div class="admin-row-meta">{{ $vehicle->engine ?: 'Motor n/d' }} · {{ $vehicle->doors ?: '?' }} portas{{ $vehicle->steering ? ' · Dir. ' . $vehicle->steering : '' }}</div>
+                        @if($vehicle->num_owners)
+                            <div class="admin-row-meta mt-1">{{ $vehicle->num_owners }} dono(s)</div>
+                        @endif
                     </article>
                     <article class="admin-info-card">
                         <span class="admin-detail-label">Ano e km</span>
                         <div class="admin-detail-value">{{ $vehicle->manufacture_year }}/{{ $vehicle->model_year }}</div>
-                        <div class="admin-row-meta">{{ number_format((int) $vehicle->mileage, 0, ',', '.') }} km · {{ $vehicle->color ?: 'Cor nao informada' }}</div>
+                        <div class="admin-row-meta">{{ number_format((int) $vehicle->mileage, 0, ',', '.') }} km · {{ $vehicle->color ?: 'Cor não informada' }}</div>
                     </article>
                     <article class="admin-info-card">
-                        <span class="admin-detail-label">Localizacao</span>
-                        <div class="admin-detail-value">{{ $vehicle->location['name'] ?? 'Patio nao informado' }}</div>
+                        <span class="admin-detail-label">Localização</span>
+                        <div class="admin-detail-value">{{ $vehicle->location['name'] ?? 'Pátio não informado' }}</div>
                         <div class="admin-row-meta">{{ collect([$vehicle->location['city'] ?? null, $vehicle->location['state'] ?? null])->filter()->implode(' · ') ?: 'Sem cidade/UF' }}</div>
                     </article>
                     <article class="admin-info-card md:col-span-2">
@@ -86,18 +96,51 @@
                                 <span class="admin-status-badge is-awaiting">Em oferta</span>
                             @endif
                             @if($vehicle->is_just_arrived)
-                                <span class="admin-status-badge is-confirmed">Recem chegado</span>
+                                <span class="admin-status-badge is-confirmed">Recém chegado</span>
                             @endif
                             @if($vehicle->has_report)
                                 <span class="admin-status-badge is-paid">Com laudo</span>
                             @endif
                             @if($vehicle->has_factory_warranty)
-                                <span class="admin-status-badge is-billed">Garantia de fabrica</span>
+                                <span class="admin-status-badge is-billed">Garantia de fábrica</span>
                             @endif
-                            @if(! $vehicle->is_on_sale && ! $vehicle->is_just_arrived && ! $vehicle->has_report && ! $vehicle->has_factory_warranty)
+                            @if($vehicle->accepts_trade)
+                                <span class="admin-status-badge is-confirmed">Aceita troca</span>
+                            @endif
+                            @if($vehicle->ipva_paid)
+                                <span class="admin-status-badge is-paid">IPVA pago</span>
+                            @endif
+                            @if($vehicle->licensing_ok)
+                                <span class="admin-status-badge is-paid">Licenciamento em dia</span>
+                            @endif
+                            @if($vehicle->is_armored)
+                                <span class="admin-status-badge is-awaiting">Blindado</span>
+                            @endif
+                            @php
+                                $hasAnyFlag = $vehicle->is_on_sale || $vehicle->is_just_arrived || $vehicle->has_report || $vehicle->has_factory_warranty || $vehicle->accepts_trade || $vehicle->ipva_paid || $vehicle->licensing_ok || $vehicle->is_armored;
+                            @endphp
+                            @if(! $hasAnyFlag)
                                 <span class="admin-row-meta">Sem destaques comerciais marcados.</span>
                             @endif
                         </div>
+                    </article>
+                </div>
+
+                @if($vehicle->description)
+                    <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                        <span class="admin-detail-label">Descrição do anúncio</span>
+                        <div class="mt-2 text-sm text-slate-700 whitespace-pre-line">{{ $vehicle->description }}</div>
+                    </div>
+                @endif
+
+                @if($vehicle->video_url)
+                    <div class="mt-4">
+                        <span class="admin-detail-label">Vídeo</span>
+                        <a href="{{ $vehicle->video_url }}" target="_blank" rel="noopener" class="mt-1 inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                            {{ $vehicle->video_url }}
+                        </a>
+                    </div>
+                @endif
                     </article>
                 </div>
             </section>
@@ -192,11 +235,15 @@
             </section>
 
             <section class="admin-card">
-                <h2 class="admin-section-title">Checklist rapido</h2>
+                <h2 class="admin-section-title">Checklist rápido</h2>
                 <div class="mt-4 admin-stack text-sm text-slate-600">
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $vehicle->has_report ? 'Veiculo com laudo marcado no cadastro.' : 'Veiculo sem flag de laudo no cadastro.' }}</div>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $summary['ordersTotal'] > 0 ? 'Este veiculo ja possui historico de pedidos na base.' : 'Ainda sem pedidos vinculados a este veiculo.' }}</div>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $vehicle->is_on_sale ? 'Em oferta para empurrao comercial.' : 'Sem oferta ativa no momento.' }}</div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $vehicle->has_report ? 'Veículo com laudo marcado no cadastro.' : 'Veículo sem flag de laudo no cadastro.' }}</div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $summary['ordersTotal'] > 0 ? 'Este veículo já possui histórico de pedidos na base.' : 'Ainda sem pedidos vinculados a este veículo.' }}</div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $vehicle->is_on_sale ? 'Em oferta para empurrão comercial.' : 'Sem oferta ativa no momento.' }}</div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">{{ $vehicle->ipva_paid ? 'IPVA pago.' : 'IPVA não confirmado.' }} {{ $vehicle->licensing_ok ? '· Licenciamento em dia.' : '· Licenciamento não confirmado.' }}</div>
+                    @if($vehicle->renavam)
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 font-mono text-xs">Renavam: {{ $vehicle->renavam }}</div>
+                    @endif
                 </div>
             </section>
         </aside>

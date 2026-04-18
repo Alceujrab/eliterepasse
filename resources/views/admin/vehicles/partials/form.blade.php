@@ -14,7 +14,7 @@
         {{-- Identificação --}}
         <section class="admin-card">
             <h2 class="admin-section-title">Identificação do veículo</h2>
-            <p class="admin-section-note">Dados obrigatorios de marca, modelo, placa e ano.</p>
+            <p class="admin-section-note">Dados obrigatórios de marca, modelo, placa e ano.</p>
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
                     <label for="brand" class="admin-field-label">Marca *</label>
@@ -31,6 +31,14 @@
                 <div>
                     <label for="plate" class="admin-field-label">Placa *</label>
                     <input id="plate" name="plate" type="text" value="{{ old('plate', $v?->plate) }}" required maxlength="8" class="admin-input font-mono uppercase" placeholder="ABC-1D23">
+                </div>
+                <div>
+                    <label for="renavam" class="admin-field-label">Renavam</label>
+                    <input id="renavam" name="renavam" type="text" value="{{ old('renavam', $v?->renavam) }}" maxlength="11" class="admin-input font-mono" placeholder="00000000000">
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="chassi" class="admin-field-label">Chassi</label>
+                    <input id="chassi" name="chassi" type="text" value="{{ old('chassi', $v?->chassi) }}" maxlength="17" class="admin-input font-mono uppercase" placeholder="9BWZZZ377VT004251">
                 </div>
                 <div>
                     <label for="category" class="admin-field-label">Carroceria</label>
@@ -63,11 +71,15 @@
         {{-- Especificações técnicas --}}
         <section class="admin-card">
             <h2 class="admin-section-title">Especificações técnicas</h2>
-            <p class="admin-section-note">Motor, combustivel, cambio, quilometragem e portas.</p>
+            <p class="admin-section-note">Motor, combustível, câmbio, quilometragem, direção e portas.</p>
             <div class="mt-5 grid gap-4 sm:grid-cols-3">
                 <div>
                     <label for="mileage" class="admin-field-label">Quilometragem (km) *</label>
                     <input id="mileage" name="mileage" type="number" value="{{ old('mileage', $v?->mileage ?? 0) }}" required min="0" class="admin-input">
+                </div>
+                <div>
+                    <label for="num_owners" class="admin-field-label">Nº de donos</label>
+                    <input id="num_owners" name="num_owners" type="number" value="{{ old('num_owners', $v?->num_owners) }}" min="0" max="20" class="admin-input" placeholder="Ex: 1">
                 </div>
                 <div>
                     <label for="fuel_type" class="admin-field-label">Combustível</label>
@@ -88,6 +100,15 @@
                     </select>
                 </div>
                 <div>
+                    <label for="steering" class="admin-field-label">Direção</label>
+                    <select id="steering" name="steering" class="admin-select">
+                        <option value="">Selecione</option>
+                        @foreach($steeringOptions as $key => $label)
+                            <option value="{{ $key }}" @selected(old('steering', $v?->steering) === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <label for="engine" class="admin-field-label">Motor</label>
                     <input id="engine" name="engine" type="text" value="{{ old('engine', $v?->engine) }}" maxlength="60" class="admin-input" placeholder="Ex: 2.0 TwinPower Turbo">
                 </div>
@@ -98,10 +119,21 @@
             </div>
         </section>
 
+        {{-- Descrição / Observações --}}
+        <section class="admin-card">
+            <h2 class="admin-section-title">Descrição do anúncio</h2>
+            <p class="admin-section-note">Texto livre para descrever o veículo, histórico, diferenciais e observações internas.</p>
+            <div class="mt-4">
+                <label for="description" class="admin-field-label">Descrição</label>
+                <textarea id="description" name="description" rows="5" maxlength="2000" class="admin-input" placeholder="Descreva o estado geral do veículo, diferenciais, histórico de manutenção, etc.">{{ old('description', $v?->description) }}</textarea>
+                <p class="mt-1 text-xs text-slate-400">Máximo 2.000 caracteres.</p>
+            </div>
+        </section>
+
         {{-- Fotos --}}
         <section class="admin-card">
             <h2 class="admin-section-title">Fotos do veículo</h2>
-            <p class="admin-section-note">A primeira imagem sera a capa do anuncio. Max 5 MB por foto.</p>
+            <p class="admin-section-note">A primeira imagem será a capa do anúncio. Máx. 5 MB por foto.</p>
 
             @if(! empty($media))
                 <div class="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
@@ -122,13 +154,23 @@
             </div>
         </section>
 
+        {{-- Vídeo --}}
+        <section class="admin-card">
+            <h2 class="admin-section-title">Vídeo</h2>
+            <p class="admin-section-note">Link do YouTube ou outro serviço de vídeo para walkthrough do veículo.</p>
+            <div class="mt-4">
+                <label for="video_url" class="admin-field-label">URL do vídeo</label>
+                <input id="video_url" name="video_url" type="url" value="{{ old('video_url', $v?->video_url) }}" maxlength="255" class="admin-input" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+        </section>
+
         {{-- Acessórios --}}
         <section class="admin-card">
             <h2 class="admin-section-title">Acessórios</h2>
-            <p class="admin-section-note">Separe por virgula. Ex: Ar condicionado, Direção elétrica, Airbag</p>
+            <p class="admin-section-note">Separe por vírgula. Ex: Ar condicionado, Direção elétrica, Airbag</p>
             <div class="mt-4">
                 <label for="accessories" class="admin-field-label">Lista de acessórios</label>
-                <input id="accessories" name="accessories" type="text" value="{{ old('accessories', $accessories) }}" class="admin-input" placeholder="Ar condicionado, Direção elétrica, Central multimídia...">
+                <textarea id="accessories" name="accessories" rows="3" class="admin-input" placeholder="Ar condicionado, Direção elétrica, Central multimídia, Câmera de ré...">{{ old('accessories', $accessories) }}</textarea>
             </div>
         </section>
     </div>
@@ -142,15 +184,15 @@
             <div class="mt-4 admin-stack">
                 <div>
                     <label for="fipe_price" class="admin-field-label">Tabela FIPE (R$)</label>
-                    <input id="fipe_price" name="fipe_price" type="number" step="0.01" min="0" value="{{ old('fipe_price', $v?->fipe_price) }}" class="admin-input" placeholder="0.00">
+                    <input id="fipe_price" name="fipe_price" type="number" step="0.01" min="0" value="{{ old('fipe_price', $v?->fipe_price) }}" class="admin-input" placeholder="0,00">
                 </div>
                 <div>
                     <label for="sale_price" class="admin-field-label">Preço de venda (R$)</label>
-                    <input id="sale_price" name="sale_price" type="number" step="0.01" min="0" value="{{ old('sale_price', $v?->sale_price) }}" class="admin-input" placeholder="0.00">
+                    <input id="sale_price" name="sale_price" type="number" step="0.01" min="0" value="{{ old('sale_price', $v?->sale_price) }}" class="admin-input" placeholder="0,00">
                 </div>
                 <div>
                     <label for="profit_margin" class="admin-field-label">Margem (%)</label>
-                    <input id="profit_margin" name="profit_margin" type="number" step="0.1" value="{{ old('profit_margin', $v?->profit_margin) }}" class="admin-input" placeholder="0.0">
+                    <input id="profit_margin" name="profit_margin" type="number" step="0.1" value="{{ old('profit_margin', $v?->profit_margin) }}" class="admin-input" placeholder="0,0">
                 </div>
             </div>
         </section>
@@ -169,7 +211,12 @@
                 </div>
                 <div>
                     <label for="location_state" class="admin-field-label">UF</label>
-                    <input id="location_state" name="location_state" type="text" value="{{ old('location_state', $location['state'] ?? '') }}" maxlength="2" class="admin-input uppercase" placeholder="MG">
+                    <select id="location_state" name="location_state" class="admin-select">
+                        <option value="">Selecione</option>
+                        @foreach($ufOptions as $uf)
+                            <option value="{{ $uf }}" @selected(old('location_state', $location['state'] ?? '') === $uf)>{{ $uf }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </section>
@@ -202,6 +249,22 @@
                     <label class="flex items-center gap-3 text-sm text-slate-700">
                         <input type="checkbox" name="has_factory_warranty" value="1" @checked(old('has_factory_warranty', $v?->has_factory_warranty)) class="h-5 w-5 rounded border-slate-300 accent-orange-500">
                         Garantia de fábrica
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700">
+                        <input type="checkbox" name="accepts_trade" value="1" @checked(old('accepts_trade', $v?->accepts_trade)) class="h-5 w-5 rounded border-slate-300 accent-orange-500">
+                        Aceita troca
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700">
+                        <input type="checkbox" name="ipva_paid" value="1" @checked(old('ipva_paid', $v?->ipva_paid)) class="h-5 w-5 rounded border-slate-300 accent-orange-500">
+                        IPVA pago
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700">
+                        <input type="checkbox" name="licensing_ok" value="1" @checked(old('licensing_ok', $v?->licensing_ok)) class="h-5 w-5 rounded border-slate-300 accent-orange-500">
+                        Licenciamento em dia
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700">
+                        <input type="checkbox" name="is_armored" value="1" @checked(old('is_armored', $v?->is_armored)) class="h-5 w-5 rounded border-slate-300 accent-orange-500">
+                        Blindado
                     </label>
                 </div>
             </div>
