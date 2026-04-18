@@ -38,7 +38,7 @@ class LoginForm extends Form
         $loginValue = $loginType === 'cpf' ? preg_replace('/[^0-9]/', '', $this->login) : $this->login;
 
         // Validar reCAPTCHA
-        if (config('services.recaptcha.secret_key')) {
+        if (config('services.recaptcha.secret_key') && \App\Models\SystemSetting::get('google_recaptcha_ativo')) {
             $response = \Illuminate\Support\Facades\Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret'   => config('services.recaptcha.secret_key'),
                 'response' => $this->recaptcha_token,
