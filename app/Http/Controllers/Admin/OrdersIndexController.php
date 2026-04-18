@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Support\Filters\RememberedFilters;
+use App\Support\Tables\SortableHeader;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -13,12 +14,19 @@ class OrdersIndexController extends Controller
     public function __invoke(Request $request): View
     {
         $filters = (new RememberedFilters($request, 'admin.orders.index'))
-            ->remember(['status', 'q', 'per_page']);
+            ->remember(['status', 'q', 'per_page', 'sort', 'direction']);
 
         $status = (string) ($filters->get('status', ''));
         $search = trim((string) $filters->get('q', ''));
         $perPage = (int) ($filters->get('per_page', 15));
         $perPage = in_array($perPage, [15, 25, 50, 100], true) ? $perPage : 15;
+
+        $sort = SortableHeader::sanitize(
+            (string) $filters->get('sort', 'created_at'),
+            ['created_at', 'id', 'valor_compra', 'status'],
+            'created_at'
+        );
+        $direction = SortableHeader::direction((string) $filters->get('direction', 'desc'));
 
         $queryFactory = function () use ($status, $search) {
             return Order::query()
@@ -50,7 +58,7 @@ class OrdersIndexController extends Controller
         };
 
         $orders = $queryFactory()
-            ->latest()
+            ->orderBy($sort, $direction)
             ->paginate($perPage)
             ->withQueryString();
 
@@ -68,6 +76,8 @@ class OrdersIndexController extends Controller
             'status' => $status,
             'search' => $search,
             'perPage' => $perPage,
+            'sort' => $sort,
+            'direction' => $direction,
             'summary' => $summary,
             'globalTotalOrders' => Order::count(),
             'hasActiveFilters' => $status !== '' || $search !== '',

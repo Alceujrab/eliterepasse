@@ -125,6 +125,39 @@
                 </select>
             </div>
 
+            <div>
+                <label for="orders-sort" class="mb-1 block text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Ordenar por</label>
+                <select
+                    id="orders-sort"
+                    name="sort"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium outline-none transition focus:border-blue-400"
+                >
+                    @php
+                        $sortOptions = [
+                            'created_at' => 'Mais recentes',
+                            'id' => 'Numero do pedido',
+                            'valor_compra' => 'Valor',
+                            'status' => 'Status',
+                        ];
+                    @endphp
+                    @foreach($sortOptions as $key => $label)
+                        <option value="{{ $key }}" @selected(($sort ?? 'created_at') === $key)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="orders-direction" class="mb-1 block text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Sentido</label>
+                <select
+                    id="orders-direction"
+                    name="direction"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium outline-none transition focus:border-blue-400"
+                >
+                    <option value="desc" @selected(($direction ?? 'desc') === 'desc')>Decrescente</option>
+                    <option value="asc" @selected(($direction ?? 'desc') === 'asc')>Crescente</option>
+                </select>
+            </div>
+
             <div class="flex gap-2">
                 <button type="submit" class="admin-btn-primary">Filtrar</button>
                 <a href="{{ route('admin.v2.orders.index', ['reset' => 1]) }}" class="admin-btn-soft" title="Limpa filtros memorizados desta tela">Limpar</a>

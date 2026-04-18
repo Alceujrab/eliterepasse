@@ -21,10 +21,7 @@
                     <label for="nome_fantasia" class="admin-field-label">Nome Fantasia</label>
                     <input id="nome_fantasia" name="nome_fantasia" type="text" value="{{ old('nome_fantasia', $c?->nome_fantasia) }}" maxlength="255" class="admin-input">
                 </div>
-                <div>
-                    <label for="cnpj" class="admin-field-label">CNPJ</label>
-                    <input id="cnpj" name="cnpj" type="text" value="{{ old('cnpj', $c?->cnpj) }}" maxlength="20" class="admin-input font-mono" placeholder="00.000.000/0000-00">
-                </div>
+                <x-admin.field name="cnpj" label="CNPJ" :value="old('cnpj', $c?->cnpj)" mask="cnpj" placeholder="00.000.000/0000-00" />
                 <div>
                     <label for="inscricao_estadual" class="admin-field-label">Inscrição Estadual</label>
                     <input id="inscricao_estadual" name="inscricao_estadual" type="text" value="{{ old('inscricao_estadual', $c?->inscricao_estadual) }}" maxlength="20" class="admin-input">
@@ -37,14 +34,8 @@
                     <label for="email" class="admin-field-label">E-mail *</label>
                     <input id="email" name="email" type="email" value="{{ old('email', $c?->email) }}" required maxlength="255" class="admin-input">
                 </div>
-                <div>
-                    <label for="phone" class="admin-field-label">WhatsApp / Telefone</label>
-                    <input id="phone" name="phone" type="text" value="{{ old('phone', $c?->phone) }}" maxlength="20" class="admin-input" placeholder="(31) 9 9999-9999">
-                </div>
-                <div>
-                    <label for="cpf" class="admin-field-label">CPF do Responsável</label>
-                    <input id="cpf" name="cpf" type="text" value="{{ old('cpf', $c?->cpf) }}" maxlength="14" class="admin-input font-mono" placeholder="000.000.000-00">
-                </div>
+                <x-admin.field name="phone" label="WhatsApp / Telefone" :value="old('phone', $c?->phone)" mask="telefone" placeholder="(31) 99999-9999" />
+                <x-admin.field name="cpf" label="CPF do Responsavel" :value="old('cpf', $c?->cpf)" mask="cpf" placeholder="000.000.000-00" />
             </div>
         </section>
 
@@ -53,10 +44,7 @@
             <h2 class="admin-section-title">Endereço</h2>
             <p class="admin-section-note">Endereco completo para correspondencia e contratos.</p>
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                <div>
-                    <label for="cep" class="admin-field-label">CEP</label>
-                    <input id="cep" name="cep" type="text" value="{{ old('cep', $c?->cep) }}" maxlength="10" class="admin-input font-mono" placeholder="00000-000">
-                </div>
+                <x-admin.field name="cep" label="CEP" :value="old('cep', $c?->cep)" mask="cep" placeholder="00000-000" hint="Pressione TAB apos preencher para preenchimento automatico futuro." />
                 <div>
                     <label for="logradouro" class="admin-field-label">Rua / Avenida</label>
                     <input id="logradouro" name="logradouro" type="text" value="{{ old('logradouro', $c?->logradouro) }}" maxlength="255" class="admin-input">

@@ -198,10 +198,14 @@
                     <div class="admin-row-meta">{{ $order->vehicle ? trim($order->vehicle->brand . ' ' . $order->vehicle->model . ' ' . $order->vehicle->model_year) : 'Sem veiculo' }}</div>
                     <div class="mt-3 text-sm font-bold text-emerald-700">R$ {{ number_format((float) $order->valor_compra, 2, ',', '.') }}</div>
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <form method="POST" action="{{ route('admin.v2.orders.generate-invoice', $order) }}">
-                            @csrf
-                            <button type="submit" class="admin-btn-primary">Gerar fatura</button>
-                        </form>
+                        <x-admin.action-button
+                            :action="route('admin.v2.orders.generate-invoice', $order)"
+                            label="Gerar fatura"
+                            variant="primary"
+                            confirm="Gerar fatura para {{ $order->numero }}?"
+                            :confirmDetail="'Sera emitida uma cobranca de R$ ' . number_format((float) $order->valor_compra, 2, ',', '.') . '.'"
+                            confirmLabel="Gerar fatura"
+                        />
                         <a href="{{ route('admin.v2.orders.show', $order) }}" class="admin-btn-soft">Pedido</a>
                     </div>
                 </article>

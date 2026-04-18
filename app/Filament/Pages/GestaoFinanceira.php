@@ -106,7 +106,7 @@ class GestaoFinanceira extends Page
         $this->formaPagamento = 'boleto';
         $this->status         = 'em_aberto';
         $this->orderId        = $orderId;
-        $this->numeroFatura   = 'FAT-' . now()->year . '-' . str_pad(Financial::max('id') + 1, 6, '0', STR_PAD_LEFT);
+        $this->numeroFatura   = Financial::gerarNumero();
 
         // Preencher valor automaticamente se tiver pedido
         if ($orderId) {
