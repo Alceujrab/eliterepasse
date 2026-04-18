@@ -139,7 +139,7 @@
                 <div class="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                     @foreach($media as $path)
                         <label class="relative group cursor-pointer rounded-xl overflow-hidden border border-slate-200 aspect-square">
-                            <img src="{{ asset('storage/' . $path) }}" alt="Foto" class="w-full h-full object-cover">
+                            <img src="{{ $path }}" alt="Foto" class="w-full h-full object-cover">
                             <input type="checkbox" name="remove_photos[]" value="{{ $path }}" class="absolute top-2 right-2 h-5 w-5 accent-rose-500">
                             <span class="absolute inset-0 bg-rose-500/0 group-has-[:checked]:bg-rose-500/30 transition"></span>
                         </label>

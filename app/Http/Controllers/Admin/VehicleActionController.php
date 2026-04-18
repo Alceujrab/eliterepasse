@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class VehicleActionController extends Controller
 {
@@ -93,16 +92,29 @@ class VehicleActionController extends Controller
         // Remove fotos marcadas
         $remove = $request->input('remove_photos', []);
         if (! empty($remove)) {
-            foreach ($remove as $path) {
-                Storage::disk('public')->delete($path);
+            foreach ($remove as $url) {
+                // Extrai o caminho relativo da URL para deletar o arquivo físico
+                $parsed = parse_url($url, PHP_URL_PATH);
+                if ($parsed) {
+                    $fullPath = public_path(ltrim($parsed, '/'));
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
+                }
             }
             $existing = array_values(array_diff($existing, $remove));
         }
 
-        // Novas fotos
+        // Novas fotos (salva direto em public/uploads/vehicles para evitar symlink)
         if ($request->hasFile('photos')) {
+            $dir = public_path('uploads/vehicles');
+            if (! is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
             foreach ($request->file('photos') as $photo) {
-                $existing[] = $photo->store('vehicles', 'public');
+                $name = uniqid('v_') . '_' . time() . '.' . $photo->getClientOriginalExtension();
+                $photo->move($dir, $name);
+                $existing[] = asset('uploads/vehicles/' . $name);
             }
         }
 
