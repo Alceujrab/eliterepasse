@@ -60,6 +60,7 @@
                 <p class="admin-section-note">Priorize aprovacao, trate bloqueios e identifique rapidamente quem ja esta operando com pedidos, tickets e documentos.</p>
             </div>
             <div class="admin-toolbar-actions">
+                <a href="{{ route('admin.v2.clients.create') }}" class="admin-btn-primary">Novo cliente</a>
                 <a href="{{ route('admin.v2.clients.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
             </div>
         </div>

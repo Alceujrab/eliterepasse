@@ -53,6 +53,7 @@
                         <p class="admin-section-note">Consolida identificacao, especificacoes, precificacao e sinais comerciais do estoque.</p>
                     </div>
                     <div class="admin-toolbar-actions">
+                        <a href="{{ route('admin.v2.vehicles.edit', $vehicle) }}" class="admin-btn-primary">Editar veículo</a>
                         <a href="{{ route('admin.v2.vehicles.index') }}" class="admin-btn-soft">Voltar para fila</a>
                     </div>
                 </div>

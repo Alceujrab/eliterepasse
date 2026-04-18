@@ -23,5 +23,6 @@
         </form>
     @endif
 
+    <a href="{{ route('admin.v2.vehicles.edit', $vehicle) }}" class="admin-btn-soft">Editar</a>
     <a href="{{ route('admin.v2.vehicles.show', $vehicle) }}" class="admin-btn-soft">Abrir v2</a>
 </div>

@@ -56,6 +56,7 @@
                 <p class="admin-section-note">Monitore disponibilidade, valor e sinais comerciais sem depender do Filament para a operacao diaria do estoque.</p>
             </div>
             <div class="admin-toolbar-actions">
+                <a href="{{ route('admin.v2.vehicles.create') }}" class="admin-btn-primary">Novo veículo</a>
                 <a href="{{ route('admin.v2.vehicles.index', request()->query()) }}" class="admin-btn-soft">Atualizar</a>
             </div>
         </div>

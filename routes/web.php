@@ -39,6 +39,10 @@ use App\Http\Controllers\Admin\TicketsIndexController;
 use App\Http\Controllers\Admin\VehicleActionController;
 use App\Http\Controllers\Admin\VehiclesIndexController;
 use App\Http\Controllers\Admin\VehicleShowController;
+use App\Http\Controllers\Admin\VehicleCreateController;
+use App\Http\Controllers\Admin\VehicleEditController;
+use App\Http\Controllers\Admin\ClientCreateController;
+use App\Http\Controllers\Admin\ClientEditController;
 use App\Http\Controllers\Admin\GeneralDocumentsIndexController;
 use App\Http\Controllers\Admin\GeneralDocumentActionController;
 use App\Http\Controllers\Admin\VehicleReportsIndexController;
@@ -104,12 +108,21 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])->prefix('painel-admi
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::get('/clientes', ClientsIndexController::class)->name('clients.index');
+    Route::get('/clientes/criar', ClientCreateController::class)->name('clients.create');
+    Route::post('/clientes', [ClientActionController::class, 'store'])->name('clients.store');
     Route::get('/clientes/{client}', ClientShowController::class)->name('clients.show');
+    Route::get('/clientes/{client}/editar', ClientEditController::class)->name('clients.edit');
+    Route::put('/clientes/{client}', [ClientActionController::class, 'update'])->name('clients.update');
     Route::post('/clientes/{client}/aprovar', [ClientActionController::class, 'approve'])->name('clients.approve');
     Route::post('/clientes/{client}/bloquear', [ClientActionController::class, 'block'])->name('clients.block');
 
     Route::get('/veiculos', VehiclesIndexController::class)->name('vehicles.index');
+    Route::get('/veiculos/criar', VehicleCreateController::class)->name('vehicles.create');
+    Route::post('/veiculos', [VehicleActionController::class, 'store'])->name('vehicles.store');
     Route::get('/veiculos/{vehicle}', VehicleShowController::class)->name('vehicles.show');
+    Route::get('/veiculos/{vehicle}/editar', VehicleEditController::class)->name('vehicles.edit');
+    Route::put('/veiculos/{vehicle}', [VehicleActionController::class, 'update'])->name('vehicles.update');
+    Route::delete('/veiculos/{vehicle}', [VehicleActionController::class, 'destroy'])->name('vehicles.destroy');
     Route::post('/veiculos/{vehicle}/status', [VehicleActionController::class, 'updateStatus'])->name('vehicles.status');
 
     Route::get('/pedidos', OrdersIndexController::class)->name('orders.index');

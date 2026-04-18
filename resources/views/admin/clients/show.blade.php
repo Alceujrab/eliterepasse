@@ -64,6 +64,7 @@
                         <p class="admin-section-note">Dados principais do lojista para validacao comercial, contato e liberacao operacional.</p>
                     </div>
                     <div class="admin-toolbar-actions">
+                        <a href="{{ route('admin.v2.clients.edit', $client) }}" class="admin-btn-primary">Editar cliente</a>
                         <a href="{{ route('admin.v2.clients.index') }}" class="admin-btn-soft">Voltar para fila</a>
                     </div>
                 </div>
