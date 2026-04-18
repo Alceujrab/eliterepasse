@@ -20,15 +20,16 @@
     $hasError = $errors->has($name);
     $oldValue = old($name, $value);
 
+    // Plugin @alpinejs/mask usa: 9 = dígito, a = letra, * = alphanumérico
     $maskMap = [
-        'cpf'       => '000.000.000-00',
-        'cnpj'      => '00.000.000/0000-00',
-        'cep'       => '00000-000',
-        'telefone'  => ['(00) 0000-0000', '(00) 00000-0000'],
-        'placa'     => 'AAA-0A00',
-        'renavam'   => '00000000000',
-        'chassi'    => 'SSSSSSSSSSSSSSSSS', // 17 chars
-        'fipe'      => '000000-0',
+        'cpf'       => '999.999.999-99',
+        'cnpj'      => '99.999.999/9999-99',
+        'cep'       => '99999-999',
+        'telefone'  => ['(99) 9999-9999', '(99) 99999-9999'],
+        'placa'     => 'aaa-9*99',
+        'renavam'   => '99999999999',
+        'chassi'    => '*****************', // 17 chars alphanumerico
+        'fipe'      => '999999-9',
         'dinheiro'  => null, // tratado via x-mask:dynamic abaixo
     ];
 
